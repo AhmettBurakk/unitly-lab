@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unitly Lab - Ultimate Engineering Suite</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6; --indigo: #6366f1; }
         [data-theme="dark"] { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --result-bg: #0f172a; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); transition: 0.3s; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -53,6 +53,8 @@
         .lab-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; margin-left: 8px; text-transform: uppercase; }
         .lab-badge.new { background: var(--accent); }
         .lab-badge.pro { background: var(--warning); color: #000; }
+        .lab-badge.hot { background: var(--purple); }
+        .lab-badge.blue { background: var(--indigo); }
         
         .analysis-text { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
         .point-dot { cursor: pointer; transition: 0.3s; }
@@ -78,22 +80,31 @@
                 <button onclick="toggleDropdown('mechDropdown')" class="dropbtn">⚙️ Mech</button>
                 <div id="mechDropdown" class="dropdown-content">
                     <a onclick="openModal('cncModal')">🏭 Machining Lab <span class="lab-badge">Adv</span></a>
-                    <a onclick="openModal('gcodeModal')">📜 G-Code Reference <span class="lab-badge">ISO</span></a>
+                    <a onclick="openModal('sheetModal')">📐 Sheet Metal Bend <span class="lab-badge blue">Shop</span></a>
+                    <a onclick="openModal('hydroModal')">🚜 Hydraulic Force <span class="lab-badge hot">Pro</span></a>
+                    <a onclick="openModal('fitsModal')">🔩 Fits & Tolerances <span class="lab-badge">ISO</span></a>
+                    <a onclick="openModal('gcodeModal')">📜 G-Code Reference</a>
                     <a onclick="openModal('gearModal')">⚙️ Transmission Lab</a>
+                    <a onclick="openModal('beltModal')">⛓️ Belt & Chain Calc</a>
                     <a onclick="openModal('fastenerModal')">🔩 Fastener Reference</a>
                     <a onclick="openModal('weightModal')">⚖️ Profile Weight Lab</a>
                     <a onclick="openModal('sketchModal')">🎨 Design Analyst (2D)</a>
                     <a onclick="openModal('geomModal')">📐 Material & Volume</a>
                     <a onclick="openModal('beamModal')">🏗️ Beam Analysis</a>
                     <a onclick="openModal('stressModal')">📈 Material Stress <span class="lab-badge pro">Pro</span></a>
-                    <a onclick="openModal('printModal')">🖨️ 3D Print Cost <span class="lab-badge new">Maker</span></a>
+                    <a onclick="openModal('thermModal')">🔥 Thermal Expansion</a>
+                    <a onclick="openModal('linterpModal')">🌡️ Linear Interpolation <span class="lab-badge new">Exam</span></a>
+                    <a onclick="openModal('flowModal')">💧 Pipe Flow Calc</a>
+                    <a onclick="openModal('printModal')">🖨️ 3D Print Cost <span class="lab-badge">Maker</span></a>
                 </div>
             </div>
 
             <div class="dropdown">
                 <button onclick="toggleDropdown('electricDropdown')" class="dropbtn" style="background:var(--warning); color:#000;">⚡ Electric</button>
                 <div id="electricDropdown" class="dropdown-content">
+                    <a onclick="openModal('cableModal')">⚡ Wire Size & Drop <span class="lab-badge hot">EV</span></a>
                     <a onclick="openModal('electroModal')">⚡ Electronics Lab <span class="lab-badge new">IoT</span></a>
+                    <a onclick="openModal('stepperModal')">🤖 Stepper / Linear <span class="lab-badge">CNC</span></a>
                     <a onclick="openModal('ebikeModal')">🚲 EV Power Dynamics <span class="lab-badge">EV</span></a>
                 </div>
             </div>
@@ -114,6 +125,225 @@
         <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
         <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
         <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45">%<input type="number" id="pTime" value="12">Mo.</div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
+    </div>
+
+    <div id="sheetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sheetModal')">&times;</span>
+            <h3 style="color:var(--indigo);">📐 Sheet Metal Bending (Büküm)</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1"><small>Thickness (T)</small><input type="number" id="bendT" value="2"></div>
+                        <div style="flex:1"><small>Inside Radius (R)</small><input type="number" id="bendR" value="2"></div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1"><small>Angle (°)</small><input type="number" id="bendA" value="90"></div>
+                        <div style="flex:1"><small>K-Factor</small><input type="number" id="bendK" value="0.33"></div>
+                    </div>
+                    <div class="analysis-text">K=0.33 (Air Bend), K=0.50 (Coining)</div>
+                    <button onclick="calcBend()" style="background:var(--indigo);">Calculate Unfolded</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Bend Allowance (BA)</small><div id="bendBA" class="result-val">0.00 mm</div></div>
+                    <div class="multi-unit-res">Deduction (BD): <span id="bendBD">0.00 mm</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="flowModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('flowModal')">&times;</span>
+            <h3 style="color:#0ea5e9;">💧 Pipe Flow & Velocity</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="unit-tag">Parameters</div>
+                    <small>Inner Diameter (mm)</small><input type="number" id="pipeID" value="50">
+                    <small>Flow Rate (L/min)</small><input type="number" id="pipeQ" value="100">
+                    <button onclick="calcFlow()" style="background:#0ea5e9;">Calculate Velocity</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Fluid Velocity</small><div id="pipeVel" class="result-val" style="color:#0ea5e9;">0.00 m/s</div></div>
+                    <div class="analysis-text" style="margin-top:10px;">Recommended: <br>Suction: 0.6-1.2 m/s<br>Pressure: 2-5 m/s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="thermModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('thermModal')">&times;</span>
+            <h3 style="color:#f97316;">🔥 Thermal Expansion (Genleşme)</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <small>Original Length (mm)</small><input type="number" id="thermL" value="100">
+                    <div class="row">
+                        <div style="flex:1"><small>Temp Change (ΔT °C)</small><input type="number" id="thermDT" value="100"></div>
+                    </div>
+                    <small>Material</small>
+                    <select id="thermMat">
+                        <option value="12">Steel (12 µm/m°C)</option>
+                        <option value="23">Aluminum (23 µm/m°C)</option>
+                        <option value="17">Copper (17 µm/m°C)</option>
+                        <option value="11">Cast Iron (11 µm/m°C)</option>
+                    </select>
+                    <button onclick="calcThermal()" style="background:#f97316;">Calculate ΔL</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Change in Length (ΔL)</small><div id="thermRes" class="result-val" style="color:#f97316;">0.00 mm</div></div>
+                    <div class="multi-unit-res">New Length: <span id="thermNewL">0.00 mm</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="linterpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('linterpModal')">&times;</span>
+            <h3 style="color:var(--accent);">🌡️ Linear Interpolation</h3>
+            <p class="analysis-text">Find Y for given X between two points.</p>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="input-group">
+                    <small>Point 1 (x1, y1)</small>
+                    <div class="row"><input type="number" id="lx1" placeholder="x1"><input type="number" id="ly1" placeholder="y1"></div>
+                    <small>Point 2 (x2, y2)</small>
+                    <div class="row"><input type="number" id="lx2" placeholder="x2"><input type="number" id="ly2" placeholder="y2"></div>
+                </div>
+                <div class="input-group" style="justify-content:center;">
+                    <small>Target X</small>
+                    <input type="number" id="ltx" placeholder="Enter X">
+                    <button onclick="calcLinterp()" style="background:var(--accent); margin-top:10px;">Calculate Y</button>
+                    <div class="result-box"><span id="lres" class="result-val">Y = --</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hydroModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('hydroModal')">&times;</span>
+            <h3 style="color:var(--danger);">🚜 Hydraulic Force Calculator</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="unit-tag">Cylinder Specs</div>
+                    <small>Bore Diameter (mm)</small><input type="number" id="cylBore" value="80">
+                    <small>Rod Diameter (mm)</small><input type="number" id="cylRod" value="40">
+                    <small>Pressure (Bar)</small><input type="number" id="cylPress" value="160">
+                    <button onclick="calcHydro()" style="background:var(--danger);">Calculate Force</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:15px;">
+                    <div><strong>Push Force (İtme):</strong> <span id="pushForce" style="color:var(--danger); font-weight:800;">0 Ton</span></div>
+                    <div style="margin-top:10px;"><strong>Pull Force (Çekme):</strong> <span id="pullForce" style="color:var(--text); font-weight:800;">0 Ton</span></div>
+                    <div class="analysis-text" style="margin-top:10px;">F = P × A</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cableModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cableModal')">&times;</span>
+            <h3 style="color:var(--warning);">⚡ DC Wire Size & Drop</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1"><small>Voltage (V)</small><input type="number" id="cabV" value="12"></div>
+                        <div style="flex:1"><small>Current (A)</small><input type="number" id="cabA" value="20"></div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1"><small>Length (m)</small><input type="number" id="cabL" value="5"></div>
+                        <div style="flex:1"><small>Max Drop %</small><input type="number" id="cabDrop" value="3"></div>
+                    </div>
+                    <button onclick="calcCable()" style="background:var(--warning); color:#000;">Calculate Cable</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Min Cross Section</small><div id="cabResMM" class="result-val">0 mm²</div></div>
+                    <div class="multi-unit-res">Nearest Standard: <strong id="cabStd">--</strong></div>
+                    <div class="multi-unit-res" style="color:var(--danger)">Voltage Drop: <span id="cabVDrop">0 V</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fitsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('fitsModal')">&times;</span>
+            <h3 style="color:var(--purple);">🔩 ISO Fits & Tolerances (Alıştırmalar)</h3>
+            <p class="analysis-text">Simplified ISO 286 Calculator for Common Fits</p>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="unit-tag">Parameters</div>
+                    <div class="row">
+                        <div style="flex:1"><small>Diameter (mm)</small><input type="number" id="fitDia" value="10"></div>
+                        <div style="flex:1"><small>Fit Type</small>
+                            <select id="fitType">
+                                <option value="H7g6">H7 / g6 (Sliding)</option>
+                                <option value="H7h6">H7 / h6 (Clearance)</option>
+                                <option value="H7k6">H7 / k6 (Transition)</option>
+                                <option value="H7p6">H7 / p6 (Interference)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="calcFits()" style="background:var(--purple);">Calculate Fit</button>
+                </div>
+                <div class="result-box" style="text-align:left; padding:15px; display:flex; flex-direction:column; gap:5px;">
+                    <div><strong>Hole:</strong> <span id="fitHoleRes">--</span></div>
+                    <div><strong>Shaft:</strong> <span id="fitShaftRes">--</span></div>
+                    <div style="margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); color:var(--purple); font-weight:bold;">
+                        <span id="fitValRes">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="beltModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('beltModal')">&times;</span>
+            <h3 style="color:var(--accent);">⛓️ Belt & Pulley Calculator</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1"><small>Large Dia (D)</small><input type="number" id="beltD" value="100"></div>
+                        <div style="flex:1"><small>Small Dia (d)</small><input type="number" id="belt_d" value="50"></div>
+                    </div>
+                    <div class="unit-tag">Center Distance (C) mm</div>
+                    <input type="number" id="beltC" value="200">
+                    <button onclick="calcBelt()" style="background:var(--accent);">Calculate Length</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Belt Pitch Length</small><div id="beltLenRes" class="result-val">0 mm</div></div>
+                    <div class="analysis-text" style="margin-top:10px;">L ≈ 2C + 1.57(D+d) + (D-d)²/4C</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stepperModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('stepperModal')">&times;</span>
+            <h3 style="color:var(--warning);">🤖 Stepper Motor & Linear Motion</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1"><small>Step Angle</small><select id="stepAng"><option value="1.8">1.8° (200)</option><option value="0.9">0.9° (400)</option></select></div>
+                        <div style="flex:1"><small>Microstepping</small><select id="stepMicro"><option value="1">1/1</option><option value="2">1/2</option><option value="4">1/4</option><option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option></select></div>
+                    </div>
+                    <div class="unit-tag">Transmission</div>
+                    <select id="transType" onchange="toggleTransInput()">
+                        <option value="screw">Lead Screw (Pitch mm)</option>
+                        <option value="belt">Belt (Pulley Pitch x Teeth)</option>
+                    </select>
+                    <input type="number" id="transVal" value="8" placeholder="Pitch or Pulley Dia">
+                    <button onclick="calcStepper()" style="background:var(--warning); color:#000;">Calculate Steps</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div><small>Steps per mm</small><div id="stepRes" class="result-val" style="color:var(--warning);">0.00</div></div>
+                    <div class="multi-unit-res">Resolution: <span id="stepResMicron">0</span> microns</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="printModal" class="modal">
@@ -532,6 +762,7 @@
         if(id === 'sketchModal') setTimeout(initCanvas, 100);
         if(id === 'geomModal') updateGeomInputs();
         if(id === 'weightModal') updateProfileInputs();
+        if(id === 'fitsModal') calcFits(); // Initial calc for fits
     }
     function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
@@ -728,6 +959,170 @@
         if(!isNaN(v) && !isNaN(i)) document.getElementById('ohmR').value = v / i;
         else if(!isNaN(v) && !isNaN(r)) document.getElementById('ohmI').value = v / r;
         else if(!isNaN(i) && !isNaN(r)) document.getElementById('ohmV').value = i * r;
+    }
+
+    // --- Fits & Tolerances (Simplified) ---
+    function calcFits() {
+        const dia = parseFloat(document.getElementById('fitDia').value);
+        const type = document.getElementById('fitType').value;
+        let holeMax=0, holeMin=0, shaftMax=0, shaftMin=0, valText = "";
+
+        // Approximation for quick calculation (not full ISO database)
+        // Values roughly scale with diameter root
+        const baseTol = Math.pow(dia, 0.45) * 0.001 * 15; // Rough micron scaling factor
+
+        if(type === 'H7g6') {
+            holeMax = baseTol; holeMin = 0;
+            shaftMax = -baseTol * 0.4; shaftMin = -baseTol * 1.2;
+            valText = "Clearance / Sliding Fit (Hassas Hareketli)";
+        } else if(type === 'H7h6') {
+            holeMax = baseTol; holeMin = 0;
+            shaftMax = 0; shaftMin = -baseTol * 0.8;
+            valText = "Clearance Fit (Hassas Boşluklu)";
+        } else if(type === 'H7k6') {
+            holeMax = baseTol; holeMin = 0;
+            shaftMax = baseTol * 0.6; shaftMin = baseTol * 0.1;
+            valText = "Transition Fit (Ara Geçme - Çekiçle)";
+        } else if(type === 'H7p6') {
+            holeMax = baseTol; holeMin = 0;
+            shaftMax = baseTol * 1.5; shaftMin = baseTol * 0.9;
+            valText = "Interference Fit (Sıkı Geçme - Pres)";
+        }
+
+        document.getElementById('fitHoleRes').innerText = `+${(holeMax*1000).toFixed(1)} / +${(holeMin*1000).toFixed(1)} µm`;
+        document.getElementById('fitShaftRes').innerText = `${(shaftMax*1000 > 0 ? '+' : '')}${(shaftMax*1000).toFixed(1)} / ${(shaftMin*1000 > 0 ? '+' : '')}${(shaftMin*1000).toFixed(1)} µm`;
+        document.getElementById('fitValRes').innerText = valText;
+    }
+
+    // --- Belt Length Calculator ---
+    function calcBelt() {
+        const D = parseFloat(document.getElementById('beltD').value);
+        const d = parseFloat(document.getElementById('belt_d').value);
+        const C = parseFloat(document.getElementById('beltC').value);
+        
+        const L = (2 * C) + (1.57 * (D + d)) + (Math.pow(D - d, 2) / (4 * C));
+        document.getElementById('beltLenRes').innerText = Math.round(L) + " mm";
+    }
+
+    // --- Stepper Motor Calculator ---
+    function calcStepper() {
+        const deg = parseFloat(document.getElementById('stepAng').value);
+        const micro = parseFloat(document.getElementById('stepMicro').value);
+        const pitch = parseFloat(document.getElementById('transVal').value);
+        
+        if(pitch === 0) return;
+        
+        const stepsPerRev = (360 / deg) * micro;
+        const stepsPerUnit = stepsPerRev / pitch;
+        
+        document.getElementById('stepRes').innerText = stepsPerUnit.toFixed(2);
+        document.getElementById('stepResMicron').innerText = (1000 / stepsPerUnit).toFixed(2);
+    }
+
+    // --- Linterp Calculator ---
+    function calcLinterp() {
+        const x1 = parseFloat(document.getElementById('lx1').value);
+        const y1 = parseFloat(document.getElementById('ly1').value);
+        const x2 = parseFloat(document.getElementById('lx2').value);
+        const y2 = parseFloat(document.getElementById('ly2').value);
+        const x = parseFloat(document.getElementById('ltx').value);
+
+        if (x2 === x1) { document.getElementById('lres').innerText = "Error (x1=x2)"; return; }
+        
+        const y = y1 + ((x - x1) * (y2 - y1) / (x2 - x1));
+        document.getElementById('lres').innerText = "Y = " + y.toFixed(4);
+    }
+
+    // --- Hydraulic Force Calculator ---
+    function calcHydro() {
+        const bore = parseFloat(document.getElementById('cylBore').value);
+        const rod = parseFloat(document.getElementById('cylRod').value);
+        const bar = parseFloat(document.getElementById('cylPress').value);
+
+        // Areas in cm2 (since bore is mm)
+        const areaPush = Math.PI * Math.pow(bore/20, 2); 
+        const areaPull = areaPush - (Math.PI * Math.pow(rod/20, 2));
+
+        // Force = P(bar) * A(cm2) = kgf -> /1000 for tons
+        const fPush = (bar * areaPush) / 1000;
+        const fPull = (bar * areaPull) / 1000;
+
+        document.getElementById('pushForce').innerText = fPush.toFixed(2) + " Ton";
+        document.getElementById('pullForce').innerText = fPull.toFixed(2) + " Ton";
+    }
+
+    // --- Cable Size Calculator ---
+    function calcCable() {
+        const v = parseFloat(document.getElementById('cabV').value);
+        const i = parseFloat(document.getElementById('cabA').value);
+        const l = parseFloat(document.getElementById('cabL').value); // Meters
+        const dropPerc = parseFloat(document.getElementById('cabDrop').value);
+
+        // Formula: S = (2 * L * I * 0.0175) / (V_drop) 
+        // 0.0175 is resistivity of copper
+        const maxDropV = v * (dropPerc / 100);
+        const section = (2 * l * i * 0.0175) / maxDropV;
+
+        document.getElementById('cabResMM').innerText = section.toFixed(2) + " mm²";
+        document.getElementById('cabVDrop').innerText = maxDropV.toFixed(2) + " V";
+
+        // Find nearest standard size
+        const standards = [0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
+        let std = "Custom";
+        for(let s of standards) {
+            if(s >= section) { std = s + " mm²"; break; }
+        }
+        document.getElementById('cabStd').innerText = std;
+    }
+
+    // --- Sheet Metal Bend Calculator (NEW) ---
+    function calcBend() {
+        const T = parseFloat(document.getElementById('bendT').value);
+        const R = parseFloat(document.getElementById('bendR').value);
+        const A = parseFloat(document.getElementById('bendA').value);
+        const K = parseFloat(document.getElementById('bendK').value);
+
+        // Bend Allowance Formula: BA = A * (PI/180) * (R + K*T)
+        // Bend Deduction Formula: BD = 2 * (R+T) * tan(A/2) - BA
+        
+        const radA = A * (Math.PI / 180);
+        const BA = radA * (R + (K * T));
+        
+        // Deduction is complex for non-90, using standard setback method
+        const OSSB = (R + T) * Math.tan(radA / 2); // Outside Setback
+        const BD = (2 * OSSB) - BA;
+
+        document.getElementById('bendBA').innerText = BA.toFixed(2) + " mm";
+        document.getElementById('bendBD').innerText = BD.toFixed(2) + " mm";
+    }
+
+    // --- Pipe Flow Calculator (NEW) ---
+    function calcFlow() {
+        const id = parseFloat(document.getElementById('pipeID').value); // mm
+        const Q_lmin = parseFloat(document.getElementById('pipeQ').value); // L/min
+
+        // Convert to meters and m3/s
+        const d_m = id / 1000;
+        const Q_m3s = Q_lmin / 60000;
+        const Area = Math.PI * Math.pow(d_m / 2, 2);
+
+        // V = Q / A
+        const vel = Q_m3s / Area;
+        
+        document.getElementById('pipeVel').innerText = vel.toFixed(2) + " m/s";
+    }
+
+    // --- Thermal Expansion Calculator (NEW) ---
+    function calcThermal() {
+        const L = parseFloat(document.getElementById('thermL').value);
+        const dT = parseFloat(document.getElementById('thermDT').value);
+        const alpha = parseFloat(document.getElementById('thermMat').value) * 0.000001; // micro to standard
+
+        const dL = L * alpha * dT;
+        const newL = L + dL;
+
+        document.getElementById('thermRes').innerText = (dL * 1000).toFixed(1) + " µm (" + dL.toFixed(3) + " mm)";
+        document.getElementById('thermNewL').innerText = newL.toFixed(3) + " mm";
     }
 
     // --- Advanced Canvas Sketch Logic (Touch Fixed) ---
