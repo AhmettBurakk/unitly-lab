@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unitly Lab - Engineering Suite</title>
+    <title>Unitly Lab - Ultimate Engineering Suite</title>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; }
         [data-theme="dark"] { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --result-bg: #0f172a; }
@@ -21,9 +21,9 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        .dropbtn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .dropbtn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: 0.2s; }
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--card); min-width: 280px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-radius: 12px; z-index: 1000; border: 1px solid var(--border); margin-top: 10px; overflow: hidden; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--card); min-width: 280px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-radius: 12px; z-index: 1000; border: 1px solid var(--border); margin-top: 10px; overflow: hidden; max-height: 500px; overflow-y: auto; }
         .dropdown-content a { color: var(--text); padding: 12px 20px; text-decoration: none; display: block; font-weight: 600; cursor: pointer; border-bottom: 1px solid var(--border); }
         .dropdown-content a:hover { background-color: var(--result-bg); color: var(--primary); }
         .show { display: block; }
@@ -49,16 +49,14 @@
         
         .info-footer { margin-top: 50px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
         .disclaimer { color: var(--danger); font-size: 0.85rem; margin-top: 15px; font-weight: 600; }
-        .contact-mail { font-size: 0.75rem; opacity: 0.6; margin-top: 15px; display: block; color: var(--text); text-decoration: none; }
-
+        
         .lab-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; margin-left: 8px; text-transform: uppercase; }
+        .lab-badge.new { background: var(--accent); }
+        .lab-badge.pro { background: var(--warning); color: #000; }
+        
         .analysis-text { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
-
         .point-dot { cursor: pointer; transition: 0.3s; }
         .point-dot:hover { r: 8; filter: drop-shadow(0 0 5px var(--primary)); }
-        .graph-label { font-size: 12px; font-weight: bold; fill: var(--text); }
-        #pointDesc { padding: 15px; border-radius: 12px; background: var(--result-bg); border: 1px solid var(--primary); min-height: 80px; }
-        
         .unit-tag { font-size: 0.75rem; font-weight: 600; color: var(--warning); margin-bottom: 2px; }
         .multi-unit-res { font-size: 0.85rem; color: var(--text); opacity: 0.9; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 4px; }
     </style>
@@ -68,27 +66,38 @@
 <div class="container">
     <header>
         <div class="logo">Unit<span>ly</span> Lab</div>
-        <div class="header-actions" style="display:flex; gap:20px; align-items:center;">
+        <div class="header-actions" style="display:flex; gap:15px; align-items:center;">
             <div class="theme-switch-wrapper">
                 <label class="theme-switch" for="checkbox">
                     <input type="checkbox" id="checkbox" onclick="toggleTheme()">
                     <span class="slider"></span>
                 </label>
             </div>
+            
             <div class="dropdown">
-                <button onclick="toggleDropdown()" class="dropbtn">🚀 Engineering Labs</button>
-                <div id="myDropdown" class="dropdown-content">
-                    <a onclick="openModal('cncModal')">🏭 Machining Lab <span class="lab-badge">Advanced</span></a>
+                <button onclick="toggleDropdown('mechDropdown')" class="dropbtn">⚙️ Mech</button>
+                <div id="mechDropdown" class="dropdown-content">
+                    <a onclick="openModal('cncModal')">🏭 Machining Lab <span class="lab-badge">Adv</span></a>
                     <a onclick="openModal('gcodeModal')">📜 G-Code Reference <span class="lab-badge">ISO</span></a>
-                    <a onclick="openModal('gearModal')">⚙️ Transmission Lab <span class="lab-badge">Mech</span></a>
-                    <a onclick="openModal('weightModal')">⚖️ Profile Weight Lab <span class="lab-badge">New</span></a>
+                    <a onclick="openModal('gearModal')">⚙️ Transmission Lab</a>
+                    <a onclick="openModal('fastenerModal')">🔩 Fastener Reference</a>
+                    <a onclick="openModal('weightModal')">⚖️ Profile Weight Lab</a>
                     <a onclick="openModal('sketchModal')">🎨 Design Analyst (2D)</a>
-                    <a onclick="openModal('geomModal')">📐 Material & Volume Lab</a>
-                    <a onclick="openModal('ebikeModal')">🚲 EV Power Dynamics</a>
-                    <a onclick="openModal('beamModal')">🏗️ Beam Analysis Lab</a>
-                    <a onclick="openModal('stressModal')">📈 Material Stress Lab <span class="lab-badge">Expert</span></a>
+                    <a onclick="openModal('geomModal')">📐 Material & Volume</a>
+                    <a onclick="openModal('beamModal')">🏗️ Beam Analysis</a>
+                    <a onclick="openModal('stressModal')">📈 Material Stress <span class="lab-badge pro">Pro</span></a>
+                    <a onclick="openModal('printModal')">🖨️ 3D Print Cost <span class="lab-badge new">Maker</span></a>
                 </div>
             </div>
+
+            <div class="dropdown">
+                <button onclick="toggleDropdown('electricDropdown')" class="dropbtn" style="background:var(--warning); color:#000;">⚡ Electric</button>
+                <div id="electricDropdown" class="dropdown-content">
+                    <a onclick="openModal('electroModal')">⚡ Electronics Lab <span class="lab-badge new">IoT</span></a>
+                    <a onclick="openModal('ebikeModal')">🚲 EV Power Dynamics <span class="lab-badge">EV</span></a>
+                </div>
+            </div>
+
         </div>
     </header>
 
@@ -105,6 +114,98 @@
         <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
         <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
         <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45">%<input type="number" id="pTime" value="12">Mo.</div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
+    </div>
+
+    <div id="printModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('printModal')">&times;</span>
+            <h3 style="color:var(--accent);">🖨️ 3D Print Cost Estimator</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <div class="unit-tag">Filament Info</div>
+                    <div class="row">
+                        <div style="flex:1"><small>Spool Cost ($/TL)</small><input type="number" id="spoolCost" value="400"></div>
+                        <div style="flex:1"><small>Spool Weight (g)</small><input type="number" id="spoolWeight" value="1000"></div>
+                    </div>
+                    <div class="unit-tag">Print Details</div>
+                    <div class="row">
+                         <div style="flex:1"><small>Part Weight (g)</small><input type="number" id="partWeight" value="50"></div>
+                         <div style="flex:1"><small>Time (Hours)</small><input type="number" id="printTime" value="4"></div>
+                    </div>
+                    <div class="unit-tag">Electricity</div>
+                    <div class="row">
+                        <div style="flex:1"><small>Power (Watts)</small><input type="number" id="printerWatts" value="150"></div>
+                        <div style="flex:1"><small>kWh Cost</small><input type="number" id="kwhCost" value="3.5"></div>
+                    </div>
+                    <button onclick="calcPrintCost()" style="background:var(--accent); margin-top:10px;">Calculate</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:20px;">
+                    <div class="multi-unit-res">🧵 Material Cost: <strong id="resMatCost">0.00</strong></div>
+                    <div class="multi-unit-res">⚡ Energy Cost: <strong id="resEnergyCost">0.00</strong></div>
+                    <hr style="width:100%; border:0; border-top:1px dashed var(--border);">
+                    <div style="font-size:1.5rem; font-weight:800; color:var(--accent); text-align:center; margin-top:10px;">
+                        Total: <span id="resTotalPrint">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="electroModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('electroModal')">&times;</span>
+            <h3 style="color:var(--warning);">⚡ Electronics & Ohm Lab</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <h4 style="margin:0; font-size:0.9rem;">LED Resistor Calculator</h4>
+                    <div class="row">
+                        <div style="flex:1"><small>Source Voltage (V)</small><input type="number" id="ledVs" value="5"></div>
+                        <div style="flex:1"><small>LED Forward (V)</small><input type="number" id="ledVf" value="2.0"></div>
+                    </div>
+                    <small>LED Current (mA)</small>
+                    <input type="number" id="ledI" value="20">
+                    <button onclick="calcLedResistor()" style="background:var(--warning); color:black;">Calculate Resistor</button>
+                    
+                    <div class="result-box">
+                        <span id="resLedOhm" class="result-val" style="color:var(--warning);">0 Ω</span>
+                        <div style="font-size:0.8rem; margin-top:5px;">Min Power: <span id="resLedPower">0 mW</span></div>
+                    </div>
+                </div>
+                
+                <div class="input-group" style="border-left:1px solid var(--border); padding-left:15px;">
+                    <h4 style="margin:0; font-size:0.9rem;">Ohm's Law (V = I × R)</h4>
+                    <small>Voltage (V)</small><input type="number" id="ohmV" placeholder="V" oninput="calcOhm()">
+                    <small>Current (A)</small><input type="number" id="ohmI" placeholder="A" oninput="calcOhm()">
+                    <small>Resistance (Ω)</small><input type="number" id="ohmR" placeholder="Ω" oninput="calcOhm()">
+                    <div class="analysis-text" style="margin-top:10px;">Enter any 2 values to calculate the 3rd.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fastenerModal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <span class="close" onclick="closeModal('fastenerModal')">&times;</span>
+            <h3 style="color:#64748b;">🔩 ISO Fastener Reference</h3>
+            <input type="text" id="fastenerSearch" placeholder="Search M3, M5, Bolt..." onkeyup="searchFasteners()" style="margin-bottom:15px;">
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table id="fastenerTable">
+                    <thead><tr><th>Size</th><th>Pitch (mm)</th><th>Tap Drill (mm)</th><th>Clearance (mm)</th><th>Hex Key (mm)</th></tr></thead>
+                    <tbody id="fastenerBody">
+                        <tr><td>M2</td><td>0.4</td><td>1.6</td><td>2.2</td><td>1.5</td></tr>
+                        <tr><td>M2.5</td><td>0.45</td><td>2.05</td><td>2.7</td><td>2.0</td></tr>
+                        <tr><td>M3</td><td>0.5</td><td>2.5</td><td>3.4</td><td>2.5</td></tr>
+                        <tr><td>M4</td><td>0.7</td><td>3.3</td><td>4.5</td><td>3.0</td></tr>
+                        <tr><td>M5</td><td>0.8</td><td>4.2</td><td>5.5</td><td>4.0</td></tr>
+                        <tr><td>M6</td><td>1.0</td><td>5.0</td><td>6.6</td><td>5.0</td></tr>
+                        <tr><td>M8</td><td>1.25</td><td>6.8</td><td>9.0</td><td>6.0</td></tr>
+                        <tr><td>M10</td><td>1.5</td><td>8.5</td><td>11.0</td><td>8.0</td></tr>
+                        <tr><td>M12</td><td>1.75</td><td>10.2</td><td>13.5</td><td>10.0</td></tr>
+                        <tr><td>M16</td><td>2.0</td><td>14.0</td><td>17.5</td><td>14.0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="weightModal" class="modal">
@@ -416,7 +517,16 @@
         const isChecked = document.getElementById('checkbox').checked;
         isChecked ? document.body.setAttribute('data-theme', 'dark') : document.body.removeAttribute('data-theme');
     }
-    function toggleDropdown() { document.getElementById("myDropdown").classList.toggle("show"); }
+    // Updated toggleDropdown to handle specific IDs
+    function toggleDropdown(id) { 
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            if (dropdowns[i].id !== id) {
+                dropdowns[i].classList.remove('show');
+            }
+        }
+        document.getElementById(id).classList.toggle("show"); 
+    }
     function openModal(id) { 
         document.getElementById(id).style.display = "block"; 
         if(id === 'sketchModal') setTimeout(initCanvas, 100);
@@ -555,6 +665,11 @@
         let rows = document.getElementById('codeTableBody').getElementsByTagName('tr');
         for (let row of rows) { if (row.cells.length > 1) { row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none"; } }
     }
+    function searchFasteners() {
+        let input = document.getElementById('fastenerSearch').value.toUpperCase();
+        let rows = document.getElementById('fastenerBody').getElementsByTagName('tr');
+        for (let row of rows) { row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none"; }
+    }
     
     // --- Gear Ratio / Drivetrain Calculator ---
     function calcGearing() {
@@ -562,10 +677,8 @@
         const driver = parseFloat(document.getElementById('gearDriver').value);
         const driven = parseFloat(document.getElementById('gearDriven').value);
         const diaCm = parseFloat(document.getElementById('tireDia').value);
-
         const ratio = driven / driver;
         const wheelRpm = rpm / ratio;
-        
         const circumference = Math.PI * diaCm; // cm
         const speedKmh = (wheelRpm * circumference * 60) / 100000;
 
@@ -575,69 +688,93 @@
         document.getElementById('torqueMult').innerText = ratio.toFixed(2) + "x";
     }
 
+    // --- 3D Print Calculator ---
+    function calcPrintCost() {
+        const spoolCost = parseFloat(document.getElementById('spoolCost').value);
+        const spoolWeight = parseFloat(document.getElementById('spoolWeight').value);
+        const partWeight = parseFloat(document.getElementById('partWeight').value);
+        const time = parseFloat(document.getElementById('printTime').value);
+        const watts = parseFloat(document.getElementById('printerWatts').value);
+        const kwhPrice = parseFloat(document.getElementById('kwhCost').value);
+
+        const matCost = (partWeight / spoolWeight) * spoolCost;
+        const energyCost = (watts / 1000) * time * kwhPrice;
+        const total = matCost + energyCost;
+
+        document.getElementById('resMatCost').innerText = matCost.toFixed(2);
+        document.getElementById('resEnergyCost').innerText = energyCost.toFixed(2);
+        document.getElementById('resTotalPrint').innerText = total.toFixed(2);
+    }
+
+    // --- Electronics / LED Calculator ---
+    function calcLedResistor() {
+        const vs = parseFloat(document.getElementById('ledVs').value);
+        const vf = parseFloat(document.getElementById('ledVf').value);
+        const i = parseFloat(document.getElementById('ledI').value) / 1000; // mA to A
+        if(i <= 0 || vs <= vf) { document.getElementById('resLedOhm').innerText = "Error"; return; }
+        
+        const r = (vs - vf) / i;
+        const p = Math.pow(i, 2) * r;
+
+        document.getElementById('resLedOhm').innerText = Math.round(r) + " Ω";
+        document.getElementById('resLedPower').innerText = (p * 1000).toFixed(0) + " mW";
+    }
+
+    function calcOhm() {
+        const v = parseFloat(document.getElementById('ohmV').value);
+        const i = parseFloat(document.getElementById('ohmI').value);
+        const r = parseFloat(document.getElementById('ohmR').value);
+        
+        if(!isNaN(v) && !isNaN(i)) document.getElementById('ohmR').value = v / i;
+        else if(!isNaN(v) && !isNaN(r)) document.getElementById('ohmI').value = v / r;
+        else if(!isNaN(i) && !isNaN(r)) document.getElementById('ohmV').value = i * r;
+    }
+
     // --- Advanced Canvas Sketch Logic (Touch Fixed) ---
     let canvas, ctx, points = [], isClosed = false;
 
     function initCanvas() {
         canvas = document.getElementById('designCanvas');
         if(!canvas) return;
-        canvas.width = canvas.parentElement.offsetWidth; // Set width to container
-        canvas.height = 400; // Fixed height
+        canvas.width = canvas.parentElement.offsetWidth; 
+        canvas.height = 400; 
         ctx = canvas.getContext('2d');
         
-        // --- Unified Event Handler for Mouse & Touch ---
         function handleInput(e) {
             if(isClosed) return;
-            
-            // Prevent default behavior (scrolling) only for touch events inside canvas
-            if(e.type === 'touchstart') {
-                e.preventDefault();
-            }
-
+            if(e.type === 'touchstart') e.preventDefault();
             const rect = canvas.getBoundingClientRect();
             let x, y;
-
             if (e.touches && e.touches.length > 0) {
-                // Touch event
                 x = e.touches[0].clientX - rect.left;
                 y = e.touches[0].clientY - rect.top;
             } else {
-                // Mouse event
                 x = e.clientX - rect.left;
                 y = e.clientY - rect.top;
             }
-
             points.push({x: x, y: y});
             drawCanvas();
         }
 
-        // Add Listeners
         canvas.addEventListener('mousedown', handleInput);
-        canvas.addEventListener('touchstart', handleInput, {passive: false}); // passive: false allows preventDefault
-
-        drawCanvas(); // Initial draw (grid)
+        canvas.addEventListener('touchstart', handleInput, {passive: false});
+        drawCanvas(); 
     }
 
     function drawCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw Grid Background
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         ctx.lineWidth = 1;
         const gridSize = 20;
         for(let i=0; i<canvas.width; i+=gridSize) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
         for(let j=0; j<canvas.height; j+=gridSize) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
 
-        // Draw Shape
         if(points.length > 0) {
-            ctx.strokeStyle = '#10b981'; // Accent Color
+            ctx.strokeStyle = '#10b981'; 
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
-            
-            for(let i=1; i<points.length; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
+            for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
             
             if(isClosed) {
                 ctx.closePath();
@@ -645,26 +782,19 @@
                 ctx.fill();
             }
             ctx.stroke();
-            
-            // Draw Vertices
             ctx.fillStyle = '#fff';
-            for(let p of points) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-                ctx.fill();
-            }
+            for(let p of points) { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill(); }
         }
     }
 
     function closePolygon() {
-        if(points.length < 3) return; // Need at least 3 points for a polygon
+        if(points.length < 3) return;
         isClosed = true;
         drawCanvas();
         calcArea();
     }
 
     function calcArea() {
-        // Shoelace Formula (Surveyor's formula)
         let area = 0;
         for (let i = 0; i < points.length; i++) {
             let j = (i + 1) % points.length;
@@ -672,8 +802,6 @@
             area -= points[j].x * points[i].y;
         }
         area = Math.abs(area) / 2;
-        
-        // Assumption: 1px = 1mm for this lab context
         document.getElementById('analysisResult').innerText = "Area: " + Math.round(area).toLocaleString() + " mm²";
         document.getElementById('areaInch').innerText = (area * 0.00155).toFixed(3) + " in²";
     }
