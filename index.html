@@ -108,7 +108,29 @@
             </div>
             <div class="result-box">Result: <span class="result-val" id="spdRes">0</span></div>
         </div>
-
+        <div class="card">
+    <h3>🔋 Energy</h3>
+    <div class="input-group">
+        <input type="number" id="nrgInput" placeholder="Value" oninput="convertNrg()">
+        <div class="row">
+            <select id="nrgFrom" onchange="convertNrg()">
+                <option value="1" selected>Joule (J)</option>
+                <option value="0.001">Kilojoule (kJ)</option>
+                <option value="0.239006">Calorie (cal)</option>
+                <option value="0.000239006">kcal</option>
+                <option value="0.0009478">BTU</option>
+            </select>
+            <span>➔</span>
+            <select id="nrgTo" onchange="convertNrg()">
+                <option value="1">Joule (J)</option>
+                <option value="0.001" selected>Kilojoule (kJ)</option>
+                <option value="0.239006">Calorie (cal)</option>
+                <option value="0.0009478">BTU</option>
+            </select>
+        </div>
+    </div>
+    <div class="result-box">Result: <span class="result-val" id="nrgRes">0</span></div>
+</div>
         <div class="card">
             <h3>🌡️ Temp</h3>
             <div class="input-group">
@@ -265,8 +287,16 @@
         let earn = (p * r * t) / 1200;
         document.getElementById('faizGetiri').innerText = earn.toLocaleString('en-US', {minimumFractionDigits: 2});
     }
+    function convertNrg() {
+    let v = document.getElementById('nrgInput').value;
+    let f = document.getElementById('nrgFrom').value;
+    let t = document.getElementById('nrgTo').value;
+    document.getElementById('nrgRes').innerText = genericConvert(v, f, t);
+    
+    }
 </script>
 
 </body>
 </html>
+
 
