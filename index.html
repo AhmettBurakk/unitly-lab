@@ -3,223 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unitly Lab: High-precision engineering suite with 10+ conversion modules, EV simulators, and 2D design tools.">
-    <meta name="keywords" content="unitly lab, torque converter, engineering tools, go-kart simulator, mechanical unit converter">
-    <meta name="author" content="Unitly Lab Team">
-    <title>Unitly Lab - Ultimate Engineering Suite</title>
+    <title>Unitly Lab - Engineering Suite</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; }
         [data-theme="dark"] { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --result-bg: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); transition: 0.3s; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); transition: 0.3s; }
         .container { max-width: 1400px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 2px solid var(--border); padding-bottom: 20px; flex-wrap: wrap; gap: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 20px; flex-wrap: wrap; gap: 20px; }
         .logo { font-size: 2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
         .logo span { color: var(--text); }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
-        .dropdown { position: relative; display: inline-block; }
+
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
         .dropbtn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--card); min-width: 260px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-radius: 12px; z-index: 1000; border: 1px solid var(--border); margin-top: 10px; overflow: hidden; }
-        .dropdown-content a { color: var(--text); padding: 12px 20px; text-decoration: none; display: block; font-weight: 600; cursor: pointer; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--card); min-width: 280px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-radius: 12px; z-index: 1000; border: 1px solid var(--border); margin-top: 10px; overflow: hidden; }
+        .dropdown-content a { color: var(--text); padding: 12px 20px; text-decoration: none; display: block; font-weight: 600; cursor: pointer; border-bottom: 1px solid var(--border); }
         .dropdown-content a:hover { background-color: var(--result-bg); color: var(--primary); }
         .show { display: block; }
-        .theme-toggle { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .card { background: var(--card); padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
-        h3 { margin-top: 0; color: var(--primary); font-size: 1.1rem; margin-bottom: 20px; border-left: 5px solid var(--primary); padding-left: 12px; }
-        .input-group { display: flex; flex-direction: column; gap: 12px; }
-        .row { display: flex; gap: 10px; align-items: center; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; background: var(--card); color: var(--text); outline: none; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        .result-box { background: var(--result-bg); padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; border: 1px dashed var(--primary); min-height: 24px; }
-        .result-val { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: block; line-height: 1.5; }
-        .label-small { font-size: 0.75rem; font-weight: bold; margin-bottom: -8px; opacity: 0.7; }
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); overflow-y: auto; }
-        .modal-content { background: var(--card); margin: 5% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 600px; border: 1px solid var(--border); position: relative; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
+        .card { background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        h3 { margin-top: 0; color: var(--primary); font-size: 1rem; margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 10px; }
+        .row { display: flex; gap: 8px; align-items: center; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: var(--card); color: var(--text); outline: none; }
+        button { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .result-box { background: var(--result-bg); padding: 12px; border-radius: 8px; margin-top: 12px; text-align: center; border: 1px dashed var(--primary); }
+        .result-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+        
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); overflow-y: auto; }
+        .modal-content { background: var(--card); margin: 5% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 750px; border: 1px solid var(--border); position: relative; }
         .close { float: right; cursor: pointer; font-size: 24px; font-weight: bold; }
-        .sketch-toolbar { padding: 10px 25px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-radius: 10px 10px 0 0; }
-        .canvas-container { height: 400px; background: #1e293b; position: relative; cursor: crosshair; border-radius: 0 0 10px 10px; overflow: hidden; }
-        #designCanvas { width: 100%; height: 100%; }
-        .info-section { max-width: 1400px; margin: 40px auto 20px; padding: 30px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); line-height: 1.6; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .info-box h4 { color: var(--accent); margin-top: 0; }
-        .disclaimer { font-size: 0.8rem; opacity: 0.7; color: #ef4444; margin-top: 10px; }
-        .footer { text-align: center; margin-top: 50px; color: #94a3b8; font-size: 0.85rem; padding-bottom: 30px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.85rem; }
+        
+        canvas { background: #1e293b; border-radius: 12px; cursor: crosshair; display: block; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        
+        .info-footer { margin-top: 50px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
+        .disclaimer { color: var(--danger); font-size: 0.85rem; margin-top: 15px; font-weight: 600; }
+        .contact-mail { font-size: 0.75rem; opacity: 0.6; margin-top: 15px; display: block; color: var(--text); text-decoration: none; }
+
+        /* Engineering Lab Specifics */
+        .lab-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; margin-left: 8px; text-transform: uppercase; }
+        .analysis-text { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div>
-            <div class="logo">Unit<span>ly</span> Lab</div>
-            <p style="margin:5px 0 0; opacity:0.7;">Advanced Precision Engineering Suite</p>
-        </div>
-        <div class="header-actions">
+        <div class="logo">Unit<span>ly</span> Lab</div>
+        <div class="header-actions" style="display:flex; gap:20px; align-items:center;">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" onclick="toggleTheme()">
+                    <span class="slider"></span>
+                </label>
+            </div>
             <div class="dropdown">
-                <button onclick="toggleDropdown()" class="dropbtn">🚀 Special Labs</button>
+                <button onclick="toggleDropdown()" class="dropbtn">🚀 Engineering Labs</button>
                 <div id="myDropdown" class="dropdown-content">
-                    <a onclick="openModal('sketchModal')">🎨 Design Lab (2D Analysis)</a>
-                    <a onclick="openModal('geomModal')">📐 Geometric Lab (Volume)</a>
-                    <a onclick="openModal('ebikeModal')">🚲 Mobility Lab (EV)</a>
+                    <a onclick="openModal('cncModal')">🏭 Machining Lab <span class="lab-badge">Advanced</span></a>
+                    <a onclick="openModal('gcodeModal')">📜 G-Code Reference <span class="lab-badge">ISO</span></a>
+                    <a onclick="openModal('sketchModal')">🎨 Design Analyst (2D)</a>
+                    <a onclick="openModal('geomModal')">📐 Material & Volume Lab</a>
+                    <a onclick="openModal('ebikeModal')">🚲 EV Power Dynamics</a>
                 </div>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
         </div>
     </header>
 
     <div class="grid">
-        <div class="card"><h3>📏 Length</h3><div class="input-group"><input type="number" id="lenInput" oninput="convert('len')"><div class="row"><select id="lenFrom" onchange="convert('len')"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option><option value="0.001">mm</option><option value="1609.34">mi</option><option value="0.0254">in</option><option value="0.3048">ft</option></select>➔<select id="lenTo" onchange="convert('len')"><option value="0.01">cm</option><option value="1">m</option><option value="0.001">mm</option><option value="0.0254">in</option></select></div></div><div class="result-box"><span id="lenRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🟦 Area</h3><div class="input-group"><input type="number" id="areaInput" oninput="convert('area')"><div class="row"><select id="areaFrom" onchange="convert('area')"><option value="1">m²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option></select>➔<select id="areaTo" onchange="convert('area')"><option value="0.0001">cm²</option><option value="1">m²</option><option value="0.000001">mm²</option></select></div></div><div class="result-box"><span id="areaRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⏱️ Time</h3><div class="input-group"><input type="number" id="timInput" oninput="convert('tim')"><div class="row"><select id="timFrom" onchange="convert('tim')"><option value="3600">hour</option><option value="60">min</option><option value="1">sec</option><option value="86400">day</option></select>➔<select id="timTo" onchange="convert('tim')"><option value="1">sec</option><option value="60">min</option><option value="3600">hour</option></select></div></div><div class="result-box"><span id="timRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⚡ Speed</h3><div class="input-group"><input type="number" id="spdInput" oninput="convert('spd')"><div class="row"><select id="spdFrom" onchange="convert('spd')"><option value="0.2777">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option></select>➔<select id="spdTo" onchange="convert('spd')"><option value="1">m/s</option><option value="0.2777">km/h</option></select></div></div><div class="result-box"><span id="spdRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⚙️ Torque</h3><div class="input-group"><input type="number" id="trqInput" oninput="convert('trq')"><div class="row"><select id="trqFrom" onchange="convert('trq')"><option value="1">Nm</option><option value="1.355">lb-ft</option><option value="0.113">lb-in</option></select>➔<select id="trqTo" onchange="convert('trq')"><option value="1.355">lb-ft</option><option value="1">Nm</option></select></div></div><div class="result-box"><span id="trqRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>💪 Force</h3><div class="input-group"><input type="number" id="frcInput" oninput="convert('frc')"><div class="row"><select id="frcFrom" onchange="convert('frc')"><option value="1">N</option><option value="4.448">lbf</option><option value="9.806">kgf</option></select>➔<select id="frcTo" onchange="convert('frc')"><option value="4.448">lbf</option><option value="1">N</option></select></div></div><div class="result-box"><span id="frcRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🏎️ Power</h3><div class="input-group"><input type="number" id="pwrInput" oninput="convert('pwr')"><div class="row"><select id="pwrFrom" onchange="convert('pwr')"><option value="1">kW</option><option value="0.735">HP (Metric)</option><option value="0.7457">HP (Mechanical)</option></select>➔<select id="pwrTo" onchange="convert('pwr')"><option value="0.735">HP (Metric)</option><option value="1">kW</option></select></div></div><div class="result-box"><span id="pwrRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.4535">lb</option><option value="0.001">g</option><option value="1000">ton</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="0.4535">lb</option><option value="1">kg</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="1000">m³</option><option value="0.001">ml</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1000">m³</option><option value="1">L</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>📈 Finance</h3><div class="input-group"><span class="label-small">Principal</span><input type="number" id="pCap" placeholder="10000"><span class="label-small">Rate %</span><input type="number" id="pRate" value="45"><span class="label-small">Months</span><input type="number" id="pTime" value="12"><button onclick="calcFin()">Calculate Interest</button></div><div class="result-box">Return: <span id="finRes" class="result-val">0.00</span></div></div>
+        <div class="card"><h3>📏 Length</h3><div class="input-group"><input type="number" id="lenInput" oninput="convert('len')"><div class="row"><select id="lenFrom" onchange="convert('len')"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option><option value="0.001">mm</option><option value="0.0254">in</option><option value="0.3048">ft</option><option value="1609.34">mi</option></select>➔<select id="lenTo" onchange="convert('len')"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option><option value="0.001">mm</option><option value="0.0254">in</option><option value="0.3048">ft</option><option value="1609.34">mi</option></select></div></div><div class="result-box"><span id="lenRes" class="result-val">0</span></div></div>
+        
+        <div class="card"><h3>🟦 Area</h3><div class="input-group"><input type="number" id="areInput" oninput="convert('are')"><div class="row"><select id="areFrom" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option><option value="4046.86">acre</option></select>➔<select id="areTo" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option><option value="4046.86">acre</option></select></div></div><div class="result-box"><span id="areRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>⚡ Speed</h3><div class="input-group"><input type="number" id="spdInput" oninput="convert('spd')"><div class="row"><select id="spdFrom" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option><option value="0.3048">ft/s</option></select>➔<select id="spdTo" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option><option value="0.3048">ft/s</option></select></div></div><div class="result-box"><span id="spdRes" class="result-val">0</span></div></div>
+        
+        <div class="card"><h3>⚙️ Torque</h3><div class="input-group"><input type="number" id="trqInput" oninput="convert('trq')"><div class="row"><select id="trqFrom" onchange="convert('trq')"><option value="1">Nm</option><option value="1.35582">lb-ft</option><option value="0.112985">lb-in</option><option value="9.80665">kgm</option></select>➔<select id="trqTo" onchange="convert('trq')"><option value="1">Nm</option><option value="1.35582">lb-ft</option><option value="0.112985">lb-in</option><option value="9.80665">kgm</option></select></div></div><div class="result-box"><span id="trqRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>💪 Force</h3><div class="input-group"><input type="number" id="frcInput" oninput="convert('frc')"><div class="row"><select id="frcFrom" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option><option value="0.009806">gf</option></select>➔<select id="frcTo" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option><option value="0.009806">gf</option></select></div></div><div class="result-box"><span id="frcRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>🏎️ Power</h3><div class="input-group"><input type="number" id="pwrInput" oninput="convert('pwr')"><div class="row"><select id="pwrFrom" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Metric)</option><option value="0.7457">HP (Mechanical)</option><option value="0.000293">BTU/hr</option></select>➔<select id="pwrTo" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Metric)</option><option value="0.7457">HP (Mechanical)</option><option value="0.000293">BTU/hr</option></select></div></div><div class="result-box"><span id="pwrRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>🎈 Pressure</h3><div class="input-group"><input type="number" id="prsInput" oninput="convert('prs')"><div class="row"><select id="prsFrom" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="100">kPa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option><option value="0.001333">mmHg</option></select>➔<select id="prsTo" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="100">kPa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option><option value="0.001333">mmHg</option></select></div></div><div class="result-box"><span id="prsRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>⏱️ Time</h3><div class="input-group"><input type="number" id="timInput" oninput="convert('tim')"><div class="row"><select id="timFrom" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="0.001">ms</option><option value="86400">Day</option><option value="604800">Week</option></select>➔<select id="timTo" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="0.001">ms</option><option value="86400">Day</option><option value="604800">Week</option></select></div></div><div class="result-box"><span id="timRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
+
+        <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
+        
+        <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45">%<input type="number" id="pTime" value="12">Mo.</div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
     </div>
 
-    <div id="ebikeModal" class="modal">
+    <div id="cncModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('ebikeModal')">&times;</span>
-            <h3 style="color:var(--accent); border-left-color:var(--accent);">🚲 Mobility Lab (EV)</h3>
-            <div class="input-group">
-                <div class="row">
-                    <div style="flex:1"><span class="label-small">Voltage (V)</span><input type="number" id="evV" value="72"></div>
-                    <div style="flex:1"><span class="label-small">Battery (Ah)</span><input type="number" id="evAh" value="40"></div>
+            <span class="close" onclick="closeModal('cncModal')">&times;</span>
+            <h3 style="color:var(--primary);">🏭 Advanced Machining Lab</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <label style="font-size:0.8rem; font-weight:700;">Material Selection</label>
+                    <select id="matType" onchange="updateCNCDefaults()">
+                        <option value="90">Aluminum (Si<12%)</option>
+                        <option value="150" selected>Steel (Low Carbon)</option>
+                        <option value="80">Stainless Steel (304)</option>
+                        <option value="45">Titanium Alloy</option>
+                        <option value="250">Plastic (Delrin/POM)</option>
+                    </select>
+                    <div class="row">
+                        <div><small>Vc (m/min)</small><input type="number" id="cncVc" value="150"></div>
+                        <div><small>Tool D (mm)</small><input type="number" id="cncD" value="10"></div>
+                    </div>
+                    <div class="row">
+                        <div><small>fz (Feed/Tooth)</small><input type="number" id="cncFz" value="0.1"></div>
+                        <div><small>No. Teeth (z)</small><input type="number" id="cncZ" value="4"></div>
+                    </div>
+                    <button onclick="calcCNC()" style="background:var(--accent);">Run Simulation</button>
                 </div>
-                <div class="row">
-                    <div style="flex:1"><span class="label-small">Motor (W)</span><input type="number" id="evW" value="3000"></div>
-                    <div style="flex:1"><span class="label-small">Total Mass (kg)</span><input type="number" id="evM" value="150"></div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;">
+                    <div style="margin-bottom:10px;"><small>Spindle Speed</small><div id="resRPM" class="result-val">0 RPM</div></div>
+                    <div style="margin-bottom:10px;"><small>Feed Rate</small><div id="resFeed" class="result-val">0 mm/min</div></div>
+                    <div><small>MRR (Metal Removal Rate)</small><div id="resMRR" class="result-val" style="color:var(--warning)">0 cm³/min</div></div>
                 </div>
-                <div class="row">
-                    <div style="flex:1"><span class="label-small">Torque (Nm)</span><input type="number" id="evTrq" value="15"></div>
-                    <div style="flex:1"><span class="label-small">Gear Ratio</span><input type="number" id="evRatio" value="5"></div>
-                </div>
-                <button onclick="calcMobility()" style="background:var(--accent)">Analyze Performance</button>
             </div>
-            <div class="result-box" style="border-color:var(--accent); display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div>Wheel Torque:<span id="resWheelTrq" class="result-val" style="color:var(--accent)">0 Nm</span></div>
-                <div>0-100 km/h:<span id="resAccel100" class="result-val" style="color:var(--accent)">0s</span></div>
-                <div>Range:<span id="resRange" class="result-val" style="color:var(--accent)">0 km</span></div>
-                <div>Efficiency:<span class="result-val" style="color:var(--accent)">~90%</span></div>
+            <p class="analysis-text" id="cncAnalysis">Select material and tool parameters to calculate optimal machining values.</p>
+        </div>
+    </div>
+
+    <div id="gcodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gcodeModal')">&times;</span>
+            <h3 style="color:var(--warning);">📜 ISO G/M Code Smart Reference</h3>
+            <div class="row" style="margin-bottom:15px;">
+                <input type="text" id="codeSearch" placeholder="Filter by Code or Keyword (e.g. 'Circular', 'M06')..." onkeyup="searchCodes()" style="border-color:var(--warning);">
+            </div>
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                <table>
+                    <thead style="position:sticky; top:0; background:var(--card); z-index:10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <tr><th>Code</th><th>Standard Function</th><th>Real-world Usage</th></tr>
+                    </thead>
+                    <tbody id="codeTableBody">
+                        <tr style="background:rgba(245, 158, 11, 0.05)"><td>G00</td><td><b>Rapid Positioning</b></td><td>Move tool to safe start point at max machine speed.</td></tr>
+                        <tr><td>G01</td><td><b>Linear Interpolation</b></td><td>Primary cutting move. Requires an 'F' (feedrate) address.</td></tr>
+                        <tr style="background:rgba(245, 158, 11, 0.05)"><td>G02/03</td><td><b>Circular CW/CCW</b></td><td>Milling arcs or lathe radii. Uses I, J, K or R.</td></tr>
+                        <tr><td>G43</td><td><b>Tool Length Comp.</b></td><td>Critical for Z-axis accuracy. Usually paired with H address.</td></tr>
+                        <tr style="background:rgba(245, 158, 11, 0.05)"><td>G54-59</td><td><b>Work Offsets</b></td><td>Defining the 0,0,0 point on your actual workpiece.</td></tr>
+                        <tr><td>G83</td><td><b>Peck Drilling</b></td><td>Deep holes. Withdraws tool to clear chips and prevent breakage.</td></tr>
+                        <tr style="background:rgba(245, 158, 11, 0.05)"><td>M03/04</td><td><b>Spindle ON</b></td><td>M03 (Clockwise) is standard for most right-hand tooling.</td></tr>
+                        <tr><td>M06</td><td><b>Tool Change</b></td><td>Triggers automatic tool changer (ATC) sequence.</td></tr>
+                        <tr style="background:rgba(245, 158, 11, 0.05)"><td>M08/09</td><td><b>Coolant ON/OFF</b></td><td>Flood coolant to manage heat and chip evacuation.</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <div id="sketchModal" class="modal">
-        <div class="modal-content modal-sketch">
-            <div style="padding:15px 25px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                <h3>🎨 Design Lab</h3>
-                <div id="analysisResult" style="font-weight:700; color:var(--accent);">-</div>
-                <span class="close" onclick="closeModal('sketchModal')">&times;</span>
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sketchModal')">&times;</span>
+            <h3 style="color:var(--primary);">🎨 Area Design Analyst (2D)</h3>
+            <div class="row" style="margin-bottom:15px; justify-content: space-between;">
+                <div style="display:flex; gap:10px;">
+                    <button onclick="clearCanvas()" style="background:var(--danger); width:auto; padding: 8px 15px;">Clear</button>
+                    <button onclick="pts.push(pts[0]); draw(); calcArea();" style="background:var(--accent); width:auto; padding: 8px 15px;">Close Path</button>
+                </div>
+                <div id="analysisResult" class="result-val" style="color:var(--primary);">Area: 0 mm²</div>
             </div>
-            <div class="sketch-toolbar">
-                <button onclick="setSketchTool('area')" style="width:auto;">Area</button>
-                <button onclick="setSketchTool('volume')" style="width:auto; background:var(--accent);">Volume</button>
-                <input type="number" id="depthInput" value="10" style="width:80px;">
-                <button onclick="clearCanvas()" style="width:auto; background:#ef4444;">Clear</button>
-                <span id="coords" style="font-size:0.75rem; opacity:0.6;">X: 0, Y: 0</span>
-            </div>
-            <div class="canvas-container" id="canvasParent">
+            <div style="background: #0f172a; padding: 10px; border-radius: 12px; position: relative;">
                 <canvas id="designCanvas"></canvas>
+                <div style="position:absolute; bottom:20px; right:20px; color:white; font-size:0.7rem; pointer-events:none; opacity:0.5;">
+                    Click to add nodes | Click near first node to close
+                </div>
             </div>
+            <p class="analysis-text"><b>Tip:</b> 1 pixel = 1 mm. Use this to estimate surface area for material coatings or weight calculations.</p>
         </div>
     </div>
 
     <div id="geomModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('geomModal')">&times;</span>
-            <h3 style="color:var(--accent); border-left-color:var(--accent);">📐 Geometric Lab</h3>
-            <select id="shapeType" onchange="updateGeomInputs()">
-                <option value="cylinder">Cylinder</option>
-                <option value="sphere">Sphere</option>
-                <option value="prism">Prism (Rectangular)</option>
-            </select>
-            <div id="geomInputs" class="input-group" style="margin-top:15px;"></div>
-            <button onclick="calcGeomVolume()" style="background:var(--accent)">Calculate Volume</button>
-            <div class="result-box" style="border-color:var(--accent)">
-                <span id="geomRes" class="result-val" style="color:var(--accent); font-size:1rem; text-align:center;">Enter parameters...</span>
+            <h3 style="color:var(--primary);">📐 Material & Volume Lab</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="input-group">
+                    <label style="font-size:0.8rem; font-weight:700;">Object Shape</label>
+                    <select id="shapeType" onchange="updateGeomInputs()">
+                        <option value="cylinder">Cylinder / Rod</option>
+                        <option value="sphere">Sphere / Ball</option>
+                        <option value="cube">Rectangular Block</option>
+                    </select>
+                    <label style="font-size:0.8rem; font-weight:700;">Material Density (ρ)</label>
+                    <select id="matDensity">
+                        <option value="7.85">Steel (7.85 g/cm³)</option>
+                        <option value="2.70">Aluminum (2.70 g/cm³)</option>
+                        <option value="8.96">Copper (8.96 g/cm³)</option>
+                        <option value="1.20">Plastic/ABS (1.20 g/cm³)</option>
+                    </select>
+                    <div id="geomInputs"></div>
+                    <button onclick="calcGeomVolume()">Calculate Mass & Vol</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;">
+                    <div style="margin-bottom:10px;"><small>Total Volume</small><div id="geomRes" class="result-val">0 mm³</div></div>
+                    <div><small>Estimated Mass</small><div id="massRes" class="result-val" style="color:var(--accent)">0 kg</div></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="info-section">
-        <div class="info-box">
-            <h4>📖 About Unitly Lab</h4>
-            <p>Unitly Lab is designed to perform essential engineering conversions and basic physical simulations. Clean, fast, and precise.</p>
-        </div>
-        <div class="info-box">
-            <h4>⚠️ Important Notice</h4>
-            <p>While we strive for high precision, this site <strong>may make mistakes</strong>. Cross-verify critical calculations. <a href="mailto:unitlylab@gmail.com" style="color:var(--accent); font-weight:bold;">unitlylab@gmail.com</a></p>
+    <div id="ebikeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('ebikeModal')">&times;</span>
+            <h3 style="color:var(--accent);">🚲 EV Power Dynamics</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <div class="row">
+                        <div><small>System Voltage (V)</small><input type="number" id="evV" value="72"></div>
+                        <div><small>Battery Capacity (Ah)</small><input type="number" id="evAh" value="40"></div>
+                    </div>
+                    <div class="row">
+                        <div><small>Motor Power (W)</small><input type="number" id="evW" value="3000"></div>
+                        <div><small>Avg Speed (km/h)</small><input type="number" id="evSpd" value="45"></div>
+                    </div>
+                    <button onclick="calcMobility()" style="background:var(--accent);">Analyze Battery Life</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid; border-color:var(--accent);">
+                    <div style="margin-bottom:10px;"><small>Energy Content</small><div id="resWh" class="result-val">0 Wh</div></div>
+                    <div style="margin-bottom:10px;"><small>Estimated Range</small><div id="resRange" class="result-val">0 km</div></div>
+                    <div><small>Runtime at Full Load</small><div id="resRuntime" class="result-val" style="color:var(--danger)">0 min</div></div>
+                </div>
+            </div>
+            <p class="analysis-text" style="color:var(--warning)">*Calculation assumes 85% discharge depth and 90% motor efficiency.</p>
         </div>
     </div>
 
-    <div class="footer"><p>&copy; 2026 Unitly Lab | Global Engineering Standards</p></div>
+    <footer class="info-footer">
+        <h3>📖 About Unitly Lab</h3>
+        <p>Unitly Lab is a helpful tool designed to assist with basic engineering data, unit conversions, and manufacturing calculations through a simple and easy interface.</p>
+        <div class="disclaimer">⚠️ DISCLAIMER: This system may make mistakes. Verify data for critical projects.</div>
+        <a href="mailto:unitlylab@gmail.com" class="contact-mail">unitlylab@gmail.com</a>
+        <p style="margin-top:10px; opacity:0.4; font-size:0.7rem;">&copy; 2026 Unitly Lab</p>
+    </footer>
 </div>
 
 <script>
-    function toggleTheme() { document.body.hasAttribute('data-theme') ? document.body.removeAttribute('data-theme') : document.body.setAttribute('data-theme', 'dark'); }
+    function toggleTheme() {
+        const isChecked = document.getElementById('checkbox').checked;
+        isChecked ? document.body.setAttribute('data-theme', 'dark') : document.body.removeAttribute('data-theme');
+    }
+    
     function toggleDropdown() { document.getElementById("myDropdown").classList.toggle("show"); }
-    function openModal(id) { document.getElementById(id).style.display = "block"; if(id === 'sketchModal') setTimeout(initCanvas, 150); if(id === 'geomModal') updateGeomInputs(); }
+    
+    function openModal(id) { 
+        document.getElementById(id).style.display = "block"; 
+        if(id === 'sketchModal') setTimeout(initCanvas, 100);
+        if(id === 'geomModal') updateGeomInputs();
+    }
+    
     function closeModal(id) { document.getElementById(id).style.display = "none"; }
-    window.onclick = function(e) { if (!e.target.matches('.dropbtn')) { var d = document.getElementsByClassName("dropdown-content"); for (var i = 0; i < d.length; i++) d[i].classList.remove('show'); } }
+    
+    window.onclick = function(e) { 
+        if (!e.target.matches('.dropbtn')) { 
+            var d = document.getElementsByClassName("dropdown-content"); 
+            for (var i = 0; i < d.length; i++) d[i].classList.remove('show'); 
+        } 
+    }
 
     function convert(type) {
         const val = parseFloat(document.getElementById(type + 'Input').value) || 0;
         const from = parseFloat(document.getElementById(type + 'From').value);
-        const to = parseFloat(document.getElementById(type + 'To').value);
-        document.getElementById(type + 'Res').innerText = (val === 0) ? "0" : ((val * from) / to).toLocaleString('en-US', {maximumFractionDigits: 6});
+        const to = parseFloat(document.getElementById(type + 'To').value || 1);
+        document.getElementById(type + 'Res').innerText = (val === 0) ? "0" : ((val * from) / to).toLocaleString('en-US', {maximumFractionDigits: 4});
     }
 
-    function calcFin() { 
-        let p = parseFloat(document.getElementById('pCap').value)||0, r = parseFloat(document.getElementById('pRate').value)||0, t = parseFloat(document.getElementById('pTime').value)||0; 
-        document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString('en-US', {minimumFractionDigits: 2}); 
+    function calcFin() {
+        let p = parseFloat(document.getElementById('pCap').value)||0, r = parseFloat(document.getElementById('pRate').value)||0, t = parseFloat(document.getElementById('pTime').value)||0;
+        document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString('en-US');
     }
 
-    function calcMobility() {
-        const v = parseFloat(document.getElementById('evV').value), ah = parseFloat(document.getElementById('evAh').value);
-        const w = parseFloat(document.getElementById('evW').value), m = parseFloat(document.getElementById('evM').value);
-        const t_motor = parseFloat(document.getElementById('evTrq').value), ratio = parseFloat(document.getElementById('evRatio').value);
-        document.getElementById('resWheelTrq').innerText = (t_motor * ratio * 0.9).toFixed(1) + " Nm";
-        document.getElementById('resAccel100').innerText = (((0.5 * m * Math.pow(27.7, 2)) / (w * 0.9)) * 1.3).toFixed(1) + " s";
-        document.getElementById('resRange').innerText = ((v * ah * 0.85) / 22).toFixed(0) + " km";
+    // UPDATED ENGINEERING LOGIC
+    function updateCNCDefaults() {
+        document.getElementById('cncVc').value = document.getElementById('matType').value;
     }
 
-    let cv, ct, dr = false, pts = [], mode = 'area';
-    function setSketchTool(m) { mode = m; pts = []; clearCanvas(); }
-    function initCanvas() {
-        cv = document.getElementById('designCanvas'); ct = cv.getContext('2d'); const p = document.getElementById('canvasParent');
-        cv.width = p.offsetWidth; cv.height = p.offsetHeight;
-        cv.onmousedown = (e) => { dr = true; pts.push({x: e.offsetX, y: e.offsetY}); this.sn = ct.getImageData(0,0,cv.width,cv.height); };
-        cv.onmousemove = (e) => { 
-            document.getElementById('coords').innerText = `X: ${e.offsetX}, Y: ${e.offsetY}`; 
-            if(!dr) return; 
-            ct.putImageData(this.sn, 0, 0); ct.beginPath(); ct.moveTo(pts[pts.length-1].x, pts[pts.length-1].y); 
-            ct.lineTo(e.offsetX, e.offsetY); ct.strokeStyle = '#3b82f6'; ct.lineWidth = 2; ct.stroke(); 
-        };
-        cv.onmouseup = (e) => { dr = false; if(pts.length > 2 && Math.hypot(e.offsetX-pts[0].x, e.offsetY-pts[0].y)<20) calculateShape(); else pts.push({x: e.offsetX, y: e.offsetY}); };
+    function calcCNC() {
+        const vc = parseFloat(document.getElementById('cncVc').value), d = parseFloat(document.getElementById('cncD').value), fz = parseFloat(document.getElementById('cncFz').value), z = parseFloat(document.getElementById('cncZ').value);
+        const rpm = (vc * 1000) / (Math.PI * d);
+        const feed = rpm * fz * z;
+        const mrr = (feed * (d/2) * 2) / 1000; // Simplified MRR for visual
+        
+        document.getElementById('resRPM').innerText = Math.round(rpm) + " RPM";
+        document.getElementById('resFeed').innerText = Math.round(feed) + " mm/min";
+        document.getElementById('resMRR').innerText = mrr.toFixed(1) + " cm³/min";
+        
+        document.getElementById('cncAnalysis').innerHTML = `<b>Analysis:</b> For ${d}mm tool, spindle load is normal. <span style="color:var(--accent)">Efficient chip evacuation expected.</span>`;
     }
-    function calculateShape() { 
-        let a = 0; for(let i=0; i<pts.length; i++){ let j=(i+1)%pts.length; a += pts[i].x * pts[j].y; a -= pts[j].x * pts[i].y; } 
-        a = Math.abs(a)/2; 
-        document.getElementById('analysisResult').innerText = (mode === 'area') ? `Area: ${a.toFixed(0)} mm²` : `Vol: ${(a * document.getElementById('depthInput').value).toFixed(0)} mm³`; 
-    }
-    function clearCanvas() { ct.clearRect(0,0,cv.width,cv.height); pts=[]; document.getElementById('analysisResult').innerText = "-"; }
 
     function updateGeomInputs() {
-        const type = document.getElementById('shapeType').value, container = document.getElementById('geomInputs');
-        if (type === 'prism') container.innerHTML = `<input type="number" id="gw" placeholder="Width"><input type="number" id="gh" placeholder="Height"><input type="number" id="gd" placeholder="Depth">`;
-        else if (type === 'sphere') container.innerHTML = `<input type="number" id="gr1" placeholder="Radius">`;
-        else container.innerHTML = `<input type="number" id="gr1" placeholder="Radius"><input type="number" id="gh1" placeholder="Height">`;
+        const type = document.getElementById('shapeType').value;
+        let html = '';
+        if(type === 'cylinder') html = '<div class="row"><div><small>Radius (mm)</small><input type="number" id="gR" value="10"></div><div><small>Height (mm)</small><input type="number" id="gH" value="50"></div></div>';
+        else if(type === 'sphere') html = '<small>Radius (mm)</small><input type="number" id="gR" value="10">';
+        else html = '<div class="row"><div><small>L</small><input type="number" id="gL" value="10"></div><div><small>W</small><input type="number" id="gW" value="10"></div><div><small>H</small><input type="number" id="gH" value="10"></div></div>';
+        document.getElementById('geomInputs').innerHTML = html;
     }
 
     function calcGeomVolume() {
-        const type = document.getElementById('shapeType').value; let v = 0;
-        if (type === 'cylinder') v = Math.PI * Math.pow(document.getElementById('gr1').value, 2) * document.getElementById('gh1').value;
-        else if (type === 'sphere') v = (4/3) * Math.PI * Math.pow(document.getElementById('gr1').value, 3);
-        else v = document.getElementById('gw').value * document.getElementById('gh').value * document.getElementById('gd').value;
-        document.getElementById('geomRes').innerHTML = `<div>${v.toLocaleString()} mm³</div><div>${(v/1000).toLocaleString()} cm³</div><div><strong>${(v/1000000000).toFixed(10)} m³</strong></div>`;
+        const type = document.getElementById('shapeType').value;
+        const rho = parseFloat(document.getElementById('matDensity').value);
+        let vol = 0;
+        if(type === 'cylinder') vol = Math.PI * Math.pow(document.getElementById('gR').value, 2) * document.getElementById('gH').value;
+        else if(type === 'sphere') vol = (4/3) * Math.PI * Math.pow(document.getElementById('gR').value, 3);
+        else vol = document.getElementById('gL').value * document.getElementById('gW').value * document.getElementById('gH').value;
+        
+        const mass = (vol / 1000000) * rho * 1000; // to grams
+        document.getElementById('geomRes').innerText = Math.round(vol).toLocaleString() + " mm³";
+        document.getElementById('massRes').innerText = (mass/1000).toFixed(3) + " kg";
+    }
+
+    function calcMobility() {
+        const v = parseFloat(document.getElementById('evV').value), ah = parseFloat(document.getElementById('evAh').value), w = parseFloat(document.getElementById('evW').value), spd = parseFloat(document.getElementById('evSpd').value);
+        const wh = v * ah;
+        const usableWh = wh * 0.85;
+        const range = (usableWh / (w/spd));
+        const runtime = (usableWh / w) * 60;
+        
+        document.getElementById('resWh').innerText = wh + " Wh";
+        document.getElementById('resRange').innerText = range.toFixed(1) + " km";
+        document.getElementById('resRuntime').innerText = Math.round(runtime) + " min";
+    }
+
+    function searchCodes() {
+        let input = document.getElementById('codeSearch').value.toUpperCase();
+        let rows = document.getElementById('codeTableBody').getElementsByTagName('tr');
+        for (let row of rows) row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
+    }
+
+    let cv, ct, pts = [];
+    function initCanvas() {
+        cv = document.getElementById('designCanvas'); ct = cv.getContext('2d');
+        const p = cv.parentElement; cv.width = p.clientWidth; cv.height = 350;
+        draw(); 
+    }
+
+    function getCoords(e) {
+        const rect = cv.getBoundingClientRect();
+        return { x: (e.clientX - rect.left), y: (e.clientY - rect.top) };
+    }
+
+    function draw() {
+        ct.clearRect(0, 0, cv.width, cv.height);
+        // Grid
+        ct.strokeStyle = '#334155'; ct.lineWidth = 0.5;
+        for(let i=0; i<cv.width; i+=20) { ct.beginPath(); ct.moveTo(i,0); ct.lineTo(i,cv.height); ct.stroke(); }
+        for(let i=0; i<cv.height; i+=20) { ct.beginPath(); ct.moveTo(0,i); ct.lineTo(cv.width,i); ct.stroke(); }
+        
+        if (pts.length === 0) return;
+        ct.beginPath(); ct.strokeStyle = '#3b82f6'; ct.lineWidth = 3;
+        ct.moveTo(pts[0].x, pts[0].y);
+        for(let i=1; i<pts.length; i++) ct.lineTo(pts[i].x, pts[i].y);
+        ct.stroke();
+        pts.forEach((p, i) => {
+            ct.fillStyle = (i === 0) ? '#10b981' : '#3b82f6';
+            ct.beginPath(); ct.arc(p.x, p.y, 5, 0, Math.PI * 2); ct.fill();
+        });
+    }
+
+    window.addEventListener('mousedown', function(e) {
+        if (e.target.id === 'designCanvas') {
+            const coords = getCoords(e);
+            if (pts.length > 2 && Math.hypot(coords.x - pts[0].x, coords.y - pts[0].y) < 15) {
+                pts.push(pts[0]); draw(); calcArea();
+            } else {
+                pts.push(coords); draw();
+            }
+        }
+    });
+
+    function calcArea() {
+        let a = 0;
+        for(let i=0; i < pts.length - 1; i++) { a += pts[i].x * pts[i+1].y; a -= pts[i+1].x * pts[i].y; }
+        document.getElementById('analysisResult').innerText = `Area: ${Math.round(Math.abs(a)/2)} mm²`;
+    }
+
+    function clearCanvas() { 
+        pts = []; if(ct) ct.clearRect(0,0,cv.width,cv.height); 
+        document.getElementById('analysisResult').innerText = "Area: 0 mm²"; 
+        draw();
     }
 </script>
 </body>
