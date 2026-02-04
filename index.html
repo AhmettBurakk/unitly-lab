@@ -39,13 +39,13 @@
         .result-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
         
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); overflow-y: auto; }
-        .modal-content { background: var(--card); margin: 5% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 750px; border: 1px solid var(--border); position: relative; }
+        .modal-content { background: var(--card); margin: 2% auto; padding: 25px; border-radius: 20px; width: 95%; max-width: 900px; border: 1px solid var(--border); position: relative; max-height: 90vh; overflow-y: auto;}
         .close { float: right; cursor: pointer; font-size: 24px; font-weight: bold; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.85rem; }
         
-        canvas { background: #1e293b; border-radius: 12px; cursor: crosshair; display: block; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); width: 100%; height: 400px; touch-action: none; }
+        canvas { background: #1e293b; border-radius: 12px; cursor: crosshair; display: block; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); width: 100%; height: 500px; touch-action: none; }
         
         .info-footer { margin-top: 50px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
         .disclaimer { color: var(--danger); font-size: 0.85rem; margin-top: 15px; font-weight: 600; }
@@ -61,6 +61,13 @@
         .point-dot:hover { r: 8; filter: drop-shadow(0 0 5px var(--primary)); }
         .unit-tag { font-size: 0.75rem; font-weight: 600; color: var(--warning); margin-bottom: 2px; }
         .multi-unit-res { font-size: 0.85rem; color: var(--text); opacity: 0.9; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 4px; }
+
+        /* Sketch Tool Styles */
+        .sketch-toolbar { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; background: var(--result-bg); padding: 10px; border-radius: 12px; flex-wrap: wrap; }
+        .tool-btn { padding: 8px 15px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .tool-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .sketch-stats { margin-left: auto; text-align: right; }
+
     </style>
 </head>
 <body>
@@ -88,7 +95,7 @@
                     <a onclick="openModal('beltModal')">⛓️ Belt & Chain Calc</a>
                     <a onclick="openModal('fastenerModal')">🔩 Fastener Reference</a>
                     <a onclick="openModal('weightModal')">⚖️ Profile Weight Lab</a>
-                    <a onclick="openModal('sketchModal')">🎨 Design Analyst (2D)</a>
+                    <a onclick="openModal('sketchModal')">🎨 Design Analyst (2D) <span class="lab-badge new">Pro</span></a>
                     <a onclick="openModal('geomModal')">📐 Material & Volume</a>
                     <a onclick="openModal('beamModal')">🏗️ Beam Analysis</a>
                     <a onclick="openModal('stressModal')">📈 Material Stress <span class="lab-badge pro">Pro</span></a>
@@ -127,6 +134,35 @@
         <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45">%<input type="number" id="pTime" value="12">Mo.</div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
     </div>
 
+    <div id="sketchModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close" onclick="closeModal('sketchModal')">&times;</span>
+            <h3 style="color:var(--primary);">🎨 Precision Design Analyst (2D Pro)</h3>
+            
+            <div class="sketch-toolbar">
+                <div style="display:flex; gap:10px;">
+                    <button id="btnPoly" class="tool-btn active" onclick="setTool('poly')">📐 Poly/Line</button>
+                    <button id="btnCircle" class="tool-btn" onclick="setTool('circle')">⭕ Circle</button>
+                </div>
+                <div style="display:flex; gap:10px; margin-left: 20px;">
+                     <button onclick="closePolygon()" style="background:var(--accent); width:auto; padding: 8px 15px; font-size:0.9rem;">Close Path</button>
+                     <button onclick="clearCanvas()" style="background:var(--danger); width:auto; padding: 8px 15px; font-size:0.9rem;">Clear All</button>
+                </div>
+                
+                <div class="sketch-stats">
+                    <div id="analysisResult" class="result-val" style="color:var(--primary); font-size: 1.2rem;">Total Area: 0 mm²</div>
+                    <div id="areaInch" style="font-size: 0.8rem; opacity: 0.7;">0 in²</div>
+                </div>
+            </div>
+
+            <div style="position:relative; background: #0f172a; border-radius: 12px; overflow: hidden; border: 2px solid var(--border);">
+                <canvas id="designCanvas"></canvas>
+                <div id="cursorPos" style="position:absolute; bottom:10px; left:10px; color:rgba(255,255,255,0.5); font-size:0.8rem; pointer-events:none;">X:0 Y:0</div>
+            </div>
+             <p class="analysis-text" style="text-align:center; margin-top:10px;">Poly: Click to add points. Circle: Click center and drag. Lines are auto-dimensioned.</p>
+        </div>
+    </div>
+    
     <div id="sheetModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('sheetModal')">&times;</span>
@@ -576,26 +612,6 @@
                     <div class="multi-unit-res" id="resRangeMi">Range: 0 miles</div>
                     <div class="multi-unit-res" id="resRuntime">Full Load Runtime: 0 min</div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="sketchModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('sketchModal')">&times;</span>
-            <h3 style="color:var(--primary);">🎨 Precision Design Analyst (2D)</h3>
-            <div class="row" style="margin-bottom:15px; justify-content: space-between;">
-                <div style="display:flex; gap:10px;">
-                    <button onclick="clearCanvas()" style="background:var(--danger); width:auto;">Reset</button>
-                    <button onclick="closePolygon()" style="background:var(--accent); width:auto;">Close Path</button>
-                </div>
-                <div class="input-group" style="width: 200px;">
-                    <div id="analysisResult" class="result-val" style="color:var(--primary);">Area: 0 mm²</div>
-                    <div id="areaInch" style="font-size: 0.75rem; text-align: right;">0 in²</div>
-                </div>
-            </div>
-            <div style="position:relative; background: #0f172a; padding: 10px; border-radius: 12px;">
-                <canvas id="designCanvas"></canvas>
             </div>
         </div>
     </div>
@@ -1125,86 +1141,212 @@
         document.getElementById('thermNewL').innerText = newL.toFixed(3) + " mm";
     }
 
-    // --- Advanced Canvas Sketch Logic (Touch Fixed) ---
-    let canvas, ctx, points = [], isClosed = false;
+    // --- MARK: Advanced 2D Sketch Logic (V2.0 - Improved) ---
+    let canvas, ctx;
+    let shapes = []; // Stores all finished shapes {type, points, radius, etc.}
+    let points = []; // Stores points for the CURRENT polygon being drawn
+    let activeTool = 'poly'; // 'poly' or 'circle'
+    let isDrawing = false;
+    let startPoint = null; // For circle center or poly rubber-banding
+    let tempPoint = null; // For previewing the current drag
 
     function initCanvas() {
         canvas = document.getElementById('designCanvas');
         if(!canvas) return;
         canvas.width = canvas.parentElement.offsetWidth; 
-        canvas.height = 400; 
+        canvas.height = 500; 
         ctx = canvas.getContext('2d');
         
-        function handleInput(e) {
-            if(isClosed) return;
-            if(e.type === 'touchstart') e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            let x, y;
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX - rect.left;
-                y = e.touches[0].clientY - rect.top;
-            } else {
-                x = e.clientX - rect.left;
-                y = e.clientY - rect.top;
-            }
-            points.push({x: x, y: y});
-            drawCanvas();
-        }
+        // Add event listeners for mouse and touch
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('mouseup', handleEnd);
+        canvas.addEventListener('touchstart', handleStart, {passive: false});
+        canvas.addEventListener('touchmove', handleMove, {passive: false});
+        canvas.addEventListener('touchend', handleEnd);
 
-        canvas.addEventListener('mousedown', handleInput);
-        canvas.addEventListener('touchstart', handleInput, {passive: false});
         drawCanvas(); 
     }
 
+    function getCoords(e) {
+        e.preventDefault(); // Prevent scrolling on touch
+        const rect = canvas.getBoundingClientRect();
+        let x, y;
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX - rect.left;
+            y = e.touches[0].clientY - rect.top;
+        } else {
+            x = e.clientX - rect.left;
+            y = e.clientY - rect.top;
+        }
+        return {x, y};
+    }
+
+    function handleStart(e) {
+        const coords = getCoords(e);
+        if(activeTool === 'poly') {
+            points.push(coords);
+            startPoint = coords; // For rubber-banding the next line
+        } else if(activeTool === 'circle') {
+            isDrawing = true;
+            startPoint = coords;
+        }
+        drawCanvas();
+    }
+
+    function handleMove(e) {
+        const coords = getCoords(e);
+        tempPoint = coords;
+        // Update coordinate display
+        document.getElementById('cursorPos').innerText = `X:${Math.round(coords.x)} Y:${Math.round(coords.y)}`;
+        drawCanvas();
+    }
+
+    function handleEnd(e) {
+        if(activeTool === 'circle' && isDrawing) {
+            const coords = getCoords(e);
+            const radius = Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2));
+            if(radius > 2) {
+                 shapes.push({type: 'circle', center: startPoint, radius: radius});
+            }
+            isDrawing = false;
+            startPoint = null;
+            tempPoint = null;
+            calcTotalArea();
+        }
+        // Polygon points are added on click (handleStart), so no action needed here for poly
+        drawCanvas();
+    }
+
+    function setTool(tool) {
+        activeTool = tool;
+        document.getElementById('btnPoly').classList.toggle('active', tool === 'poly');
+        document.getElementById('btnCircle').classList.toggle('active', tool === 'circle');
+        // Reset current poly drawing if switching tools
+        points = []; startPoint = null; tempPoint = null;
+        drawCanvas();
+    }
+
+
     function drawCanvas() {
+        if(!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw Grid
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         ctx.lineWidth = 1;
         const gridSize = 20;
         for(let i=0; i<canvas.width; i+=gridSize) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
         for(let j=0; j<canvas.height; j+=gridSize) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
 
-        if(points.length > 0) {
-            ctx.strokeStyle = '#10b981'; 
-            ctx.lineWidth = 2;
+        // 1. Draw Finished Shapes
+        for(let shape of shapes) {
+            ctx.strokeStyle = '#10b981'; ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-            
-            if(isClosed) {
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+            if(shape.type === 'poly') {
+                ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                for(let i=1; i<shape.points.length; i++) ctx.lineTo(shape.points[i].x, shape.points[i].y);
+                ctx.closePath(); ctx.fill();
+                // Draw labels for finished polygon
+                 for(let i=0; i<shape.points.length; i++) {
+                    let p1 = shape.points[i];
+                    let p2 = shape.points[(i+1) % shape.points.length];
+                    drawLabel(p1, p2);
+                }
+            } else if(shape.type === 'circle') {
+                ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, Math.PI*2);
                 ctx.fill();
+                // Draw radius label
+                drawLabel(shape.center, {x: shape.center.x + shape.radius, y: shape.center.y});
             }
             ctx.stroke();
-            ctx.fillStyle = '#fff';
-            for(let p of points) { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill(); }
         }
+
+        // 2. Draw Current Polygon being drawn
+        if(points.length > 0) {
+            ctx.strokeStyle = activeTool === 'poly' ? '#3b82f6' : '#10b981'; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for(let i=1; i<points.length; i++) {
+                 ctx.lineTo(points[i].x, points[i].y);
+                 drawLabel(points[i-1], points[i]); // Label finished segments
+            }
+            ctx.stroke();
+            
+            // Draw rubber-band preview line
+            if(tempPoint && activeTool === 'poly') {
+                 ctx.beginPath(); ctx.moveTo(points[points.length-1].x, points[points.length-1].y); ctx.lineTo(tempPoint.x, tempPoint.y);
+                 ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)'; ctx.stroke();
+                 drawLabel(points[points.length-1], tempPoint, true); // Preview label
+            }
+            ctx.fillStyle = '#fff'; for(let p of points) { ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill(); }
+        }
+
+        // 3. Draw Circle Preview
+        if(isDrawing && activeTool === 'circle' && startPoint && tempPoint) {
+             const radius = Math.sqrt(Math.pow(tempPoint.x - startPoint.x, 2) + Math.pow(tempPoint.y - startPoint.y, 2));
+             ctx.beginPath(); ctx.arc(startPoint.x, startPoint.y, radius, 0, Math.PI*2);
+             ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)'; ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+             ctx.fill(); ctx.stroke();
+             drawLabel(startPoint, tempPoint, true); // Radius preview label
+        }
+    }
+    
+    // Helper function to draw length labels
+    function drawLabel(p1, p2, isPreview = false) {
+         const midX = (p1.x + p2.x) / 2;
+         const midY = (p1.y + p2.y) / 2;
+         const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+         if(dist < 5) return; // Don't label tiny lines
+         
+         ctx.save();
+         ctx.fillStyle = isPreview ? 'rgba(255,255,255,0.7)' : '#fff';
+         ctx.font = 'bold 11px Inter, sans-serif';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         // Simple background for text readability
+         const text = Math.round(dist) + 'mm';
+         const metrics = ctx.measureText(text);
+         ctx.fillStyle = 'rgba(0,0,0,0.5)';
+         ctx.fillRect(midX - metrics.width/2 - 2, midY - 8, metrics.width + 4, 16);
+         ctx.fillStyle = isPreview ? 'rgba(255,255,255,0.9)' : '#fff';
+         ctx.fillText(text, midX, midY);
+         ctx.restore();
     }
 
     function closePolygon() {
         if(points.length < 3) return;
-        isClosed = true;
+        shapes.push({type: 'poly', points: points});
+        points = []; // Reset current poly
+        startPoint = null; tempPoint = null;
         drawCanvas();
-        calcArea();
+        calcTotalArea();
     }
 
-    function calcArea() {
-        let area = 0;
-        for (let i = 0; i < points.length; i++) {
-            let j = (i + 1) % points.length;
-            area += points[i].x * points[j].y;
-            area -= points[j].x * points[i].y;
+    function calcTotalArea() {
+        let totalArea = 0;
+        for(let shape of shapes) {
+            if(shape.type === 'poly') {
+                let area = 0;
+                for (let i = 0; i < shape.points.length; i++) {
+                    let j = (i + 1) % shape.points.length;
+                    area += shape.points[i].x * shape.points[j].y;
+                    area -= shape.points[j].x * shape.points[i].y;
+                }
+                totalArea += Math.abs(area) / 2;
+            } else if(shape.type === 'circle') {
+                totalArea += Math.PI * Math.pow(shape.radius, 2);
+            }
         }
-        area = Math.abs(area) / 2;
-        document.getElementById('analysisResult').innerText = "Area: " + Math.round(area).toLocaleString() + " mm²";
-        document.getElementById('areaInch').innerText = (area * 0.00155).toFixed(3) + " in²";
+        document.getElementById('analysisResult').innerText = "Total Area: " + Math.round(totalArea).toLocaleString() + " mm²";
+        document.getElementById('areaInch').innerText = (totalArea * 0.00155).toFixed(3) + " in²";
     }
 
     function clearCanvas() {
         points = [];
-        isClosed = false;
-        document.getElementById('analysisResult').innerText = "Area: 0 mm²";
+        shapes = [];
+        startPoint = null; tempPoint = null; isDrawing = false;
+        document.getElementById('analysisResult').innerText = "Total Area: 0 mm²";
         document.getElementById('areaInch').innerText = "0 in²";
         drawCanvas();
     }
