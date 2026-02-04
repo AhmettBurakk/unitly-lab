@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Unitly Lab: A professional engineering suite featuring 2D Sketch Analysis, EV Performance Simulators, and high-precision unit converters.">
+    <meta name="keywords" content="wheel torque calculator, 2d sketch analysis, engineering converter, ev range simulator, mechanical engineering tools, unitly lab">
+    <meta name="author" content="Unitly Lab Team">
     <title>Unitly Lab - Ultimate Engineering Suite</title>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; }
@@ -144,23 +147,16 @@
         <div class="card"><h3>🏎️ Power</h3><div class="input-group"><input type="number" id="pwrInput" oninput="convertPwr()"><div class="row"><select id="pwrFrom" onchange="convertPwr()"><option value="1">kW</option></select>➔<select id="pwrTo" onchange="convertPwr()"><option value="1.341">HP</option></select></div></div><div class="result-box"><span id="pwrRes" class="result-val">0</span></div></div>
         <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convertWgt()"><div class="row"><select id="wgtFrom" onchange="convertWgt()"><option value="1">kg</option></select>➔<select id="wgtTo" onchange="convertWgt()"><option value="2.204">lb</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
         <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convertVol()"><div class="row"><select id="volFrom" onchange="convertVol()"><option value="1">L</option></select>➔<select id="volTo" onchange="convertVol()"><option value="0.001">m³</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>📈 Finance</h3><div class="input-group"><span class="label-small">Principal (Amount)</span><input type="number" id="pCap" placeholder="10000"><span class="label-small">Months</span><input type="number" id="pTime" value="12"><button onclick="calcFin()">Calculate</button></div><div class="result-box">Return: <span id="finRes" class="result-val">0.00</span></div></div>
+        <div class="card"><h3>📈 Finance</h3><div class="input-group"><span class="label-small">Principal (Amount)</span><input type="number" id="pCap" placeholder="10000"><span class="label-small">Annual Interest %</span><input type="number" id="pRate" value="45"><span class="label-small">Months</span><input type="number" id="pTime" value="12"><button onclick="calcFin()">Calculate</button></div><div class="result-box">Return: <span id="finRes" class="result-val">0.00</span></div></div>
     </div>
 
     <div class="info-section">
         <div class="info-title">🚀 About Unitly Lab</div>
-        <p>
-            Unitly Lab is a high-precision engineering portal designed to simplify complex technical calculations. 
-            Built with a focus on <strong>simplicity and speed</strong>, our suite bridges the gap between theoretical mechanical engineering and practical DIY applications. 
-            From calculating <strong>wheel torque</strong> for electric vehicles to analyzing <strong>2D sketch geometry</strong>, we provide a clean, distraction-free environment for engineers, students, and hobbyists worldwide.
-        </p>
+        <p>Unitly Lab is a high-precision engineering portal designed to simplify complex technical calculations. Built with a focus on <strong>simplicity and speed</strong>, our suite bridges the gap between theoretical mechanical engineering and practical DIY applications. From calculating <strong>wheel torque</strong> for electric vehicles to analyzing <strong>2D sketch geometry</strong>, we provide a clean, distraction-free environment for engineers, students, and hobbyists worldwide.</p>
         <div class="disclaimer-text">
-            <strong>Disclaimer:</strong> The calculations and tools provided by Unitly Lab are for educational and informational purposes only. 
-            While we strive for 100% precision, results should be verified for critical engineering applications. 
-            The creator of Unitly Lab assumes no liability for any errors or damages resulting from the use of this software. Always double-check your safety factors.
+            <strong>Disclaimer:</strong> The calculations and tools provided by Unitly Lab are for educational and informational purposes only. While we strive for 100% precision, results should be verified for critical engineering applications. The creator of Unitly Lab assumes no liability for any errors or damages resulting from the use of this software. Always double-check your safety factors.
         </div>
     </div>
-
     <div class="footer"><p>&copy; 2026 Unitly Lab | Global Engineering Standards</p></div>
 </div>
 
@@ -202,7 +198,7 @@
     function convertPwr() { document.getElementById('pwrRes').innerText = genericConvert(document.getElementById('pwrInput').value, 1, 1.341); }
     function convertWgt() { document.getElementById('wgtRes').innerText = genericConvert(document.getElementById('wgtInput').value, 1, 2.204); }
     function convertVol() { document.getElementById('volRes').innerText = genericConvert(document.getElementById('volInput').value, 1, 0.001); }
-    function calcFin() { let p = parseFloat(document.getElementById('pCap').value)||0, t = parseFloat(document.getElementById('pTime').value)||0; document.getElementById('finRes').innerText = ((p*45*t)/1200).toLocaleString('en-US', {minimumFractionDigits: 2}); }
+    function calcFin() { let p = parseFloat(document.getElementById('pCap').value)||0, r = parseFloat(document.getElementById('pRate').value)||0, t = parseFloat(document.getElementById('pTime').value)||0; document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString('en-US', {minimumFractionDigits: 2}); }
     
     function calcMobility() {
         let v = parseFloat(document.getElementById('ebikeV').value)||0, ah = parseFloat(document.getElementById('ebikeAh').value)||0, w = parseFloat(document.getElementById('ebikeW').value)||0, m = parseFloat(document.getElementById('ebikeMass').value)||0;
