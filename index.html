@@ -44,7 +44,6 @@
         .result-box { background: var(--result-bg); padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; border: 1px dashed var(--primary); }
         .result-val { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: block; margin-top: 5px; }
         
-        .disclaimer { margin-top: 60px; padding: 20px; background: rgba(0,0,0,0.05); border-radius: 10px; font-size: 0.8rem; line-height: 1.5; color: #64748b; text-align: center; }
         .footer { text-align: center; margin-top: 30px; color: #94a3b8; font-size: 0.85rem; padding-bottom: 40px; }
     </style>
 </head>
@@ -68,10 +67,8 @@
                     <select id="lenFrom" onchange="convertLen()">
                         <option value="1000">mm</option>
                         <option value="100">cm</option>
-                        <option value="10">dm</option>
                         <option value="1" selected>m</option>
                         <option value="0.1">dam</option>
-                        <option value="0.01">hm</option>
                         <option value="0.001">km</option>
                         <option value="39.3701">inch</option>
                     </select>
@@ -80,7 +77,9 @@
                         <option value="1000">mm</option>
                         <option value="100" selected>cm</option>
                         <option value="1">m</option>
+                        <option value="0.1">dam</option>
                         <option value="0.001">km</option>
+                        <option value="39.3701">inch</option>
                     </select>
                 </div>
             </div>
@@ -88,86 +87,26 @@
         </div>
 
         <div class="card">
-            <h3>⚡ Speed</h3>
+            <h3>⚙️ Torque (Tork)</h3>
             <div class="input-group">
-                <input type="number" id="spdInput" placeholder="Speed" oninput="convertSpd()">
+                <input type="number" id="trqInput" placeholder="Value" oninput="convertTrq()">
                 <div class="row">
-                    <select id="spdFrom" onchange="convertSpd()">
-                        <option value="3.6" selected>km/h</option>
-                        <option value="1">m/s</option>
-                        <option value="2.23694">mph</option>
-                        <option value="1.94384">Knots</option>
+                    <select id="trqFrom" onchange="convertTrq()">
+                        <option value="1" selected>Nm (Newton-meter)</option>
+                        <option value="0.10197">kgf-m</option>
+                        <option value="0.73756">lb-ft (Pound-foot)</option>
+                        <option value="8.8507">lb-in</option>
                     </select>
                     <span>➔</span>
-                    <select id="spdTo" onchange="convertSpd()">
-                        <option value="3.6">km/h</option>
-                        <option value="1" selected>m/s</option>
-                        <option value="2.23694">mph</option>
+                    <select id="trqTo" onchange="convertTrq()">
+                        <option value="1">Nm</option>
+                        <option value="0.10197" selected>kgf-m</option>
+                        <option value="0.73756">lb-ft</option>
+                        <option value="8.8507">lb-in</option>
                     </select>
                 </div>
             </div>
-            <div class="result-box">Result: <span class="result-val" id="spdRes">0</span></div>
-        </div>
-        <div class="card">
-    <h3>🔋 Energy</h3>
-    <div class="input-group">
-        <input type="number" id="nrgInput" placeholder="Value" oninput="convertNrg()">
-        <div class="row">
-            <select id="nrgFrom" onchange="convertNrg()">
-                <option value="1" selected>Joule (J)</option>
-                <option value="0.001">Kilojoule (kJ)</option>
-                <option value="0.239006">Calorie (cal)</option>
-                <option value="0.000239006">kcal</option>
-                <option value="0.0009478">BTU</option>
-            </select>
-            <span>➔</span>
-            <select id="nrgTo" onchange="convertNrg()">
-                <option value="1">Joule (J)</option>
-                <option value="0.001" selected>Kilojoule (kJ)</option>
-                <option value="0.239006">Calorie (cal)</option>
-                <option value="0.0009478">BTU</option>
-            </select>
-        </div>
-    </div>
-    <div class="result-box">Result: <span class="result-val" id="nrgRes">0</span></div>
-</div>
-        <div class="card">
-            <h3>🌡️ Temp</h3>
-            <div class="input-group">
-                <input type="number" id="tempInput" placeholder="Value" oninput="convertTemp()">
-                <div class="row">
-                    <select id="tempFrom" onchange="convertTemp()">
-                        <option value="C" selected>Celsius</option>
-                        <option value="F">Fahrenheit</option>
-                        <option value="K">Kelvin</option>
-                    </select>
-                    <span>➔</span>
-                    <select id="tempTo" onchange="convertTemp()">
-                        <option value="C">Celsius</option>
-                        <option value="F" selected>Fahrenheit</option>
-                    </select>
-                </div>
-            </div>
-            <div class="result-box">Result: <span class="result-val" id="tempRes">0</span></div>
-        </div>
-
-        <div class="card">
-            <h3>🏎️ Power</h3>
-            <div class="input-group">
-                <input type="number" id="pwrInput" placeholder="Value" oninput="convertPwr()">
-                <div class="row">
-                    <select id="pwrFrom" onchange="convertPwr()">
-                        <option value="1.341">HP</option>
-                        <option value="1" selected>kW</option>
-                    </select>
-                    <span>➔</span>
-                    <select id="pwrTo" onchange="convertPwr()">
-                        <option value="1.341" selected>HP</option>
-                        <option value="1">kW</option>
-                    </select>
-                </div>
-            </div>
-            <div class="result-box">Result: <span class="result-val" id="pwrRes">0</span></div>
+            <div class="result-box">Result: <span class="result-val" id="trqRes">0</span></div>
         </div>
 
         <div class="card">
@@ -179,16 +118,41 @@
                         <option value="1" selected>Bar</option>
                         <option value="14.5038">PSI</option>
                         <option value="100000">Pa</option>
+                        <option value="0.9869">atm</option>
                     </select>
                     <span>➔</span>
                     <select id="prsTo" onchange="convertPrs()">
                         <option value="1">Bar</option>
                         <option value="14.5038" selected>PSI</option>
                         <option value="100000">Pa</option>
+                        <option value="0.9869">atm</option>
                     </select>
                 </div>
             </div>
             <div class="result-box">Result: <span class="result-val" id="prsRes">0</span></div>
+        </div>
+
+        <div class="card">
+            <h3>🔋 Energy</h3>
+            <div class="input-group">
+                <input type="number" id="nrgInput" placeholder="Value" oninput="convertNrg()">
+                <div class="row">
+                    <select id="nrgFrom" onchange="convertNrg()">
+                        <option value="1" selected>Joule (J)</option>
+                        <option value="0.001">kJ</option>
+                        <option value="0.239">cal</option>
+                        <option value="0.0009478">BTU</option>
+                    </select>
+                    <span>➔</span>
+                    <select id="nrgTo" onchange="convertNrg()">
+                        <option value="1">Joule (J)</option>
+                        <option value="0.001" selected>kJ</option>
+                        <option value="0.239">cal</option>
+                        <option value="0.0009478">BTU</option>
+                    </select>
+                </div>
+            </div>
+            <div class="result-box">Result: <span class="result-val" id="nrgRes">0</span></div>
         </div>
 
         <div class="card">
@@ -202,6 +166,7 @@
             <div class="result-box">Return: <span class="result-val" id="faizGetiri">0.00</span></div>
         </div>
     </div>
+
     <div style="max-width: 800px; margin: 30px auto; padding: 20px; text-align: center; border-top: 1px solid var(--border); opacity: 0.9;">
         <h4 style="color: var(--primary); margin-bottom: 10px;">About Unitly / Hakkında</h4>
         <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px;">
@@ -210,10 +175,6 @@
         <p style="font-size: 0.9rem; line-height: 1.6; font-style: italic; opacity: 0.8;">
             Unitly, mühendislik ve günlük kullanım için temel ölçü birimlerini hızlıca dönüştürmenize ve temel finansal hesaplamalarınızı kolayca yapmanıza yardımcı olan sade ve hassas bir araçtır. Basit ve sade bir arayüzle kolay kullanım sağlar.
         </p>
-    </div>
-
-    <div class="disclaimer">
-        <strong>Disclaimer:</strong> This tool is provided for informational purposes only. While we strive for accuracy, calculations may contain errors. We are not responsible for any financial or engineering decisions made based on these results.
     </div>
 
     <div class="footer">
@@ -233,13 +194,6 @@
         return res < 0.0001 ? res.toFixed(6) : res.toLocaleString('en-US', {maximumFractionDigits: 4});
     }
 
-    function convertSpd() {
-        let v = document.getElementById('spdInput').value;
-        let f = document.getElementById('spdFrom').value;
-        let t = document.getElementById('spdTo').value;
-        document.getElementById('spdRes').innerText = genericConvert(v, f, t);
-    }
-
     function convertLen() {
         let v = document.getElementById('lenInput').value;
         let f = document.getElementById('lenFrom').value;
@@ -247,11 +201,11 @@
         document.getElementById('lenRes').innerText = genericConvert(v, f, t);
     }
 
-    function convertPwr() {
-        let v = document.getElementById('pwrInput').value;
-        let f = document.getElementById('pwrFrom').value;
-        let t = document.getElementById('pwrTo').value;
-        document.getElementById('pwrRes').innerText = genericConvert(v, f, t);
+    function convertTrq() {
+        let v = document.getElementById('trqInput').value;
+        let f = document.getElementById('trqFrom').value;
+        let t = document.getElementById('trqTo').value;
+        document.getElementById('trqRes').innerText = genericConvert(v, f, t);
     }
 
     function convertPrs() {
@@ -261,23 +215,11 @@
         document.getElementById('prsRes').innerText = genericConvert(v, f, t);
     }
 
-    function convertTemp() {
-        let val = parseFloat(document.getElementById('tempInput').value);
-        let from = document.getElementById('tempFrom').value;
-        let to = document.getElementById('tempTo').value;
-        if (isNaN(val)) return;
-
-        let celsius;
-        if (from === "C") celsius = val;
-        else if (from === "F") celsius = (val - 32) * 5/9;
-        else if (from === "K") celsius = val - 273.15;
-
-        let res;
-        if (to === "C") res = celsius;
-        else if (to === "F") res = (celsius * 9/5) + 32;
-        else if (to === "K") res = celsius + 273.15;
-
-        document.getElementById('tempRes').innerText = res.toFixed(2);
+    function convertNrg() {
+        let v = document.getElementById('nrgInput').value;
+        let f = document.getElementById('nrgFrom').value;
+        let t = document.getElementById('nrgTo').value;
+        document.getElementById('nrgRes').innerText = genericConvert(v, f, t);
     }
 
     function calcInterest() {
@@ -287,16 +229,6 @@
         let earn = (p * r * t) / 1200;
         document.getElementById('faizGetiri').innerText = earn.toLocaleString('en-US', {minimumFractionDigits: 2});
     }
-    function convertNrg() {
-    let v = document.getElementById('nrgInput').value;
-    let f = document.getElementById('nrgFrom').value;
-    let t = document.getElementById('nrgTo').value;
-    document.getElementById('nrgRes').innerText = genericConvert(v, f, t);
-    
-    }
 </script>
-
 </body>
 </html>
-
-
