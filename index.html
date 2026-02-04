@@ -125,12 +125,31 @@
                     <div class="unit-tag">Number of Flutes (z)</div>
                     <input type="number" id="cncZ" value="4">
                     <button onclick="calcCNC()" style="background:var(--primary);">Calculate Cycles</button>
+                    
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border);">
+                    <div class="unit-tag">Metric Tap Reference (Quick Drill Size)</div>
+                    <select id="tapSizeSelector" onchange="updateTapDrill()">
+                        <option value="">Select Metric Tap...</option>
+                        <option value="2.5">M3 x 0.5</option>
+                        <option value="3.3">M4 x 0.7</option>
+                        <option value="4.2">M5 x 0.8</option>
+                        <option value="5.0">M6 x 1.0</option>
+                        <option value="6.8">M8 x 1.25</option>
+                        <option value="8.5">M10 x 1.5</option>
+                        <option value="10.2">M12 x 1.75</option>
+                        <option value="12.0">M14 x 2.0</option>
+                        <option value="14.0">M16 x 2.0</option>
+                        <option value="17.5">M20 x 2.5</option>
+                    </select>
                 </div>
                 <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; gap:8px; border-style:solid;">
                     <div><small>Spindle Speed</small><div id="resRPM" class="result-val">0 RPM</div></div>
                     <div><small>Feed Rate</small><div id="resFeed" class="result-val">0 mm/min</div></div>
                     <div class="multi-unit-res" id="resCNCSfpm">Speed in SFM: 0 ft/min</div>
-                    <div class="multi-unit-res" id="resCNCInmin">Feed in IPM: 0 in/min</div>
+                    <div class="multi-unit-res" style="border-top: 2px solid var(--accent); color: var(--accent); padding-top: 10px; margin-top: 10px;">
+                        <small>Recommended Drill Bit for Tap:</small>
+                        <div id="tapDrillRes" style="font-size: 1.5rem; font-weight: 800;">-- mm</div>
+                    </div>
                 </div>
             </div>
             <p class="analysis-text" id="cncNote">Analysis: Proper cutting speed prevents tool wear and ensures surface finish quality.</p>
@@ -212,22 +231,124 @@
             </div>
             <div style="position:relative; background: #0f172a; padding: 10px; border-radius: 12px;">
                 <canvas id="designCanvas"></canvas>
-                <div style="position:absolute; bottom:20px; right:20px; color:rgba(255,255,255,0.4); font-size:10px; pointer-events:none;">
-                    1 Unit = 1 mm | Grid: 20x20mm
-                </div>
             </div>
-            <p class="analysis-text" id="areaAnalysis">Use the grid to define surface boundaries. Real-time area calculation updates as you draw.</p>
         </div>
     </div>
 
-    <div id="beamModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beamModal')">&times;</span><h3 style="color:var(--primary);">🏗️ Beam Analysis Pro</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;"><div class="input-group"><label>Structural Parameters</label><div class="row"><input type="number" id="beamF" value="1000" placeholder="Load (N)"><input type="number" id="beamL" value="2000" placeholder="Length (mm)"></div><label>Material (E)</label><select id="beamE"><option value="210000">Steel (210 GPa)</option><option value="70000">Aluminum (70 GPa)</option></select><label>Inertia (I) mm⁴</label><input type="number" id="beamI" value="100000"><button onclick="calcBeamPro()">Analyze</button></div><div class="result-box"><div><small>Deflection</small><div id="resDef" class="result-val">0.00 mm</div></div></div></div></div></div>
-    <div id="stressModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stressModal')">&times;</span><h3 style="color:var(--primary);">📈 Material Stress Lab</h3><div style="background:var(--card); padding:10px; border:1px solid var(--border); border-radius:15px; text-align:center;"><svg viewBox="0 0 600 400" width="100%" height="auto"><line x1="50" y1="350" x2="550" y2="350" stroke="var(--text)" stroke-width="2" /><line x1="50" y1="350" x2="50" y2="50" stroke="var(--text)" stroke-width="2" /><path d="M50,350 L150,150 Q200,160 250,120 T450,100 T530,250" fill="none" stroke="var(--primary)" stroke-width="4" /><circle cx="150" cy="150" r="6" fill="var(--accent)" class="point-dot" onmouseover="showPoint('proportional')" /><circle cx="200" cy="158" r="6" fill="#f59e0b" class="point-dot" onmouseover="showPoint('yield')" /><circle cx="450" cy="100" r="6" fill="#ef4444" class="point-dot" onmouseover="showPoint('ultimate')" /><circle cx="530" cy="250" r="6" fill="#000" class="point-dot" onmouseover="showPoint('fracture')" /></svg></div><div id="pointDesc" class="analysis-text" style="margin-top:15px;">Hover points.</div></div></div>
-    <div id="gcodeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gcodeModal')">&times;</span><h3 style="color:var(--warning);">📜 ISO G/M Code Reference</h3><input type="text" id="codeSearch" placeholder="Filter..." onkeyup="searchCodes()"><div style="max-height:300px; overflow-y:auto;"><table><tbody id="codeTableBody"><tr><td>G00</td><td><b>Rapid</b></td><td>Point to point move.</td></tr><tr><td>G01</td><td><b>Linear</b></td><td>Cutting feed move.</td></tr></tbody></table></div></div></div>
+    <div id="beamModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('beamModal')">&times;</span>
+            <h3 style="color:var(--primary);">🏗️ Beam Analysis Pro (Cantilever)</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <div class="unit-tag">Point Load (F - Newton)</div>
+                    <input type="number" id="beamF" value="1000">
+                    
+                    <div class="unit-tag">Beam Length (L - mm)</div>
+                    <input type="number" id="beamL" value="2000">
+                    
+                    <div class="unit-tag">Elastic Modulus (E - GPa)</div>
+                    <select id="beamE">
+                        <option value="210">Steel (210 GPa)</option>
+                        <option value="70">Aluminum (70 GPa)</option>
+                        <option value="110">Titanium (110 GPa)</option>
+                    </select>
+                    
+                    <div class="unit-tag">Moment of Inertia (I - mm⁴)</div>
+                    <input type="number" id="beamI" value="100000">
+                    
+                    <button onclick="calcBeamPro()" style="background:var(--primary);">Analyze Deflection</button>
+                </div>
+                <div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;">
+                    <div><small>Max Tip Deflection</small>
+                        <div id="resDef" class="result-val">0.00 mm</div>
+                    </div>
+                    <div class="analysis-text" style="margin-top:20px;">
+                        Formula: $\delta = \frac{F \cdot L^3}{3 \cdot E \cdot I}$
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stressModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('stressModal')">&times;</span>
+            <h3 style="color:var(--primary);">📈 Material Stress Lab</h3>
+            <div style="background:var(--card); padding:10px; border:1px solid var(--border); border-radius:15px; text-align:center;">
+                <svg viewBox="0 0 600 400" width="100%" height="auto">
+                    <line x1="50" y1="350" x2="550" y2="350" stroke="var(--text)" stroke-width="2" />
+                    <line x1="50" y1="350" x2="50" y2="50" stroke="var(--text)" stroke-width="2" />
+                    <path d="M50,350 L150,150 Q200,160 250,120 T450,100 T530,250" fill="none" stroke="var(--primary)" stroke-width="4" />
+                    <circle cx="150" cy="150" r="6" fill="var(--accent)" class="point-dot" onmouseover="showPoint('proportional')" />
+                    <circle cx="200" cy="158" r="6" fill="#f59e0b" class="point-dot" onmouseover="showPoint('yield')" />
+                    <circle cx="450" cy="100" r="6" fill="#ef4444" class="point-dot" onmouseover="showPoint('ultimate')" />
+                    <circle cx="530" cy="250" r="6" fill="#000" class="point-dot" onmouseover="showPoint('fracture')" />
+                </svg>
+            </div>
+            <div id="pointDesc" class="analysis-text" style="margin-top:15px;">Hover points for data.</div>
+        </div>
+    </div>
+
+    <div id="gcodeModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeModal('gcodeModal')">&times;</span>
+            <h3 style="color:var(--warning);">📜 ISO G/M Code Comprehensive Reference</h3>
+            <input type="text" id="codeSearch" placeholder="Search codes (e.g., G02, M08)..." onkeyup="searchCodes()" style="margin-bottom:15px; border-color:var(--warning);">
+            <div style="max-height: 500px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                <table id="gCodeTable">
+                    <thead style="position: sticky; top: 0; background: var(--result-bg); z-index: 1;">
+                        <tr><th>Code</th><th>Function</th><th>Description</th></tr>
+                    </thead>
+                    <tbody id="codeTableBody">
+                        <tr style="background: rgba(37, 99, 235, 0.05); font-weight: bold;"><td colspan="3">PREPARATORY CODES (G-CODES)</td></tr>
+                        <tr><td>G00</td><td>Rapid Positioning</td><td>High-speed non-cutting move to specific coordinates.</td></tr>
+                        <tr><td>G01</td><td>Linear Interpolation</td><td>Controlled feed rate move in a straight line.</td></tr>
+                        <tr><td>G02</td><td>Circular Int. (CW)</td><td>Clockwise arc or circle at specified feed rate.</td></tr>
+                        <tr><td>G03</td><td>Circular Int. (CCW)</td><td>Counter-clockwise arc or circle.</td></tr>
+                        <tr><td>G04</td><td>Dwell</td><td>Timed delay in program execution (P in ms).</td></tr>
+                        <tr><td>G17</td><td>XY Plane Selection</td><td>Sets the workspace to the XY plane (Standard).</td></tr>
+                        <tr><td>G18</td><td>ZX Plane Selection</td><td>Sets the workspace to the ZX plane.</td></tr>
+                        <tr><td>G19</td><td>YZ Plane Selection</td><td>Sets the workspace to the YZ plane.</td></tr>
+                        <tr><td>G20</td><td>Inch Units</td><td>Sets coordinates and dimensions to inches.</td></tr>
+                        <tr><td>G21</td><td>Metric Units</td><td>Sets coordinates and dimensions to millimeters.</td></tr>
+                        <tr><td>G28</td><td>Return to Home</td><td>Automated return to machine zero/reference point.</td></tr>
+                        <tr><td>G40</td><td>Cutter Comp Cancel</td><td>Turns off cutter radius compensation.</td></tr>
+                        <tr><td>G41</td><td>Cutter Comp Left</td><td>Offset tool path to the left of the programmed line.</td></tr>
+                        <tr><td>G42</td><td>Cutter Comp Right</td><td>Offset tool path to the right of the programmed line.</td></tr>
+                        <tr><td>G43</td><td>Tool Length Comp (+)</td><td>Adjusts for tool length using offset from H table.</td></tr>
+                        <tr><td>G49</td><td>Length Comp Cancel</td><td>Cancels tool length compensation.</td></tr>
+                        <tr><td>G54-G59</td><td>Work Offsets</td><td>Selects work coordinate systems 1 through 6.</td></tr>
+                        <tr><td>G80</td><td>Canned Cycle Cancel</td><td>Terminates active drilling or boring cycles.</td></tr>
+                        <tr><td>G81</td><td>Drilling Cycle</td><td>Simple drilling cycle (no peck).</td></tr>
+                        <tr><td>G83</td><td>Peck Drilling</td><td>Deep hole drilling with incremental withdrawals.</td></tr>
+                        <tr><td>G90</td><td>Absolute Positioning</td><td>All coordinates referenced from work zero.</td></tr>
+                        <tr><td>G91</td><td>Incremental Position</td><td>Each move referenced from the current position.</td></tr>
+                        <tr><td>G94</td><td>Feed per Minute</td><td>Feed rate defined as distance/min (mm/min).</td></tr>
+                        <tr><td>G95</td><td>Feed per Revolution</td><td>Feed rate defined as distance/rev (mm/rev).</td></tr>
+                        <tr><td>G96</td><td>Const. Surface Speed</td><td>Spindle RPM varies to maintain constant cutting speed.</td></tr>
+                        <tr><td>G97</td><td>Fixed Spindle Speed</td><td>Spindle RPM stays constant.</td></tr>
+                        <tr style="background: rgba(16, 185, 129, 0.05); font-weight: bold;"><td colspan="3">MISCELLANEOUS CODES (M-CODES)</td></tr>
+                        <tr><td>M00</td><td>Program Stop</td><td>Pauses program; operator must press start to continue.</td></tr>
+                        <tr><td>M01</td><td>Optional Stop</td><td>Pauses if 'Optional Stop' switch is active on console.</td></tr>
+                        <tr><td>M02</td><td>Program End</td><td>Signals the end of the program.</td></tr>
+                        <tr><td>M03</td><td>Spindle ON (CW)</td><td>Starts spindle rotation clockwise.</td></tr>
+                        <tr><td>M04</td><td>Spindle ON (CCW)</td><td>Starts spindle rotation counter-clockwise.</td></tr>
+                        <tr><td>M05</td><td>Spindle STOP</td><td>Stops spindle rotation immediately.</td></tr>
+                        <tr><td>M06</td><td>Tool Change</td><td>Triggers automatic tool change sequence (T code).</td></tr>
+                        <tr><td>M08</td><td>Coolant ON</td><td>Activates primary coolant/flood.</td></tr>
+                        <tr><td>M09</td><td>Coolant OFF</td><td>Deactivates all coolant.</td></tr>
+                        <tr><td>M30</td><td>Program End & Reset</td><td>Ends program and rewinds back to the first line.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <footer class="info-footer">
         <h3>📖 About Unitly Lab</h3>
         <p>A comprehensive engineering data and manufacturing simulation suite.</p>
-        <div class="disclaimer">⚠️ Verify all simulation data against physical standards for critical projects.</div>
+        <div class="disclaimer">⚠️ Verify simulation data against physical standards for critical projects.</div>
         <p style="margin-top:10px; opacity:0.4; font-size:0.7rem;">&copy; 2026 Unitly Lab</p>
     </footer>
 </div>
@@ -247,14 +368,18 @@
     window.onclick = function(e) { if (!e.target.matches('.dropbtn')) { var d = document.getElementsByClassName("dropdown-content"); for (var i = 0; i < d.length; i++) d[i].classList.remove('show'); } }
 
     const pointData = {
-        proportional: "<b>A: Proportional Limit.</b> Linear elastic behavior.",
-        yield: "<b>B: Yield Point.</b> Permanent deformation begins.",
-        ultimate: "<b>C: UTS.</b> Maximum stress capacity.",
+        proportional: "<b>A: Proportional Limit.</b> Linear elastic behavior follows Hooke's Law.",
+        yield: "<b>B: Yield Point.</b> Permanent plastic deformation begins.",
+        ultimate: "<b>C: UTS.</b> Maximum engineering stress capacity.",
         fracture: "<b>D: Fracture.</b> Total material failure."
     };
     function showPoint(id) { document.getElementById('pointDesc').innerHTML = pointData[id]; }
 
-    // MACHINING ANALYST
+    function updateTapDrill() {
+        const val = document.getElementById('tapSizeSelector').value;
+        document.getElementById('tapDrillRes').innerText = val ? val + " mm" : "-- mm";
+    }
+
     function updateCNCDefaults() {
         const speed = document.getElementById('matType').value;
         document.getElementById('cncNote').innerText = `Note: Recommended Vc for this material is ${speed} m/min.`;
@@ -265,17 +390,13 @@
         const d = parseFloat(document.getElementById('cncD').value);
         const fz = parseFloat(document.getElementById('cncFz').value);
         const z = parseFloat(document.getElementById('cncZ').value);
-        
         const rpm = (vc * 1000) / (Math.PI * d);
         const feed = rpm * fz * z;
-        
         document.getElementById('resRPM').innerText = Math.round(rpm) + " RPM";
         document.getElementById('resFeed').innerText = Math.round(feed) + " mm/min";
         document.getElementById('resCNCSfpm').innerText = `Speed in SFM: ${Math.round(vc * 3.28)} ft/min`;
-        document.getElementById('resCNCInmin').innerText = `Feed in IPM: ${(feed / 25.4).toFixed(2)} in/min`;
     }
 
-    // VOLUME & MATERIAL
     function updateGeomInputs() {
         const type = document.getElementById('shapeType').value;
         let html = '';
@@ -292,48 +413,44 @@
         if(type === 'cylinder') vol = Math.PI * Math.pow(document.getElementById('gR').value, 2) * document.getElementById('gL').value;
         else if(type === 'sphere') vol = (4/3) * Math.PI * Math.pow(document.getElementById('gR').value, 3);
         else vol = document.getElementById('gL').value * document.getElementById('gW').value * document.getElementById('gH').value;
-        
-        const mass = (vol / 1000) * (rho / 1000); // kg
+        const mass = (vol / 1000) * (rho / 1000); 
         document.getElementById('geomRes').innerText = Math.round(vol).toLocaleString() + " mm³";
         document.getElementById('massRes').innerText = mass.toFixed(3) + " kg";
         document.getElementById('massLbs').innerText = `Mass: ${(mass * 2.204).toFixed(3)} lbs`;
         document.getElementById('volInches').innerText = `Volume: ${(vol / 16387).toFixed(3)} in³`;
     }
 
-    // EV SIMULATION
     function calcMobility() {
         const v = parseFloat(document.getElementById('evV').value);
         const ah = parseFloat(document.getElementById('evAh').value);
         const w = parseFloat(document.getElementById('evW').value);
         const spd = parseFloat(document.getElementById('evSpd').value);
-        
         const wh = v * ah;
-        const usableWh = wh * 0.85; // 15% margin
-        const range = (usableWh / (w / spd)); // Simplified efficiency model
-        const runtime = (usableWh / w) * 60;
-        
+        const range = ((wh * 0.85) / (w / spd));
+        const runtime = ((wh * 0.85) / w) * 60;
         document.getElementById('resWh').innerText = wh + " Wh";
         document.getElementById('resRange').innerText = range.toFixed(1) + " km";
         document.getElementById('resRangeMi').innerText = `Range: ${(range * 0.621).toFixed(1)} miles`;
         document.getElementById('resRuntime').innerText = `Full Load Runtime: ${Math.round(runtime)} min`;
     }
 
-    // BEAM
     function calcBeamPro() {
-        const F = parseFloat(document.getElementById('beamF').value), L = parseFloat(document.getElementById('beamL').value);
-        const E = parseFloat(document.getElementById('beamE').value), I = parseFloat(document.getElementById('beamI').value);
-        const def = (F * Math.pow(L, 3)) / (48 * E * I);
+        const F = parseFloat(document.getElementById('beamF').value);
+        const L = parseFloat(document.getElementById('beamL').value);
+        const E_GPa = parseFloat(document.getElementById('beamE').value);
+        const I = parseFloat(document.getElementById('beamI').value);
+        const E = E_GPa * 1000;
+        const def = (F * Math.pow(L, 3)) / (3 * E * I);
         document.getElementById('resDef').innerText = def.toFixed(2) + " mm";
     }
 
-    // 2D DESIGN
     let pts = [], cv, ct;
-    function initCanvas() { 
-        cv = document.getElementById('designCanvas'); 
-        ct = cv.getContext('2d'); 
-        cv.width = cv.parentElement.clientWidth; 
-        cv.height = 350; 
-        drawGrid(); 
+    function initCanvas() { 
+        cv = document.getElementById('designCanvas'); 
+        ct = cv.getContext('2d'); 
+        cv.width = cv.parentElement.clientWidth; 
+        cv.height = 350; 
+        drawGrid(); 
     }
     function drawGrid() {
         ct.clearRect(0,0,cv.width,cv.height);
@@ -344,7 +461,7 @@
     function draw() {
         drawGrid();
         if(pts.length < 1) return;
-        ct.beginPath(); ct.strokeStyle="#3b82f6"; ct.lineWidth=2; 
+        ct.beginPath(); ct.strokeStyle="#3b82f6"; ct.lineWidth=2; 
         ct.moveTo(pts[0].x, pts[0].y);
         for(let i=1; i<pts.length; i++) ct.lineTo(pts[i].x, pts[i].y);
         ct.stroke();
@@ -375,6 +492,15 @@
     function calcFin() {
         const p = parseFloat(document.getElementById('pCap').value), r = parseFloat(document.getElementById('pRate').value), t = parseFloat(document.getElementById('pTime').value);
         document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString();
+    }
+    function searchCodes() {
+        let input = document.getElementById('codeSearch').value.toUpperCase();
+        let rows = document.getElementById('codeTableBody').getElementsByTagName('tr');
+        for (let row of rows) {
+            if (row.cells.length > 1) {
+                row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
+            }
+        }
     }
 </script>
 </body>
