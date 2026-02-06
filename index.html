@@ -42,11 +42,11 @@
             display: flex;
         }
 
-        /* --- SIDEBAR STYLING (UPDATED) --- */
+        /* --- SIDEBAR STYLING --- */
         .sidebar {
             position: fixed;
             left: 0; top: 0;
-            width: 280px; /* Biraz daha genişletildi */
+            width: 280px;
             height: 100vh;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
@@ -54,11 +54,10 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            z-index: 5000; /* En üstte durması için */
-            overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu çıksın */
+            z-index: 5000;
+            overflow-y: auto;
         }
         
-        /* Scrollbar styling for sidebar */
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-track { background: #020617; }
         .sidebar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
@@ -84,27 +83,24 @@
         .dropbtn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
         .dropbtn.active { background: rgba(59, 130, 246, 0.1); color: #fff; border-color: rgba(59, 130, 246, 0.2); }
         
-        /* Icon rotation when active */
         .dropbtn .arrow { transition: transform 0.3s; margin-left: auto; font-size: 0.8rem; opacity: 0.5; }
         .dropbtn.active .arrow { transform: rotate(90deg); opacity: 1; }
 
         .dropdown { width: 100%; }
         
-        /* ACCORDION MENU STYLE (FIXED) */
         .dropdown-content {
             display: none; 
-            background: rgba(0, 0, 0, 0.2); /* Sidebar'dan biraz daha koyu */
+            background: rgba(0, 0, 0, 0.2);
             margin-top: 5px;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.03);
         }
-        /* Açıldığında görünmesi için */
         .dropdown-content.show { display: block; animation: fadeIn 0.3s; }
         
         .dropdown-content a { 
             color: #94a3b8; 
-            padding: 12px 20px 12px 50px; /* Soldan girinti */
+            padding: 12px 20px 12px 50px;
             text-decoration: none; 
             display: flex; justify-content: space-between; 
             font-size: 0.85rem; 
@@ -122,7 +118,7 @@
         /* --- MAIN CONTENT AREA --- */
         .main-wrapper {
             flex: 1;
-            margin-left: 280px; /* Sidebar width ile aynı */
+            margin-left: 280px;
             padding: 40px;
             width: calc(100% - 280px);
             box-sizing: border-box;
@@ -246,7 +242,7 @@
                 width: 100%; height: auto; 
                 border-right: none; border-bottom: 1px solid var(--border);
                 padding: 15px; box-sizing: border-box;
-                overflow-y: visible; /* Mobilde scroll gerekmez, content uzar */
+                overflow-y: visible;
             }
             .main-wrapper { margin-left: 0; width: 100%; padding: 20px; }
             .modal-grid { grid-template-columns: 1fr; }
@@ -281,6 +277,7 @@
                     <a onclick="openModal('threeModal')">🧊 3D Studio <span class="lab-badge hot">FIXED</span></a>
                     <a onclick="openModal('sketchModal')">🎨 Sketch 2D <span class="lab-badge hot">TOUCH</span></a>
                     <a onclick="openModal('robotModal')">🤖 Robot Kinematics</a>
+                    <a onclick="openModal('gearDesignModal')">⚙️ Gear Module / Dim. <span class="lab-badge new">NEW</span></a>
                     <a onclick="openModal('latheModal')">🛑 Lathe / Turning</a>
                     <a onclick="openModal('cncModal')">🏭 Milling / CNC</a>
                     <a onclick="openModal('weldingModal')">🔥 Welding Calc</a>
@@ -289,7 +286,7 @@
                     <a onclick="openModal('sheetModal')">📐 Sheet Metal</a>
                     <a onclick="openModal('hydroModal')">🚜 Hydraulic Force</a>
                     <a onclick="openModal('fitsModal')">🔩 Fits & Tolerances <span class="lab-badge new">ISO</span></a>
-                    <a onclick="openModal('gearModal')">⚙️ Transmission</a>
+                    <a onclick="openModal('gearModal')">🏎️ Drivetrain Speed</a>
                     <a onclick="openModal('beltModal')">⛓️ Belt & Chain</a>
                     <a onclick="openModal('weightModal')">⚖️ Profile Weight</a>
                     <a onclick="openModal('geomModal')">📐 Material & Volume</a>
@@ -311,6 +308,7 @@
                     <a onclick="openModal('batteryModal')">🔋 Battery Designer</a>
                     <a onclick="openModal('cableModal')">⚡ Wire Size & Drop</a>
                     <a onclick="openModal('electroModal')">💡 Electronics / Ohm</a>
+                    <a onclick="openModal('resistorModal')">🎨 Resistor Colors <span class="lab-badge new">NEW</span></a>
                     <a onclick="openModal('stepperModal')">🤖 Stepper Motor</a>
                 </div>
             </div>
@@ -334,7 +332,7 @@
         
         <div style="margin-top:auto; font-size:0.75rem; color:var(--text-muted); padding-top:20px; border-top:1px solid var(--border);">
             System Status: <span style="color:#10b981">● Online</span><br>
-            Ver: 2.1.5
+            Ver: 2.1.7
         </div>
     </nav>
 
@@ -631,8 +629,45 @@
 
     <div id="fitsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('fitsModal')">&times;</span><h3>🔩 ISO Fits & Tolerances (ISO 286)</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Dia (mm)</small><input type="number" id="fitDia" value="25"></div><div style="flex:1"><small>Class</small><select id="fitType"><option value="H7g6">H7/g6 (Slide)</option><option value="H7h6">H7/h6 (Clear)</option><option value="H7p6">H7/p6 (Press)</option></select></div></div><button onclick="calcFits()">Check Fit</button></div><div class="result-box"><div>Result: <strong id="fitValRes" style="color:var(--accent)">--</strong></div><div style="margin-top:10px; font-size:0.9rem;">Hole: <span id="fitHoleRes">--</span></div><div style="font-size:0.9rem;">Shaft: <span id="fitShaftRes">--</span></div></div></div></div></div>
 
-    <div id="gearModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gearModal')">&times;</span><h3>⚙️ Drivetrain / Gearing</h3><div class="modal-grid"><div class="input-group"><small>Motor RPM</small><input type="number" id="motorRPM" value="4500"><div class="row"><div style="flex:1"><small>Driver T</small><input type="number" id="gearDriver" value="12"></div><div style="flex:1"><small>Driven T</small><input type="number" id="gearDriven" value="54"></div></div><small>Wheel Dia (cm)</small><input type="number" id="tireDia" value="26"><button onclick="calcGearing()">Calculate Speed</button></div><div class="result-box"><div>Top Speed</div><div id="speedRes" class="result-val">0 km/h</div><hr><div>Ratio: <span id="ratioRes">0:1</span></div></div></div></div></div>
+    <div id="gearModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gearModal')">&times;</span><h3>🏎️ Drivetrain Speed Calc</h3><div class="modal-grid"><div class="input-group"><small>Motor RPM</small><input type="number" id="motorRPM" value="4500"><div class="row"><div style="flex:1"><small>Driver T</small><input type="number" id="gearDriver" value="12"></div><div style="flex:1"><small>Driven T</small><input type="number" id="gearDriven" value="54"></div></div><small>Wheel Dia (cm)</small><input type="number" id="tireDia" value="26"><button onclick="calcGearing()">Calculate Speed</button></div><div class="result-box"><div>Top Speed</div><div id="speedRes" class="result-val">0 km/h</div><hr><div>Ratio: <span id="ratioRes">0:1</span></div></div></div></div></div>
 
+    <div id="gearDesignModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gearDesignModal')">&times;</span>
+            <h3>⚙️ Gear Dimensions / Module</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <span class="unit-tag">Metric Spur Gear (ISO)</span>
+                    <div class="row">
+                        <div style="flex:1">
+                            <small>Module (m)</small>
+                            <input type="number" id="gMod" value="2.0" step="0.25">
+                        </div>
+                        <div style="flex:1">
+                            <small>Teeth (z)</small>
+                            <input type="number" id="gTeeth" value="20" step="1">
+                        </div>
+                    </div>
+                    <small>Pressure Angle (Standard 20°)</small>
+                    <button onclick="calcGearDesign()">Calculate Dimensions</button>
+                </div>
+                <div class="result-box">
+                    <div class="res-grid">
+                        <div class="res-item highlight"><small>Pitch Diameter (d)</small><span id="gPitchDia">0 mm</span></div>
+                        <div class="res-item"><small>Outside Dia (da)</small><span id="gOutDia">0 mm</span></div>
+                        <div class="res-item"><small>Root Dia (df)</small><span id="gRootDia">0 mm</span></div>
+                        <div class="res-item"><small>Addendum (ha)</small><span id="gAdd">0 mm</span></div>
+                        <div class="res-item"><small>Dedendum (hf)</small><span id="gDed">0 mm</span></div>
+                        <div class="res-item"><small>Tooth Depth (h)</small><span id="gTotalH">0 mm</span></div>
+                    </div>
+                    <hr style="border-color:rgba(255,255,255,0.1); margin:15px 0;">
+                    <p style="font-size:0.8rem; color:#94a3b8; text-align:center; margin:0;">
+                         Based on Standard Involute: ha=1m, hf=1.25m
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="beltModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beltModal')">&times;</span><h3>⛓️ Belt Length Calc</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Large Dia</small><input type="number" id="beltD" value="100"></div><div style="flex:1"><small>Small Dia</small><input type="number" id="belt_d" value="50"></div></div><small>Center Dist (mm)</small><input type="number" id="beltC" value="200"><button onclick="calcBelt()">Calculate Length</button></div><div class="result-box"><div>Belt Length</div><div id="beltLenRes" class="result-val">0 mm</div></div></div></div></div>
 
     <div id="weightModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('weightModal')">&times;</span><h3>⚖️ Profile Weight Calculator</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Profile</small><select id="profileType" onchange="updateProfileInputs()"><option value="round_solid">Round Bar</option><option value="square_hollow">Square Tube</option><option value="plate">Plate</option></select></div><div style="flex:1"><small>Material</small><select id="profileMat"><option value="7.85">Steel</option><option value="2.70">Alu</option></select></div></div><div id="profileInputs"><small>Diameter (mm)</small><input type="number" id="pD" value="20"></div><small>Length (mm)</small><input type="number" id="profL" value="1000"><button onclick="calcProfileWeight()">Calculate Mass</button></div><div class="result-box"><div>Total Weight</div><div id="profWeightRes" class="result-val">0.00 kg</div></div></div></div></div>
@@ -650,6 +685,88 @@
     <div id="cableModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('cableModal')">&times;</span><h3>⚡ DC Cable Sizing</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Volts</small><input type="number" id="cabV" value="12"></div><div style="flex:1"><small>Amps</small><input type="number" id="cabA" value="20"></div></div><div class="row"><div style="flex:1"><small>Length (m)</small><input type="number" id="cabL" value="5"></div><div style="flex:1"><small>Drop %</small><input type="number" id="cabDrop" value="3"></div></div><button onclick="calcCable()">Calculate Size</button></div><div class="result-box"><div>Min Section</div><div id="cabResMM" class="result-val">0 mm²</div><div style="font-size:0.9rem; margin-top:5px;">Nearest: <strong id="cabStd">--</strong></div></div></div></div></div>
 
     <div id="electroModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('electroModal')">&times;</span><h3>💡 Electronics Lab</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">LED Resistor</span><div class="row"><div style="flex:1"><small>Source V</small><input type="number" id="ledVs" value="5"></div><div style="flex:1"><small>LED V</small><input type="number" id="ledVf" value="2.0"></div></div><small>Current (mA)</small><input type="number" id="ledI" value="20"><button onclick="calcLedResistor()">Find Resistor</button><div class="result-box" style="margin-top:5px; padding:5px;"><span id="resLedOhm">0 Ω</span></div></div><div class="input-group" style="border-left:1px solid var(--border); padding-left:15px;"><span class="unit-tag">Ohm's Law</span><small>Voltage (V)</small><input type="number" id="ohmV" oninput="calcOhm()"><small>Current (A)</small><input type="number" id="ohmI" oninput="calcOhm()"><small>Resistance (Ω)</small><input type="number" id="ohmR" oninput="calcOhm()"></div></div></div></div></div>
+
+    <div id="resistorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('resistorModal')">&times;</span>
+            <h3>🎨 Resistor Color Code</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1">
+                            <small>Band 1</small>
+                            <select id="rBand1" onchange="calcResistor()">
+                                <option value="0" style="background:black; color:white;">Black</option>
+                                <option value="1" style="background:brown; color:white;" selected>Brown</option>
+                                <option value="2" style="background:red; color:white;">Red</option>
+                                <option value="3" style="background:orange; color:black;">Orange</option>
+                                <option value="4" style="background:yellow; color:black;">Yellow</option>
+                                <option value="5" style="background:green; color:white;">Green</option>
+                                <option value="6" style="background:blue; color:white;">Blue</option>
+                                <option value="7" style="background:violet; color:black;">Violet</option>
+                                <option value="8" style="background:grey; color:black;">Grey</option>
+                                <option value="9" style="background:white; color:black;">White</option>
+                            </select>
+                        </div>
+                        <div style="flex:1">
+                            <small>Band 2</small>
+                            <select id="rBand2" onchange="calcResistor()">
+                                <option value="0" style="background:black; color:white;" selected>Black</option>
+                                <option value="1" style="background:brown; color:white;">Brown</option>
+                                <option value="2" style="background:red; color:white;">Red</option>
+                                <option value="3" style="background:orange; color:black;">Orange</option>
+                                <option value="4" style="background:yellow; color:black;">Yellow</option>
+                                <option value="5" style="background:green; color:white;">Green</option>
+                                <option value="6" style="background:blue; color:white;">Blue</option>
+                                <option value="7" style="background:violet; color:black;">Violet</option>
+                                <option value="8" style="background:grey; color:black;">Grey</option>
+                                <option value="9" style="background:white; color:black;">White</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1">
+                            <small>Multiplier</small>
+                            <select id="rMul" onchange="calcResistor()">
+                                <option value="1" style="background:black; color:white;">Black (x1)</option>
+                                <option value="10" style="background:brown; color:white;">Brown (x10)</option>
+                                <option value="100" style="background:red; color:white;" selected>Red (x100)</option>
+                                <option value="1000" style="background:orange; color:black;">Orange (x1k)</option>
+                                <option value="10000" style="background:yellow; color:black;">Yellow (x10k)</option>
+                                <option value="100000" style="background:green; color:white;">Green (x100k)</option>
+                                <option value="1000000" style="background:blue; color:white;">Blue (x1M)</option>
+                                <option value="0.1" style="background:gold; color:black;">Gold (x0.1)</option>
+                                <option value="0.01" style="background:silver; color:black;">Silver (x0.01)</option>
+                            </select>
+                        </div>
+                        <div style="flex:1">
+                            <small>Tolerance</small>
+                            <select id="rTol" onchange="calcResistor()">
+                                <option value="1" style="background:brown; color:white;">Brown (1%)</option>
+                                <option value="2" style="background:red; color:white;">Red (2%)</option>
+                                <option value="5" style="background:gold; color:black;" selected>Gold (5%)</option>
+                                <option value="10" style="background:silver; color:black;">Silver (10%)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="resistorVisual" style="height:40px; background:#e2e8f0; border-radius:20px; display:flex; justify-content:space-evenly; align-items:center; margin:20px 0; padding:0 30px; position:relative; overflow:hidden; border:2px solid #64748b;">
+                        <div style="position:absolute; left:0; right:0; top:45%; height:10%; background:#94a3b8; z-index:0;"></div>
+                        <div id="vBand1" style="width:15px; height:100%; background:brown; z-index:1;"></div>
+                        <div id="vBand2" style="width:15px; height:100%; background:black; z-index:1;"></div>
+                        <div id="vMul" style="width:15px; height:100%; background:red; z-index:1;"></div>
+                        <div style="width:20px;"></div>
+                        <div id="vTol" style="width:15px; height:100%; background:gold; z-index:1;"></div>
+                    </div>
+
+                </div>
+                <div class="result-box">
+                    <div id="resistorResult" class="result-val">1 kΩ</div>
+                    <small id="resistorTolResult">± 5%</small>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="stepperModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stepperModal')">&times;</span><h3>🤖 Stepper Motor Calc</h3><div class="modal-grid"><div class="input-group"><small>Step Angle</small><select id="stepAng"><option value="1.8">1.8°</option><option value="0.9">0.9°</option></select><small>Microstepping</small><select id="stepMicro"><option value="1">Full</option><option value="2">1/2</option><option value="8">1/8</option><option value="16">1/16</option></select><small>Pitch / Lead (mm)</small><input type="number" id="transVal" value="8"><button onclick="calcStepper()">Calculate</button></div><div class="result-box"><div>Steps / mm</div><div id="stepRes" class="result-val">0</div></div></div></div></div>
 
@@ -690,12 +807,10 @@
         }
     }
     
-    // Global close handler - Not needed for accordion as much, but good for cleanup
-    // We removed the "close on outside click" for sidebar menus to make it less annoying
+    // Global close handler
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn') && !event.target.matches('.dropbtn span') && !event.target.closest('.sidebar')) {
             // Optional: Close menus if clicking main content? 
-            // For now, let's keep them open as it's an accordion style
         }
     }
 
@@ -747,6 +862,8 @@
         if(id === 'robotModal') setTimeout(drawRobot, 100);
         if(id === 'geomModal') updateGeomInputs();
         if(id === 'weightModal') updateProfileInputs();
+        if(id === 'gearDesignModal') calcGearDesign();
+        if(id === 'resistorModal') calcResistor(); // Init resistor calc
     }
 
     function closeModal(id) { 
@@ -1037,6 +1154,33 @@
         document.getElementById('speedRes').innerText = speed.toFixed(1)+" km/h";
         document.getElementById('ratioRes').innerText = ratio.toFixed(2)+":1";
     }
+
+    // NEW GEAR DIMENSION CALCULATOR
+    function calcGearDesign() {
+        const m = safeFloat('gMod');
+        const z = safeFloat('gTeeth');
+        
+        if (m <= 0 || z <= 0) return;
+
+        // Standard ISO Metric Spur Gear Formulas (20 degree pressure angle)
+        // ha = 1 * m
+        // hf = 1.25 * m
+        
+        const d = m * z; // Pitch Diameter
+        const ha = 1.0 * m; // Addendum
+        const hf = 1.25 * m; // Dedendum
+        const da = d + 2 * m; // Outside Diameter
+        const df = d - 2 * (1.25 * m); // Root Diameter
+        const h = ha + hf; // Total Depth
+
+        document.getElementById('gPitchDia').innerText = d.toFixed(2) + " mm";
+        document.getElementById('gOutDia').innerText = da.toFixed(2) + " mm";
+        document.getElementById('gRootDia').innerText = df.toFixed(2) + " mm";
+        document.getElementById('gAdd').innerText = ha.toFixed(2) + " mm";
+        document.getElementById('gDed').innerText = hf.toFixed(2) + " mm";
+        document.getElementById('gTotalH').innerText = h.toFixed(2) + " mm";
+    }
+
     function calcBelt(){
         const L = (2*safeFloat('beltC')+1.57*(safeFloat('beltD')+safeFloat('belt_d'))+(Math.pow(safeFloat('beltD')-safeFloat('belt_d'),2)/(4*safeFloat('beltC'))));
         document.getElementById('beltLenRes').innerText = L.toFixed(0) + " mm";
@@ -1086,6 +1230,37 @@
     function calcOhm(){const v=safeFloat('ohmV'), i=safeFloat('ohmI'); if(v&&i) document.getElementById('ohmR').value = v/i;}
     function calcStepper(){document.getElementById('stepRes').innerText = ((360/1.8*16)/safeFloat('transVal')).toFixed(2);}
     function calcLinterp(){document.getElementById('lres').innerText = (safeFloat('ly1')+((safeFloat('ltx')-safeFloat('lx1'))*(safeFloat('ly2')-safeFloat('ly1'))/(safeFloat('lx2')-safeFloat('lx1')))).toFixed(4);}
+
+    // NEW FUNCTION: RESISTOR CALCULATOR
+    function calcResistor() {
+        const b1 = parseFloat(document.getElementById('rBand1').value);
+        const b2 = parseFloat(document.getElementById('rBand2').value);
+        const mul = parseFloat(document.getElementById('rMul').value);
+        const tol = document.getElementById('rTol').value;
+        
+        let ohms = (b1 * 10 + b2) * mul;
+        let formatted = ohms;
+        
+        if (ohms >= 1000000) formatted = (ohms / 1000000).toFixed(2).replace(/\.00$/,'') + " MΩ";
+        else if (ohms >= 1000) formatted = (ohms / 1000).toFixed(2).replace(/\.00$/,'') + " kΩ";
+        else formatted = ohms.toFixed(1).replace(/\.0$/,'') + " Ω";
+
+        document.getElementById('resistorResult').innerText = formatted;
+        document.getElementById('resistorTolResult').innerText = "± " + tol + "%";
+
+        // Update Visuals
+        const colors = ['black','brown','red','orange','yellow','green','blue','violet','grey','white','gold','silver'];
+        // Band 1
+        document.getElementById('vBand1').style.backgroundColor = colors[b1];
+        // Band 2
+        document.getElementById('vBand2').style.backgroundColor = colors[b2];
+        // Multiplier Color Mapping
+        const mulMap = {1:'black', 10:'brown', 100:'red', 1000:'orange', 10000:'yellow', 100000:'green', 1000000:'blue', 0.1:'gold', 0.01:'silver'};
+        document.getElementById('vMul').style.backgroundColor = mulMap[mul];
+        // Tolerance Color Mapping
+        const tolMap = {1:'brown', 2:'red', 5:'gold', 10:'silver'};
+        document.getElementById('vTol').style.backgroundColor = tolMap[tol];
+    }
 
     // --- 2D SKETCH LOGIC ---
     let canvas, ctx, shapes=[], points=[], activeTool='pencil', isDrawing=false, startPoint=null;
