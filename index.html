@@ -2,140 +2,225 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unitly Lab - Engineering Suite v2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unitly Lab - Global Engineering Suite</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --result-bg: #eff6ff; --accent: #10b981; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6; --indigo: #6366f1; --rose: #e11d48; --orange: #f97316; --teal: #14b8a6; }
-        [data-theme="dark"] { --primary: #3b82f6; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --border: #334155; --result-bg: #0f172a; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; padding-bottom: 60px; color: var(--text); transition: 0.3s; }
+        :root {
+            /* Cyberpunk / Tech Palette */
+            --primary: #3b82f6; 
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.5);
+            --warn: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            --gradient-orange: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+            margin: 0; padding: 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
         .container { max-width: 1400px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 20px; flex-wrap: wrap; gap: 20px; }
-        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
-        .logo span { color: var(--text); }
 
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
-        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        /* --- HEADER & NAVIGATION --- */
+        .header-wrap {
+            position: relative; z-index: 1000; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0; margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(5px);
+        }
 
-        .dropbtn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-svg { width: 40px; height: 40px; fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px var(--primary-glow)); }
+        .brand-name { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-badge { background: rgba(59, 130, 246, 0.2); color: #60a5fa; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.3); margin-left: 5px; font-family: 'JetBrains Mono', monospace; }
+
+        .nav-actions { display: flex; gap: 15px; flex-wrap: wrap; }
+        
+        .dropbtn {
+            background: rgba(30, 41, 59, 0.6); color: var(--text-main);
+            border: 1px solid var(--border); padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+            backdrop-filter: blur(4px);
+        }
+        .dropbtn:hover, .dropbtn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); color: #fff; }
+
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--card); min-width: 280px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-radius: 12px; z-index: 1000; border: 1px solid var(--border); margin-top: 10px; overflow: hidden; max-height: 500px; overflow-y: auto; }
-        .dropdown-content a { color: var(--text); padding: 12px 20px; text-decoration: none; display: block; font-weight: 600; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .dropdown-content a:hover { background-color: var(--result-bg); color: var(--primary); }
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 110%;
+            background: #0f172a; min-width: 280px;
+            border: 1px solid var(--border); border-radius: 12px;
+            z-index: 2000; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            overflow: hidden; max-height: 80vh; overflow-y: auto;
+        }
+        .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+        .dropdown-content a:hover { background: rgba(59, 130, 246, 0.1); color: #fff; padding-left: 25px; transition: 0.2s; }
         .show { display: block; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
-        h3 { margin-top: 0; color: var(--primary); font-size: 1rem; margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px; }
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        .row { display: flex; gap: 8px; align-items: center; }
-        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: var(--card); color: var(--text); outline: none; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        .result-box { background: var(--result-bg); padding: 12px; border-radius: 8px; margin-top: 12px; text-align: center; border: 1px dashed var(--primary); }
-        .result-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
-        
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); overflow-y: auto; }
-        .modal-content { background: var(--card); margin: 2% auto; padding: 25px; border-radius: 20px; width: 95%; max-width: 1000px; border: 1px solid var(--border); position: relative; max-height: 90vh; overflow-y: auto;}
-        .close { float: right; cursor: pointer; font-size: 24px; font-weight: bold; color: var(--text); }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.85rem; }
-        
-        canvas { background: #1e293b; border-radius: 12px; cursor: crosshair; display: block; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); width: 100%; height: 400px; touch-action: none; }
-        
-        .info-footer { margin-top: 50px; padding: 30px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        
-        /* Disclaimer Bar */
-        .disclaimer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; color: #fff; text-align: center; padding: 10px; font-size: 0.75rem; border-top: 2px solid var(--warning); z-index: 9999; }
-        
-        .lab-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; margin-left: 8px; text-transform: uppercase; }
-        .lab-badge.new { background: var(--accent); }
-        .lab-badge.pro { background: var(--warning); color: #000; }
-        .lab-badge.hot { background: var(--purple); }
-        .lab-badge.blue { background: var(--indigo); }
-        .lab-badge.rose { background: var(--rose); }
-        .lab-badge.orange { background: var(--orange); }
-        .lab-badge.teal { background: var(--teal); }
-        .lab-badge.danger { background: var(--danger); }
-        
-        .analysis-text { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
-        .point-dot { cursor: pointer; transition: 0.3s; }
-        .point-dot:hover { r: 8; filter: drop-shadow(0 0 5px var(--primary)); }
-        .unit-tag { font-size: 0.75rem; font-weight: 600; color: var(--warning); margin-bottom: 2px; }
-        .multi-unit-res { font-size: 0.85rem; color: var(--text); opacity: 0.9; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 4px; }
 
-        /* Sketch Tool Styles */
-        .sketch-toolbar { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; background: var(--result-bg); padding: 10px; border-radius: 12px; flex-wrap: wrap; }
-        .tool-btn { padding: 8px 15px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; width: auto;}
-        .tool-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .sketch-stats { margin-left: auto; text-align: right; }
-
-        /* 3D Viewer Styles */
-        #threeContainer { width: 100%; height: 500px; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
-        .three-overlay { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; color: white; display: flex; flex-direction: column; gap: 5px; z-index: 10; }
-        .three-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; transition: 0.2s; width: auto; }
-        .three-btn:hover { background: var(--primary); border-color: var(--primary); }
-        .three-btn.active { background: var(--accent); border-color: var(--accent); }
-
-        /* 3D View Cube (Nav) */
-        .view-cube { position: absolute; bottom: 20px; right: 20px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; z-index: 10; backdrop-filter: blur(2px); }
-        .view-btn { width: 35px; height: 35px; background: #334155; color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; cursor: pointer; font-size: 0.6rem; font-weight: bold; }
-        .view-btn:hover { background: var(--primary); }
+        /* --- CARDS & GRID --- */
+        .grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
         
-        /* Comp Table */
-        .comp-table { width: 100%; border-collapse: collapse; }
-        .comp-table th { background: var(--result-bg); padding: 10px; text-align: left; color: var(--primary); border-bottom: 2px solid var(--border); }
-        .comp-table td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-        .comp-table tr:hover { background-color: var(--result-bg); }
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); padding: 20px; border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden;
+        }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent); opacity: 0.5; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border-color: rgba(59, 130, 246, 0.3); }
 
-        /* GDT Grid */
-        .gdt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .gdt-card { background: var(--result-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); transition: 0.3s; }
-        .gdt-card:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .gdt-symbol { font-size: 2.5rem; display: block; margin-bottom: 5px; color: var(--text); font-family: sans-serif; }
-        .gdt-name { font-weight: 700; font-size: 0.85rem; color: var(--primary); display: block; margin-bottom: 3px; }
-        .gdt-desc { font-size: 0.7rem; opacity: 0.8; line-height: 1.2; }
+        h3 { margin-top: 0; color: var(--primary); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-weight: 800; }
 
+        /* --- INPUTS --- */
+        input, select {
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border); border-radius: 8px; color: #fff;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; transition: 0.2s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.5); }
+        .input-group { display: flex; flex-direction: column; gap: 15px; }
+        .row { display: flex; gap: 10px; align-items: center; }
+
+        button {
+            background: var(--gradient-blue); color: white; border: none; padding: 12px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2); margin-top: 5px; width: 100%;
+        }
+        button:hover { filter: brightness(1.1); box-shadow: 0 0 15px var(--primary-glow); transform: translateY(-1px); }
+
+        /* --- RESULT DASHBOARD STYLING --- */
+        .result-box { 
+            background: rgba(15, 23, 42, 0.6); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-top: 15px; 
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+        .res-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+        .res-item small { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .res-item span { color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .res-item.highlight span { color: var(--accent); font-size: 1.4rem; }
+        .res-item.warn span { color: var(--warn); }
+        
+        .result-val { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #60a5fa; text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); display: block; font-weight: bold; margin-bottom: 5px; }
+        .unit-tag { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block;}
+
+        /* --- MODALS --- */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
+        .modal-content {
+            background: #0f172a; margin: 3% auto; padding: 35px; border-radius: 20px;
+            width: 90%; max-width: 1000px; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); position: relative; animation: slideUp 0.3s ease-out;
+            max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .close { color: var(--text-muted); float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .close:hover { color: #fff; transform: rotate(90deg); }
+
+        /* --- FOOTER --- */
+        .info-footer {
+            margin-top: 60px; padding: 30px; text-align: center;
+            border-top: 1px solid var(--border); color: var(--text-muted);
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
+        }
+        .disclaimer { 
+            font-size: 0.75rem; color: #64748b; margin-top: 15px; opacity: 0.8; 
+            line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto;
+        }
+        .contact-link {
+            color: var(--primary); text-decoration: none; 
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+            border-bottom: 1px solid transparent; transition: 0.2s;
+        }
+        .contact-link:hover { border-bottom-color: var(--primary); color: #fff; }
+
+        /* Badges & Tables */
+        .lab-badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; margin-left: auto; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.1); }
+        .lab-badge.hot { color: #fb7185; border-color: rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.1); }
+        .lab-badge.new { color: #34d399; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+        
+        .comp-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .comp-table th { background: rgba(59, 130, 246, 0.1); padding: 12px; text-align: left; color: var(--primary); border-bottom: 2px solid var(--border); font-size: 0.85rem; }
+        .comp-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text-muted); }
+        .comp-table tr:hover td { color: #fff; background: rgba(255,255,255,0.02); }
+
+        /* Viewers */
+        .viewer-container { width: 100%; height: 500px; background: #020617; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border); box-shadow: inset 0 0 50px rgba(0,0,0,0.5); }
+        .overlay-tools { position: absolute; top: 15px; left: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 10; }
+        .tool-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 12px; cursor: pointer; border-radius: 6px; font-size: 0.8rem; width: auto; text-align: left; backdrop-filter: blur(4px); transition: 0.2s;}
+        .tool-btn:hover, .tool-btn.active { background: var(--primary); border-color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <div class="logo">Unit<span>ly</span> Lab</div>
-        <div class="header-actions" style="display:flex; gap:15px; align-items:center;">
-            <div class="theme-switch-wrapper">
-                <label class="theme-switch" for="checkbox">
-                    <input type="checkbox" id="checkbox" onclick="toggleTheme()">
-                    <span class="slider"></span>
-                </label>
+    
+    <div class="header-wrap">
+        <a href="#" class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                <path d="M12 22V12"></path>
+                <path d="M7 7v5a5 5 0 0 0 10 0V7" stroke-opacity="0.8" stroke-width="1.5"></path>
+            </svg>
+            <div>
+                <div class="brand-name">Unitly Lab <span class="brand-badge">PRO</span></div>
             </div>
-            
+        </a>
+
+        <div class="nav-actions">
             <div class="dropdown">
-                <button onclick="toggleDropdown('mechDropdown')" class="dropbtn">⚙️ Mech</button>
+                <button onclick="toggleDropdown('mechDropdown')" class="dropbtn"><span>⚙️</span> Mechanical</button>
                 <div id="mechDropdown" class="dropdown-content">
-                    <a onclick="openModal('threeModal')">🧊 3D Studio (Beta) <span class="lab-badge danger">Pro</span></a>
-                    <a onclick="openModal('latheModal')">🛑 Lathe / Turning <span class="lab-badge rose">DNMG</span></a>
+                    <a onclick="openModal('threeModal')">🧊 3D Studio <span class="lab-badge hot">FIXED</span></a>
+                    <a onclick="openModal('sketchModal')">🎨 Sketch 2D <span class="lab-badge hot">TOUCH</span></a>
+                    <a onclick="openModal('robotModal')">🤖 Robot Kinematics</a>
+                    <a onclick="openModal('latheModal')">🛑 Lathe / Turning</a>
                     <a onclick="openModal('cncModal')">🏭 Milling / CNC</a>
-                    <a onclick="openModal('weldingModal')">🔥 Welding Calc <span class="lab-badge orange">New</span></a>
-                    <a onclick="openModal('laserModal')">⚡ Laser Cut Cost <span class="lab-badge orange">New</span></a>
-                    <a onclick="openModal('oringModal')">⭕ O-Ring / Groove <span class="lab-badge orange">New</span></a>
-                    <a onclick="openModal('sheetModal')">📐 Sheet Metal Bend <span class="lab-badge blue">Shop</span></a>
-                    <a onclick="openModal('hydroModal')">🚜 Hydraulic Force <span class="lab-badge hot">Pro</span></a>
-                    <a onclick="openModal('fitsModal')">🔩 Fits & Tolerances <span class="lab-badge">ISO</span></a>
+                    <a onclick="openModal('weldingModal')">🔥 Welding Calc</a>
+                    <a onclick="openModal('laserModal')">⚡ Laser Cut Cost</a>
+                    <a onclick="openModal('oringModal')">⭕ O-Ring / Groove</a>
+                    <a onclick="openModal('sheetModal')">📐 Sheet Metal</a>
+                    <a onclick="openModal('hydroModal')">🚜 Hydraulic Force</a>
+                    <a onclick="openModal('fitsModal')">🔩 Fits & Tolerances <span class="lab-badge new">ISO</span></a>
                     <a onclick="openModal('gearModal')">⚙️ Transmission</a>
                     <a onclick="openModal('beltModal')">⛓️ Belt & Chain</a>
                     <a onclick="openModal('weightModal')">⚖️ Profile Weight</a>
-                    <a onclick="openModal('sketchModal')">🎨 Sketch 2D <span class="lab-badge new">Pro</span></a>
                     <a onclick="openModal('geomModal')">📐 Material & Volume</a>
                     <a onclick="openModal('beamModal')">🏗️ Beam Analysis</a>
-                    <a onclick="openModal('stressModal')">📈 Stress Analysis</a>
+                    <a onclick="openModal('stressModal')">📈 Stress Analysis <span class="lab-badge new">NEW</span></a>
                     <a onclick="openModal('thermModal')">🔥 Thermal Exp.</a>
                     <a onclick="openModal('flowModal')">💧 Pipe Flow</a>
                     <a onclick="openModal('printModal')">🖨️ 3D Print Cost</a>
@@ -143,1003 +228,978 @@
             </div>
 
             <div class="dropdown">
-                <button onclick="toggleDropdown('electricDropdown')" class="dropbtn" style="background:var(--warning); color:#000;">⚡ Electric</button>
+                <button onclick="toggleDropdown('electricDropdown')" class="dropbtn" style="border-color: rgba(245, 158, 11, 0.4);"><span style="color:#fbbf24">⚡</span> Electrical</button>
                 <div id="electricDropdown" class="dropdown-content">
-                    <a onclick="openModal('cableModal')">⚡ Wire Size & Drop <span class="lab-badge hot">EV</span></a>
-                    <a onclick="openModal('electroModal')">⚡ Electronics Lab <span class="lab-badge new">IoT</span></a>
-                    <a onclick="openModal('stepperModal')">🤖 Stepper / Linear</a>
-                    <a onclick="openModal('ebikeModal')">🚲 EV Dynamics <span class="lab-badge">EV</span></a>
+                    <a onclick="openModal('ebikeModal')">🚲 EV & E-Bike Sim</a>
+                    <a onclick="openModal('batteryModal')">🔋 Battery Designer</a>
+                    <a onclick="openModal('cableModal')">⚡ Wire Size & Drop</a>
+                    <a onclick="openModal('electroModal')">💡 Electronics / Ohm</a>
+                    <a onclick="openModal('stepperModal')">🤖 Stepper Motor</a>
                 </div>
             </div>
 
             <div class="dropdown">
-                <button onclick="toggleDropdown('eduDropdown')" class="dropbtn" style="background:var(--teal); color:white;">🎓 Edu / Ref</button>
+                <button onclick="toggleDropdown('eduDropdown')" class="dropbtn"><span>🎓</span> Reference</button>
                 <div id="eduDropdown" class="dropdown-content">
-                      <a onclick="openModal('materialModal')">📚 Materials Lib <span class="lab-badge teal">New</span></a>
-                      <a onclick="openModal('gdtModal')">📐 GD&T Symbols <span class="lab-badge teal">New</span></a>
-                      <a onclick="openModal('surfaceModal')">〰️ Surface Roughness <span class="lab-badge teal">New</span></a>
+                      <a onclick="openModal('materialModal')">📚 Materials Lib</a>
                       <a onclick="openModal('gcodeModal')">📜 G-Code List</a>
                       <a onclick="openModal('fastenerModal')">🔩 Fastener Table</a>
-                      <a onclick="openModal('linterpModal')">🌡️ Linear Interp. <span class="lab-badge">Exam</span></a>
+                      <a onclick="openModal('gdtModal')">📐 GD&T Symbols</a>
+                      <a onclick="openModal('surfaceModal')">〰️ Surface Roughness</a>
+                      <a onclick="openModal('linterpModal')">🌡️ Linear Interp.</a>
                       <a onclick="openModal('infoModal')">ℹ️ Lathe vs Milling</a>
                 </div>
             </div>
-
         </div>
-    </header>
+    </div>
 
     <div class="grid">
         <div class="card"><h3>📏 Length</h3><div class="input-group"><input type="number" id="lenInput" oninput="convert('len')"><div class="row"><select id="lenFrom" onchange="convert('len')"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option><option value="0.001">mm</option><option value="0.0254">in</option><option value="0.3048">ft</option><option value="1609.34">mi</option></select>➔<select id="lenTo" onchange="convert('len')"><option value="1">m</option><option value="1000">km</option><option value="0.01">cm</option><option value="0.001">mm</option><option value="0.0254">in</option><option value="0.3048">ft</option><option value="1609.34">mi</option></select></div></div><div class="result-box"><span id="lenRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🟦 Area</h3><div class="input-group"><input type="number" id="areInput" oninput="convert('are')"><div class="row"><select id="areFrom" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option><option value="4046.86">acre</option></select>➔<select id="areTo" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option><option value="4046.86">acre</option></select></div></div><div class="result-box"><span id="areRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⚡ Speed</h3><div class="input-group"><input type="number" id="spdInput" oninput="convert('spd')"><div class="row"><select id="spdFrom" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option><option value="0.3048">ft/s</option></select>➔<select id="spdTo" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option><option value="0.3048">ft/s</option></select></div></div><div class="result-box"><span id="spdRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>🟦 Area</h3><div class="input-group"><input type="number" id="areInput" oninput="convert('are')"><div class="row"><select id="areFrom" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option></select>➔<select id="areTo" onchange="convert('are')"><option value="1">m²</option><option value="1000000">km²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option><option value="0.092903">ft²</option><option value="0.000645">in²</option></select></div></div><div class="result-box"><span id="areRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>⚡ Speed</h3><div class="input-group"><input type="number" id="spdInput" oninput="convert('spd')"><div class="row"><select id="spdFrom" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option></select>➔<select id="spdTo" onchange="convert('spd')"><option value="0.277778">km/h</option><option value="1">m/s</option><option value="0.44704">mph</option><option value="0.514444">knot</option></select></div></div><div class="result-box"><span id="spdRes" class="result-val">0</span></div></div>
         <div class="card"><h3>⚙️ Torque</h3><div class="input-group"><input type="number" id="trqInput" oninput="convert('trq')"><div class="row"><select id="trqFrom" onchange="convert('trq')"><option value="1">Nm</option><option value="1.35582">lb-ft</option><option value="0.112985">lb-in</option><option value="9.80665">kgm</option></select>➔<select id="trqTo" onchange="convert('trq')"><option value="1">Nm</option><option value="1.35582">lb-ft</option><option value="0.112985">lb-in</option><option value="9.80665">kgm</option></select></div></div><div class="result-box"><span id="trqRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>💪 Force</h3><div class="input-group"><input type="number" id="frcInput" oninput="convert('frc')"><div class="row"><select id="frcFrom" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option><option value="0.009806">gf</option></select>➔<select id="frcTo" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option><option value="0.009806">gf</option></select></div></div><div class="result-box"><span id="frcRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🏎️ Power</h3><div class="input-group"><input type="number" id="pwrInput" oninput="convert('pwr')"><div class="row"><select id="pwrFrom" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Metric)</option><option value="0.7457">HP (Mechanical)</option><option value="0.000293">BTU/hr</option></select>➔<select id="pwrTo" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Metric)</option><option value="0.7457">HP (Mechanical)</option><option value="0.000293">BTU/hr</option></select></div></div><div class="result-box"><span id="pwrRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🎈 Pressure</h3><div class="input-group"><input type="number" id="prsInput" oninput="convert('prs')"><div class="row"><select id="prsFrom" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="100">kPa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option><option value="0.001333">mmHg</option></select>➔<select id="prsTo" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="100">kPa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option><option value="0.001333">mmHg</option></select></div></div><div class="result-box"><span id="prsRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🏛️ Structural Stress</h3><div class="input-group"><input type="number" id="strInput" oninput="convert('str')"><div class="row"><select id="strFrom" onchange="convert('str')"><option value="1">MPa (N/mm²)</option><option value="1000">GPa</option><option value="0.006894">psi</option><option value="6.89475">ksi (kips)</option><option value="0.098066">kgf/cm²</option><option value="0.001">kPa</option></select>➔<select id="strTo" onchange="convert('str')"><option value="1">MPa (N/mm²)</option><option value="1000">GPa</option><option value="0.006894">psi</option><option value="6.89475">ksi (kips)</option><option value="0.098066">kgf/cm²</option><option value="0.001">kPa</option></select></div></div><div class="result-box"><span id="strRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⏱️ Time</h3><div class="input-group"><input type="number" id="timInput" oninput="convert('tim')"><div class="row"><select id="timFrom" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="0.001">ms</option><option value="86400">Day</option><option value="604800">Week</option></select>➔<select id="timTo" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="0.001">ms</option><option value="86400">Day</option><option value="604800">Week</option></select></div></div><div class="result-box"><span id="timRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option><option value="0.028349">oz</option><option value="907.185">ton (US)</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="0.000001">cm³</option><option value="3.78541">gal (US)</option><option value="0.029573">fl oz (US)</option><option value="0.016387">in³</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
-        <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45">%<input type="number" id="pTime" value="12">Mo.</div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>💪 Force</h3><div class="input-group"><input type="number" id="frcInput" oninput="convert('frc')"><div class="row"><select id="frcFrom" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option></select>➔<select id="frcTo" onchange="convert('frc')"><option value="1">N</option><option value="1000">kN</option><option value="4.44822">lbf</option><option value="9.80665">kgf</option></select></div></div><div class="result-box"><span id="frcRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>🏎️ Power</h3><div class="input-group"><input type="number" id="pwrInput" oninput="convert('pwr')"><div class="row"><select id="pwrFrom" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Met)</option><option value="0.7457">HP (Mech)</option></select>➔<select id="pwrTo" onchange="convert('pwr')"><option value="1">kW</option><option value="0.001">W</option><option value="0.735499">HP (Met)</option><option value="0.7457">HP (Mech)</option></select></div></div><div class="result-box"><span id="pwrRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>🎈 Pressure</h3><div class="input-group"><input type="number" id="prsInput" oninput="convert('prs')"><div class="row"><select id="prsFrom" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option></select>➔<select id="prsTo" onchange="convert('prs')"><option value="1">Bar</option><option value="0.00001">Pa</option><option value="0.068947">Psi</option><option value="1.01325">atm</option></select></div></div><div class="result-box"><span id="prsRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>🏛️ Stress</h3><div class="input-group"><input type="number" id="strInput" oninput="convert('str')"><div class="row"><select id="strFrom" onchange="convert('str')"><option value="1">MPa</option><option value="1000">GPa</option><option value="0.006894">psi</option><option value="6.89475">ksi</option></select>➔<select id="strTo" onchange="convert('str')"><option value="1">MPa</option><option value="1000">GPa</option><option value="0.006894">psi</option><option value="6.89475">ksi</option></select></div></div><div class="result-box"><span id="strRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>⏱️ Time</h3><div class="input-group"><input type="number" id="timInput" oninput="convert('tim')"><div class="row"><select id="timFrom" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="86400">Day</option></select>➔<select id="timTo" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="86400">Day</option></select></div></div><div class="result-box"><span id="timRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="3.78541">gal</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="3.78541">gal</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
+        <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45" placeholder="%"><input type="number" id="pTime" value="12" placeholder="Mo"></div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
     </div>
 
     <div id="threeModal" class="modal">
         <div class="modal-content" style="width: 98%; max-width: 1200px;">
             <span class="close" onclick="closeModal('threeModal')">&times;</span>
-            <h3 style="color:var(--danger);">🧊 3D Prototyping Studio (Beta)</h3>
-            <div id="threeContainer">
-                <div class="three-overlay">
-                    <button id="btn3DDraw" class="three-btn" onclick="toggle3DDrawMode()">✍️ Draw Line Mode</button>
-                    <button class="three-btn" onclick="add3DCube()">🟦 Add Block</button>
-                    <button class="three-btn" onclick="add3DCylinder()">🔘 Add Cylinder</button>
-                    <button class="three-btn" onclick="toggleWireframe()">🕸️ Wireframe</button>
-                    <button class="three-btn" style="background:var(--danger);" onclick="clear3D()">❌ Clear</button>
-                    <small style="font-size:0.7rem; opacity:0.8;">Click 'Draw' & Tap on grid.</small>
-                </div>
-                <div class="view-cube">
-                    <button class="view-btn" onclick="set3DView('top')">TOP</button>
-                    <button class="view-btn" onclick="set3DView('front')">FRT</button>
-                    <button class="view-btn" onclick="set3DView('right')">RGT</button>
-                    <button class="view-btn" onclick="set3DView('iso')" style="background:var(--primary);">ISO</button>
+            <h3>🧊 3D Prototyping Studio</h3>
+            <p class="unit-tag">Left Click: Rotate • Right Click: Pan • Scroll: Zoom</p>
+            <div class="viewer-container" id="threeContainer">
+                <div class="overlay-tools">
+                    <button class="tool-btn" id="btn3DDraw" onclick="toggle3DDrawMode()">✍️ Draw Line on Grid</button>
+                    <button class="tool-btn" onclick="add3DCube()">🟦 Add Cube</button>
+                    <button class="tool-btn" onclick="add3DCylinder()">🔘 Add Cylinder</button>
+                    <button class="tool-btn" onclick="toggleWireframe()">🕸️ Toggle Wireframe</button>
+                    <button class="tool-btn" style="background:rgba(239, 68, 68, 0.4);" onclick="clear3D()">❌ Clear Scene</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="latheModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('latheModal')">&times;</span><h3 style="color:var(--rose);">🛑 Lathe / Turning Lab (Torna)</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Material</div><select id="latheMat"><option value="steel">Steel (Low Carbon)</option><option value="stainless">Stainless Steel</option><option value="aluminum">Aluminum</option><option value="cast">Cast Iron</option></select><div class="unit-tag">Insert Type</div><select id="latheInsert" onchange="updateLatheDefaults()"><option value="cnmg">CNMG (Roughing - 80°)</option><option value="dnmg">DNMG (General - 55°)</option><option value="wnmg">WNMG (Economical - 80°)</option><option value="vbmt">VBMT (Finishing - 35°)</option></select><div class="row"><div style="flex:1"><small>Work Dia (mm)</small><input type="number" id="latheDia" value="50"></div><div style="flex:1"><small>Radius (mm)</small><select id="latheRad"><option value="0.4">0.4</option><option value="0.8" selected>0.8</option><option value="1.2">1.2</option></select></div></div><button onclick="calcLathe()" style="background:var(--rose);">Calculate Turning</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:15px;"><div style="text-align:center;"><small>Spindle Speed</small><div id="latheRPM" class="result-val" style="color:var(--rose);">0 RPM</div></div><hr style="border:0; border-top:1px dashed var(--border); width:100%; margin:10px 0;"><div><strong>Feed (fn):</strong> <span id="latheFeed">0.25</span> mm/rev</div><div><strong>Depth (ap):</strong> <span id="latheDepth">2.0</span> mm</div><div><strong>Cutting Speed (Vc):</strong> <span id="latheVc">200</span> m/min</div></div></div></div></div>
-    <div id="cncModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('cncModal')">&times;</span><h3 style="color:var(--primary);">🏭 Advanced Milling Analyst</h3><div class="grid" style="grid-template-columns: 1fr 1.2fr; gap: 20px;"><div class="input-group"><div class="unit-tag">Cutting Speed (Vc - m/min)</div><select id="matType" onchange="updateCNCDefaults()"><option value="150">Steel - Low Carbon (150)</option><option value="90">Stainless Steel (90)</option><option value="300">Aluminum Alloys (300)</option><option value="45">Titanium Alloys (45)</option><option value="200">Cast Iron (200)</option></select><div class="row"><div style="flex:1"><div class="unit-tag">Tool Diameter (mm)</div><input type="number" id="cncD" value="10"></div><div style="flex:1"><div class="unit-tag">Feed/Tooth (fz - mm)</div><input type="number" id="cncFz" value="0.1"></div></div><div class="unit-tag">Number of Flutes (z)</div><input type="number" id="cncZ" value="4"><button onclick="calcCNC()" style="background:var(--primary);">Calculate Cycles</button><hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border);"><div class="unit-tag">Metric Tap Reference (Quick Drill Size)</div><select id="tapSizeSelector" onchange="updateTapDrill()"><option value="">Select Metric Tap...</option><option value="2.5">M3 x 0.5</option><option value="3.3">M4 x 0.7</option><option value="4.2">M5 x 0.8</option><option value="5.0">M6 x 1.0</option><option value="6.8">M8 x 1.25</option><option value="8.5">M10 x 1.5</option><option value="10.2">M12 x 1.75</option><option value="12.0">M14 x 2.0</option><option value="14.0">M16 x 2.0</option><option value="17.5">M20 x 2.5</option></select></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; gap:8px; border-style:solid;"><div><small>Spindle Speed</small><div id="resRPM" class="result-val">0 RPM</div></div><div><small>Feed Rate</small><div id="resFeed" class="result-val">0 mm/min</div></div><div class="multi-unit-res" id="resCNCSfpm">Speed in SFM: 0 ft/min</div><div class="multi-unit-res" style="border-top: 2px solid var(--accent); color: var(--accent); padding-top: 10px; margin-top: 10px;"><small>Recommended Drill Bit for Tap:</small><div id="tapDrillRes" style="font-size: 1.5rem; font-weight: 800;">-- mm</div></div></div></div></div></div>
-    <div id="sketchModal" class="modal"><div class="modal-content" style="max-width: 1000px;"><span class="close" onclick="closeModal('sketchModal')">&times;</span><h3 style="color:var(--primary);">🎨 Precision Design Analyst (2D Pro)</h3><div class="sketch-toolbar"><div style="display:flex; gap:10px;"><button id="btnPoly" class="tool-btn active" onclick="setTool('poly')">📐 Poly/Line</button><button id="btnCircle" class="tool-btn" onclick="setTool('circle')">⭕ Circle</button></div><div style="display:flex; gap:10px; margin-left: 20px;"><button onclick="closePolygon()" style="background:var(--accent); width:auto; padding: 8px 15px; font-size:0.9rem;">Close Path</button><button onclick="clearCanvas()" style="background:var(--danger); width:auto; padding: 8px 15px; font-size:0.9rem;">Clear All</button></div><div class="sketch-stats"><div id="analysisResult" class="result-val" style="color:var(--primary); font-size: 1.2rem;">Total Area: 0 mm²</div><div id="areaInch" style="font-size: 0.8rem; opacity: 0.7;">0 in²</div></div></div><div style="position:relative; background: #0f172a; border-radius: 12px; overflow: hidden; border: 2px solid var(--border); width: 100%; height: 500px;"><canvas id="designCanvas"></canvas><div id="cursorPos" style="position:absolute; bottom:10px; left:10px; color:rgba(255,255,255,0.5); font-size:0.8rem; pointer-events:none;">X:0 Y:0</div></div><p class="analysis-text" style="text-align:center; margin-top:10px;">Poly: Click to add points. Circle: Click center and drag. Lines are auto-dimensioned.</p></div></div>
-    <div id="weldingModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('weldingModal')">&times;</span><h3 style="color:var(--orange);">🔥 Welding Calculator</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Process & Material</div><select id="weldType"><option value="stick">SMAW (Stick/Electrode)</option><option value="mig">MIG/MAG</option><option value="tig">TIG</option></select><small>Material Thickness (mm)</small><input type="number" id="weldThick" value="3"><button onclick="calcWeld()" style="background:var(--orange);">Calculate Amps</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Recommended Current</small><div id="weldAmps" class="result-val" style="color:var(--orange);">0 - 0 A</div></div><div class="analysis-text" id="weldNote" style="margin-top:10px;">Select process...</div></div></div></div></div>
-    <div id="laserModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('laserModal')">&times;</span><h3 style="color:var(--orange);">⚡ Laser/Plasma Cutting Cost</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Path Length (m)</small><input type="number" id="cutLen" value="2.5"></div><div style="flex:1"><small>Speed (mm/min)</small><input type="number" id="cutSpeed" value="1500"></div></div><div class="row"><div style="flex:1"><small>Hourly Rate ($/€)</small><input type="number" id="cutRate" value="60"></div><div style="flex:1"><small>Setup Cost</small><input type="number" id="cutSetup" value="10"></div></div><button onclick="calcLaser()" style="background:var(--orange);">Estimate Cost</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Estimated Cost</small><div id="cutCostRes" class="result-val" style="color:var(--orange);">0.00</div></div><div class="multi-unit-res">Time: <span id="cutTimeRes">0 min</span></div></div></div></div></div>
-    <div id="oringModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('oringModal')">&times;</span><h3 style="color:var(--orange);">⭕ O-Ring Groove Calculator</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">O-Ring Dimensions</div><small>Cross Section (W - mm)</small><select id="oringW" onchange="calcOring()"><option value="1.78">1.78 mm</option><option value="2.62">2.62 mm</option><option value="3.53">3.53 mm</option><option value="5.33">5.33 mm</option><option value="6.99">6.99 mm</option></select><div class="unit-tag">Application</div><select id="oringApp"><option value="rod">Rod Seal</option><option value="piston">Piston Seal</option></select><small>Shaft/Bore Diameter (mm)</small><input type="number" id="oringDia" value="50"><button onclick="calcOring()" style="background:var(--orange);">Calculate Groove</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:15px;"><div><strong>Groove Width:</strong> <span id="grooveW">0.0 mm</span></div><div><strong>Groove Depth:</strong> <span id="grooveD">0.0 mm</span></div><div style="margin-top:5px; border-top:1px dashed var(--border); padding-top:5px;"><strong>Groove Dia:</strong> <span id="grooveDiaRes" style="color:var(--orange);">0.0 mm</span></div></div></div></div></div>
-    <div id="sheetModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sheetModal')">&times;</span><h3 style="color:var(--indigo);">📐 Sheet Metal Bending</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Thickness (T)</small><input type="number" id="bendT" value="2"></div><div style="flex:1"><small>Inside Radius (R)</small><input type="number" id="bendR" value="2"></div></div><div class="row"><div style="flex:1"><small>Angle (°)</small><input type="number" id="bendA" value="90"></div><div style="flex:1"><small>K-Factor</small><input type="number" id="bendK" value="0.33"></div></div><button onclick="calcBend()" style="background:var(--indigo);">Calculate Unfolded</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Bend Allowance (BA)</small><div id="bendBA" class="result-val">0.00 mm</div></div><div class="multi-unit-res">Deduction (BD): <span id="bendBD">0.00 mm</span></div></div></div></div></div>
-    <div id="hydroModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('hydroModal')">&times;</span><h3 style="color:var(--danger);">🚜 Hydraulic Force Calculator</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Cylinder Specs</div><small>Bore Diameter (mm)</small><input type="number" id="cylBore" value="80"><small>Rod Diameter (mm)</small><input type="number" id="cylRod" value="40"><small>Pressure (Bar)</small><input type="number" id="cylPress" value="160"><button onclick="calcHydro()" style="background:var(--danger);">Calculate Force</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:15px;"><div><strong>Push Force:</strong> <span id="pushForce" style="color:var(--danger); font-weight:800;">0 Ton</span></div><div style="margin-top:10px;"><strong>Pull Force:</strong> <span id="pullForce" style="color:var(--text); font-weight:800;">0 Ton</span></div></div></div></div></div>
-    <div id="fitsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('fitsModal')">&times;</span><h3 style="color:var(--purple);">🔩 ISO Fits & Tolerances</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Diameter (mm)</small><input type="number" id="fitDia" value="10"></div><div style="flex:1"><small>Fit Type</small><select id="fitType"><option value="H7g6">H7 / g6 (Sliding)</option><option value="H7h6">H7 / h6 (Clearance)</option><option value="H7k6">H7 / k6 (Transition)</option><option value="H7p6">H7 / p6 (Interference)</option></select></div></div><button onclick="calcFits()" style="background:var(--purple);">Calculate Fit</button></div><div class="result-box" style="text-align:left; padding:15px; display:flex; flex-direction:column; gap:5px;"><div><strong>Hole:</strong> <span id="fitHoleRes">--</span></div><div><strong>Shaft:</strong> <span id="fitShaftRes">--</span></div><div style="margin-top:5px; padding-top:5px; border-top:1px dashed var(--border); color:var(--purple); font-weight:bold;"><span id="fitValRes">--</span></div></div></div></div></div>
-    <div id="gcodeModal" class="modal"><div class="modal-content" style="max-width: 800px;"><span class="close" onclick="closeModal('gcodeModal')">&times;</span><h3 style="color:var(--warning);">📜 ISO G/M Code Reference</h3><input type="text" id="codeSearch" placeholder="Search codes..." onkeyup="searchCodes()" style="margin-bottom:15px;"><div style="max-height: 400px; overflow-y: auto;"><table id="gCodeTable"><thead><tr><th>Code</th><th>Function</th><th>Description</th></tr></thead><tbody id="codeTableBody"><tr><td>G00</td><td>Rapid Positioning</td><td>High-speed non-cutting movement.</td></tr><tr><td>G01</td><td>Linear Interpolation</td><td>Controlled feed cutting motion (Linear).</td></tr><tr><td>G02</td><td>CW Circular Interpolation</td><td>Clockwise circular arc movement.</td></tr><tr><td>G03</td><td>CCW Circular Interpolation</td><td>Counter-Clockwise circular arc movement.</td></tr><tr><td>G17</td><td>XY Plane Selection</td><td>Selects the XY plane for arcs.</td></tr><tr><td>G18</td><td>ZX Plane Selection</td><td>Selects the ZX plane for arcs.</td></tr><tr><td>G19</td><td>YZ Plane Selection</td><td>Selects the YZ plane for arcs.</td></tr><tr><td>G20</td><td>Inch Unit Selection</td><td>Sets units to inches.</td></tr><tr><td>G21</td><td>Metric Unit Selection</td><td>Sets units to millimeters.</td></tr><tr><td>G28</td><td>Return to Home</td><td>Moves to machine reference point.</td></tr><tr><td>G40</td><td>Cutter Comp Cancel</td><td>Cancels G41/G42 compensation.</td></tr><tr><td>G41</td><td>Cutter Comp Left</td><td>Compensates for tool radius (Left).</td></tr><tr><td>G42</td><td>Cutter Comp Right</td><td>Compensates for tool radius (Right).</td></tr><tr><td>G43</td><td>Tool Length Comp</td><td>Adjusts for tool length offset (H).</td></tr><tr><td>G54</td><td>Work Coordinate 1</td><td>Selects standard work offset 1.</td></tr><tr><td>G81</td><td>Drilling Cycle</td><td>Simple spot drilling cycle.</td></tr><tr><td>G83</td><td>Peck Drilling Cycle</td><td>Deep hole drilling with retraction.</td></tr><tr><td>G90</td><td>Absolute Programming</td><td>Coordinates relative to origin.</td></tr><tr><td>G91</td><td>Incremental Programming</td><td>Coordinates relative to last position.</td></tr><tr><td>M00</td><td>Program Stop</td><td>Pauses the program (Operator resume).</td></tr><tr><td>M01</td><td>Optional Stop</td><td>Pauses if 'Opt Stop' switch is on.</td></tr><tr><td>M03</td><td>Spindle On (CW)</td><td>Starts spindle clockwise.</td></tr><tr><td>M04</td><td>Spindle On (CCW)</td><td>Starts spindle counter-clockwise.</td></tr><tr><td>M05</td><td>Spindle Stop</td><td>Stops the spindle rotation.</td></tr><tr><td>M06</td><td>Tool Change</td><td>Executes tool change sequence (T).</td></tr><tr><td>M08</td><td>Coolant On</td><td>Turns on flood coolant.</td></tr><tr><td>M09</td><td>Coolant Off</td><td>Turns off coolant.</td></tr><tr><td>M30</td><td>Program End</td><td>Ends program and resets to start.</td></tr></tbody></table></div></div></div>
-    <div id="gearModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gearModal')">&times;</span><h3 style="color:var(--primary);">⚙️ Drivetrain & Gear Ratio</h3><div class="grid" style="grid-template-columns: 1fr 1.2fr; gap:20px;"><div class="input-group"><div class="unit-tag">Motor Specs</div><small>Motor RPM (Loaded)</small><input type="number" id="motorRPM" value="4500"><div class="unit-tag">Transmission (Sprockets)</div><div class="row"><div style="flex:1"><small>Driver (T)</small><input type="number" id="gearDriver" value="12"></div><div style="flex:1"><small>Driven (T)</small><input type="number" id="gearDriven" value="54"></div></div><div class="unit-tag">Wheel Size</div><small>Tire Diameter (cm)</small><input type="number" id="tireDia" value="26"><button onclick="calcGearing()" style="background:var(--primary); margin-top:10px;">Calculate Speed</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;"><div><small>Theoretical Top Speed</small><div id="speedRes" class="result-val">0 km/h</div></div><div class="row" style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;"><div style="flex:1; text-align:center;"><small>Gear Ratio</small><div id="ratioRes" style="font-weight:bold; color:var(--text);">0 : 1</div></div><div style="flex:1; text-align:center;"><small>Wheel RPM</small><div id="wheelRpmRes" style="font-weight:bold; color:var(--text);">0</div></div></div><div class="multi-unit-res" style="text-align:center; margin-top:10px;">Torque Multiplier: <span id="torqueMult">1.0x</span></div></div></div></div></div>
-    <div id="beltModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beltModal')">&times;</span><h3 style="color:var(--accent);">⛓️ Belt & Pulley Calculator</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Large Dia (D)</small><input type="number" id="beltD" value="100"></div><div style="flex:1"><small>Small Dia (d)</small><input type="number" id="belt_d" value="50"></div></div><div class="unit-tag">Center Distance (C) mm</div><input type="number" id="beltC" value="200"><button onclick="calcBelt()" style="background:var(--accent);">Calculate Length</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Belt Pitch Length</small><div id="beltLenRes" class="result-val">0 mm</div></div><div class="analysis-text" style="margin-top:10px;">L ≈ 2C + 1.57(D+d) + (D-d)²/4C</div></div></div></div></div>
-    <div id="fastenerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('fastenerModal')">&times;</span><h3 style="color:#64748b;">🔩 ISO Fastener Reference</h3><input type="text" id="fastenerSearch" placeholder="Search M3, M5, Bolt..." onkeyup="searchFasteners()" style="margin-bottom:15px;"><div style="max-height: 400px; overflow-y: auto;"><table id="fastenerTable"><thead><tr><th>Size</th><th>Pitch (mm)</th><th>Tap Drill (mm)</th><th>Clearance (mm)</th><th>Hex Key (mm)</th></tr></thead><tbody id="fastenerBody"><tr><td>M2</td><td>0.4</td><td>1.6</td><td>2.2</td><td>1.5</td></tr><tr><td>M2.5</td><td>0.45</td><td>2.05</td><td>2.7</td><td>2.0</td></tr><tr><td>M3</td><td>0.5</td><td>2.5</td><td>3.4</td><td>2.5</td></tr><tr><td>M4</td><td>0.7</td><td>3.3</td><td>4.5</td><td>3.0</td></tr><tr><td>M5</td><td>0.8</td><td>4.2</td><td>5.5</td><td>4.0</td></tr><tr><td>M6</td><td>1.0</td><td>5.0</td><td>6.6</td><td>5.0</td></tr><tr><td>M8</td><td>1.25</td><td>6.8</td><td>9.0</td><td>6.0</td></tr><tr><td>M10</td><td>1.5</td><td>8.5</td><td>11.0</td><td>8.0</td></tr><tr><td>M12</td><td>1.75</td><td>10.2</td><td>13.5</td><td>10.0</td></tr><tr><td>M16</td><td>2.0</td><td>14.0</td><td>17.5</td><td>14.0</td></tr></tbody></table></div></div></div>
-    <div id="weightModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('weightModal')">&times;</span><h3 style="color:var(--accent);">⚖️ Advanced Profile Weight Lab</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Profile Type</div><select id="profileType" onchange="updateProfileInputs()"><option value="square_hollow">Kutu Profil (Hollow Square)</option><option value="round_hollow">Boru (Hollow Round)</option><option value="l_profile">L Köşebent (L Profile)</option><option value="round_solid">Dolu Mil (Round Bar)</option><option value="flat_bar">Lama (Flat Bar)</option></select><div class="unit-tag">Material</div><select id="profileMat"><option value="7.85">Steel (7.85 g/cm³)</option><option value="2.70">Aluminum (2.70 g/cm³)</option><option value="8.0">Stainless Steel (8.0 g/cm³)</option></select><div id="profileInputs"></div><div class="unit-tag">Length (mm)</div><input type="number" id="profL" value="1000"><button onclick="calcProfileWeight()" style="background:var(--accent);">Calculate Weight</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid; border-color:var(--accent);"><div><small>Calculated Weight</small><div id="profWeightRes" class="result-val" style="color:var(--accent); font-size:2rem;">0.00 kg</div></div><div class="multi-unit-res" id="profWeightLbs">Weight: 0.00 lbs</div><div class="multi-unit-res" id="profWeightNote">Ready for calculation.</div></div></div></div></div>
-    <div id="geomModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('geomModal')">&times;</span><h3 style="color:var(--primary);">📐 Material & Volume Lab</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Geometry Shape</div><select id="shapeType" onchange="updateGeomInputs()"><option value="cylinder">Cylinder / Rod</option><option value="sphere">Sphere / Ball</option><option value="cube">Rectangular Block</option></select><div class="unit-tag">Material Density (ρ)</div><select id="matDensity"><option value="7.85">Steel (7.85 g/cm³)</option><option value="2.70">Aluminum (2.70 g/cm³)</option><option value="8.96">Copper (8.96 g/cm³)</option><option value="1.20">Plastic/ABS (1.20 g/cm³)</option></select><div id="geomInputs"></div><button onclick="calcGeomVolume()" style="background:var(--primary);">Analyze Physics</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;"><div><small>Total Volume</small><div id="geomRes" class="result-val">0 mm³</div></div><div><small>Estimated Mass</small><div id="massRes" class="result-val" style="color:var(--accent)">0 kg</div></div><div class="multi-unit-res" id="massLbs">Mass: 0 lbs</div><div class="multi-unit-res" id="volInches">Volume: 0 in³</div></div></div></div></div>
-    <div id="beamModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beamModal')">&times;</span><h3 style="color:var(--primary);">🏗️ Beam Analysis Pro (Cantilever)</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Point Load (F - Newton)</div><input type="number" id="beamF" value="1000"><div class="unit-tag">Beam Length (L - mm)</div><input type="number" id="beamL" value="2000"><div class="unit-tag">Elastic Modulus (E - GPa)</div><select id="beamE"><option value="210">Steel (210 GPa)</option><option value="70">Aluminum (70 GPa)</option><option value="110">Titanium (110 GPa)</option></select><div class="unit-tag">Moment of Inertia (I - mm⁴)</div><input type="number" id="beamI" value="100000"><button onclick="calcBeamPro()" style="background:var(--primary);">Analyze Deflection</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid;"><div><small>Max Tip Deflection</small><div id="resDef" class="result-val">0.00 mm</div></div><div class="analysis-text" style="margin-top:20px;">Formula: $\delta = \frac{F \cdot L^3}{3 \cdot E \cdot I}$</div></div></div></div></div>
-    <div id="stressModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stressModal')">&times;</span><h3 style="color:var(--primary);">📈 Material Stress Lab</h3><div style="background:var(--card); padding:10px; border:1px solid var(--border); border-radius:15px; text-align:center;"><svg viewBox="0 0 600 400" width="100%" height="auto"><line x1="50" y1="350" x2="550" y2="350" stroke="var(--text)" stroke-width="2" /><line x1="50" y1="350" x2="50" y2="50" stroke="var(--text)" stroke-width="2" /><path d="M50,350 L150,150 Q200,160 250,120 T450,100 T530,250" fill="none" stroke="var(--primary)" stroke-width="4" /><circle cx="150" cy="150" r="6" fill="var(--accent)" class="point-dot" onmouseover="showPoint('proportional')" /><circle cx="200" cy="158" r="6" fill="#f59e0b" class="point-dot" onmouseover="showPoint('yield')" /><circle cx="450" cy="100" r="6" fill="#ef4444" class="point-dot" onmouseover="showPoint('ultimate')" /><circle cx="530" cy="250" r="6" fill="#000" class="point-dot" onmouseover="showPoint('fracture')" /></svg></div><div id="pointDesc" class="analysis-text" style="margin-top:15px;">Hover points for data.</div></div></div>
-    <div id="thermModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('thermModal')">&times;</span><h3 style="color:#f97316;">🔥 Thermal Expansion (Genleşme)</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><small>Original Length (mm)</small><input type="number" id="thermL" value="100"><div class="row"><div style="flex:1"><small>Temp Change (ΔT °C)</small><input type="number" id="thermDT" value="100"></div></div><small>Material</small><select id="thermMat"><option value="12">Steel (12 µm/m°C)</option><option value="23">Aluminum (23 µm/m°C)</option><option value="17">Copper (17 µm/m°C)</option><option value="11">Cast Iron (11 µm/m°C)</option></select><button onclick="calcThermal()" style="background:#f97316;">Calculate ΔL</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Change in Length (ΔL)</small><div id="thermRes" class="result-val" style="color:#f97316;">0.00 mm</div></div><div class="multi-unit-res">New Length: <span id="thermNewL">0.00 mm</span></div></div></div></div></div>
-    <div id="linterpModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('linterpModal')">&times;</span><h3 style="color:var(--accent);">🌡️ Linear Interpolation</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:10px;"><div class="input-group"><small>Point 1 (x1, y1)</small><div class="row"><input type="number" id="lx1" placeholder="x1"><input type="number" id="ly1" placeholder="y1"></div><small>Point 2 (x2, y2)</small><div class="row"><input type="number" id="lx2" placeholder="x2"><input type="number" id="ly2" placeholder="y2"></div></div><div class="input-group" style="justify-content:center;"><small>Target X</small><input type="number" id="ltx" placeholder="Enter X"><button onclick="calcLinterp()" style="background:var(--accent); margin-top:10px;">Calculate Y</button><div class="result-box"><span id="lres" class="result-val">Y = --</span></div></div></div></div></div>
-    <div id="flowModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('flowModal')">&times;</span><h3 style="color:#0ea5e9;">💧 Pipe Flow & Velocity</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Parameters</div><small>Inner Diameter (mm)</small><input type="number" id="pipeID" value="50"><small>Flow Rate (L/min)</small><input type="number" id="pipeQ" value="100"><button onclick="calcFlow()" style="background:#0ea5e9;">Calculate Velocity</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Fluid Velocity</small><div id="pipeVel" class="result-val" style="color:#0ea5e9;">0.00 m/s</div></div><div class="analysis-text" style="margin-top:10px;">Recommended: <br>Suction: 0.6-1.2 m/s<br>Pressure: 2-5 m/s</div></div></div></div></div>
-    <div id="printModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('printModal')">&times;</span><h3 style="color:var(--accent);">🖨️ 3D Print Cost Estimator</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="unit-tag">Filament Info</div><div class="row"><div style="flex:1"><small>Spool Cost ($/TL)</small><input type="number" id="spoolCost" value="400"></div><div style="flex:1"><small>Spool Weight (g)</small><input type="number" id="spoolWeight" value="1000"></div></div><div class="unit-tag">Print Details</div><div class="row"><div style="flex:1"><small>Part Weight (g)</small><input type="number" id="partWeight" value="50"></div><div style="flex:1"><small>Time (Hours)</small><input type="number" id="printTime" value="4"></div></div><div class="unit-tag">Electricity</div><div class="row"><div style="flex:1"><small>Power (Watts)</small><input type="number" id="printerWatts" value="150"></div><div style="flex:1"><small>kWh Cost</small><input type="number" id="kwhCost" value="3.5"></div></div><button onclick="calcPrintCost()" style="background:var(--accent); margin-top:10px;">Calculate</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; text-align:left; padding:20px;"><div class="multi-unit-res">🧵 Material Cost: <strong id="resMatCost">0.00</strong></div><div class="multi-unit-res">⚡ Energy Cost: <strong id="resEnergyCost">0.00</strong></div><hr style="width:100%; border:0; border-top:1px dashed var(--border);"><div style="font-size:1.5rem; font-weight:800; color:var(--accent); text-align:center; margin-top:10px;">Total: <span id="resTotalPrint">0.00</span></div></div></div></div></div>
-    <div id="cableModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('cableModal')">&times;</span><h3 style="color:var(--warning);">⚡ DC Wire Size & Drop</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Voltage (V)</small><input type="number" id="cabV" value="12"></div><div style="flex:1"><small>Current (A)</small><input type="number" id="cabA" value="20"></div></div><div class="row"><div style="flex:1"><small>Length (m)</small><input type="number" id="cabL" value="5"></div><div style="flex:1"><small>Max Drop %</small><input type="number" id="cabDrop" value="3"></div></div><button onclick="calcCable()" style="background:var(--warning); color:#000;">Calculate Cable</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Min Cross Section</small><div id="cabResMM" class="result-val">0 mm²</div></div><div class="multi-unit-res">Nearest Standard: <strong id="cabStd">--</strong></div><div class="multi-unit-res" style="color:var(--danger)">Voltage Drop: <span id="cabVDrop">0 V</span></div></div></div></div></div>
-    <div id="electroModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('electroModal')">&times;</span><h3 style="color:var(--warning);">⚡ Electronics & Ohm Lab</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><h4 style="margin:0; font-size:0.9rem;">LED Resistor Calculator</h4><div class="row"><div style="flex:1"><small>Source Voltage (V)</small><input type="number" id="ledVs" value="5"></div><div style="flex:1"><small>LED Forward (V)</small><input type="number" id="ledVf" value="2.0"></div></div><small>LED Current (mA)</small><input type="number" id="ledI" value="20"><button onclick="calcLedResistor()" style="background:var(--warning); color:black;">Calculate Resistor</button><div class="result-box"><span id="resLedOhm" class="result-val" style="color:var(--warning);">0 Ω</span><div style="font-size:0.8rem; margin-top:5px;">Min Power: <span id="resLedPower">0 mW</span></div></div></div><div class="input-group" style="border-left:1px solid var(--border); padding-left:15px;"><h4 style="margin:0; font-size:0.9rem;">Ohm's Law (V = I × R)</h4><small>Voltage (V)</small><input type="number" id="ohmV" placeholder="V" oninput="calcOhm()"><small>Current (A)</small><input type="number" id="ohmI" placeholder="A" oninput="calcOhm()"><small>Resistance (Ω)</small><input type="number" id="ohmR" placeholder="Ω" oninput="calcOhm()"><div class="analysis-text" style="margin-top:10px;">Enter any 2 values to calculate the 3rd.</div></div></div></div></div>
-    <div id="stepperModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stepperModal')">&times;</span><h3 style="color:var(--warning);">🤖 Stepper Motor & Linear Motion</h3><div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;"><div class="input-group"><div class="row"><div style="flex:1"><small>Step Angle</small><select id="stepAng"><option value="1.8">1.8° (200)</option><option value="0.9">0.9° (400)</option></select></div><div style="flex:1"><small>Microstepping</small><select id="stepMicro"><option value="1">1/1</option><option value="2">1/2</option><option value="4">1/4</option><option value="8">1/8</option><option value="16" selected>1/16</option><option value="32">1/32</option></select></div></div><div class="unit-tag">Transmission</div><select id="transType" onchange="toggleTransInput()"><option value="screw">Lead Screw (Pitch mm)</option><option value="belt">Belt (Pulley Pitch x Teeth)</option></select><input type="number" id="transVal" value="8" placeholder="Pitch or Pulley Dia"><button onclick="calcStepper()" style="background:var(--warning); color:#000;">Calculate Steps</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center;"><div><small>Steps per mm</small><div id="stepRes" class="result-val" style="color:var(--warning);">0.00</div></div><div class="multi-unit-res">Resolution: <span id="stepResMicron">0</span> microns</div></div></div></div></div>
-    <div id="ebikeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('ebikeModal')">&times;</span><h3 style="color:var(--accent);">🚲 EV Power & Range Dynamics</h3><div class="grid" style="grid-template-columns: 1fr 1.2fr; gap: 20px;"><div class="input-group"><div class="row"><div style="flex:1"><div class="unit-tag">Voltage (V)</div><input type="number" id="evV" value="72"></div><div style="flex:1"><div class="unit-tag">Capacity (Ah)</div><input type="number" id="evAh" value="40"></div></div><div class="row"><div style="flex:1"><div class="unit-tag">Motor (W)</div><input type="number" id="evW" value="3000"></div><div style="flex:1"><div class="unit-tag">Avg Speed (km/h)</div><input type="number" id="evSpd" value="45"></div></div><button onclick="calcMobility()" style="background:var(--accent);">Run Range Simulation</button></div><div class="result-box" style="display:flex; flex-direction:column; justify-content:center; border-style:solid; border-color:var(--accent);"><div><small>Energy Storage</small><div id="resWh" class="result-val">0 Wh</div></div><div><small>Simulated Range</small><div id="resRange" class="result-val">0 km</div></div><div class="multi-unit-res" id="resRangeMi">Range: 0 miles</div><div class="multi-unit-res" id="resRuntime">Full Load Runtime: 0 min</div></div></div></div></div>
-
-    <div id="materialModal" class="modal">
+    <div id="sketchModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('materialModal')">&times;</span>
-            <h3 style="color:var(--teal);">📚 Engineering Materials Library</h3>
-            <div class="input-group">
-                <input type="text" id="matSearch" placeholder="Search (e.g. 1040, Aluminum, Steel)..." onkeyup="searchMaterials()">
-            </div>
-            <div style="max-height: 400px; overflow-y: auto; margin-top:15px;">
-                <table class="comp-table">
-                    <thead><tr><th>Material</th><th>Density (g/cm³)</th><th>Yield Strength (MPa)</th><th>Hardness (Brinell)</th></tr></thead>
-                    <tbody id="matTableBody">
-                        <tr><td>Steel 1018 (Mild)</td><td>7.87</td><td>370</td><td>126</td></tr>
-                        <tr><td>Steel 1040 (Carbon)</td><td>7.85</td><td>415</td><td>201</td></tr>
-                        <tr><td>Steel 4140 (Chrome-Moly)</td><td>7.85</td><td>655</td><td>217</td></tr>
-                        <tr><td>Stainless 304</td><td>8.00</td><td>215</td><td>123</td></tr>
-                        <tr><td>Stainless 316</td><td>8.00</td><td>205</td><td>149</td></tr>
-                        <tr><td>Aluminum 6061-T6</td><td>2.70</td><td>276</td><td>95</td></tr>
-                        <tr><td>Aluminum 7075-T6</td><td>2.81</td><td>503</td><td>150</td></tr>
-                        <tr><td>Brass C360</td><td>8.49</td><td>310</td><td>135</td></tr>
-                        <tr><td>Bronze C932 (Bearing)</td><td>8.93</td><td>125</td><td>65</td></tr>
-                        <tr><td>Titanium Gr5 (6Al-4V)</td><td>4.43</td><td>880</td><td>334</td></tr>
-                        <tr><td>Cast Iron (Gray)</td><td>7.20</td><td>N/A (Brittle)</td><td>180</td></tr>
-                        <tr><td>Nylon 6/6</td><td>1.14</td><td>80</td><td>-</td></tr>
-                        <tr><td>Delrin (Acetal)</td><td>1.41</td><td>70</td><td>-</td></tr>
-                    </tbody>
-                </table>
+            <span class="close" onclick="closeModal('sketchModal')">&times;</span>
+            <h3>🎨 2D Sketch Pro</h3>
+            <p class="unit-tag">Freehand & Geometric Drafting (Supports Touch)</p>
+            <div class="viewer-container" style="height:550px; background:#1e293b; cursor:crosshair;">
+                <div class="overlay-tools" style="flex-direction:row;">
+                    <button class="tool-btn" id="btnPencil" onclick="setTool('pencil')">✏️ Pencil (Free)</button>
+                    <button class="tool-btn" id="btnPoly" onclick="setTool('poly')">📐 Polyline</button>
+                    <button class="tool-btn" id="btnCircle" onclick="setTool('circle')">⭕ Circle</button>
+                    <button class="tool-btn" onclick="closePolygon()" style="background:rgba(16, 185, 129, 0.3);">✅ Close Path</button>
+                    <button class="tool-btn" style="background:rgba(239, 68, 68, 0.3);" onclick="clearCanvas()">❌ Clear</button>
+                </div>
+                <canvas id="designCanvas" style="width:100%; height:100%; display:block;"></canvas>
+                <div id="analysisResult" style="position:absolute; bottom:15px; right:15px; color:var(--accent); font-weight:bold; font-size:1.2rem; text-shadow:0 0 10px rgba(0,0,0,0.8);">Area: 0 mm²</div>
             </div>
         </div>
     </div>
 
-    <div id="gdtModal" class="modal">
+    <div id="ebikeModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('gdtModal')">&times;</span>
-            <h3 style="color:var(--teal);">📐 GD&T Symbols Reference</h3>
-            <p class="analysis-text">Geometric Dimensioning and Tolerancing</p>
-            <div class="gdt-grid">
-                <div class="gdt-card"><span class="gdt-symbol">⏤</span><span class="gdt-name">Straightness</span><span class="gdt-desc">Form: Line element straightness</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">⏥</span><span class="gdt-name">Flatness</span><span class="gdt-desc">Form: Surface evenness</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">○</span><span class="gdt-name">Circularity</span><span class="gdt-desc">Form: Roundness of a section</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">⌭</span><span class="gdt-name">Cylindricity</span><span class="gdt-desc">Form: Roundness along length</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">∥</span><span class="gdt-name">Parallelism</span><span class="gdt-desc">Orientation: Equidistant lines</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">⟂</span><span class="gdt-name">Perpendicularity</span><span class="gdt-desc">Orientation: 90° angle</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">∠</span><span class="gdt-name">Angularity</span><span class="gdt-desc">Orientation: Specific angle</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">⊕</span><span class="gdt-name">Position</span><span class="gdt-desc">Location: True position</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">◎</span><span class="gdt-name">Concentricity</span><span class="gdt-desc">Location: Center alignment</span></div>
-                <div class="gdt-card"><span class="gdt-symbol">↗</span><span class="gdt-name">Runout</span><span class="gdt-desc">Runout: Circular deviation</span></div>
+            <span class="close" onclick="closeModal('ebikeModal')">&times;</span>
+            <h3 style="color:#fbbf24;">🚲 EV & E-Bike Mobility Simulator</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <span class="unit-tag">Vehicle Specs</span>
+                    <div class="row">
+                        <div style="flex:1"><small>System Voltage (V)</small><input type="number" id="evV" value="72"></div>
+                        <div style="flex:1"><small>Battery Cap (Ah)</small><input type="number" id="evAh" value="40"></div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1"><small>Total Weight (kg)</small><input type="number" id="evWeight" value="120" placeholder="Rider+Bike"></div>
+                        <div style="flex:1"><small>Avg Speed (km/h)</small><input type="number" id="evSpd" value="45"></div>
+                    </div>
+                    <small>Motor Power (Watts - Nominal)</small><input type="number" id="evW" value="3000">
+                    <button onclick="calcMobility()" style="background:var(--gradient-orange); margin-top:20px;">Run Simulation</button>
+                </div>
+                
+                <div class="result-box" style="text-align:left;">
+                    <div class="res-grid">
+                        <div class="res-item highlight"><small>Est. Range</small><span id="resRange">0 km</span></div>
+                        <div class="res-item"><small>Ride Duration</small><span id="resTime">0 h 00 m</span></div>
+                        <div class="res-item"><small>Energy/Km</small><span id="resWhKm">0 Wh/km</span></div>
+                        <div class="res-item"><small>Total Energy</small><span id="resTotalE">0 Wh</span></div>
+                        <div class="res-item"><small>Est. Top Speed</small><span id="resMaxSpd">-- km/h</span></div>
+                        <div class="res-item"><small>Charge Cost (TR)</small><span id="resCost">0 ₺</span></div>
+                    </div>
+                    <hr style="border-color:rgba(255,255,255,0.1); margin:15px 0;">
+                    <p style="font-size:0.8rem; color:#94a3b8; text-align:center; margin:0;">
+                        *Simulated based on flat ground & 85% battery efficiency.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="surfaceModal" class="modal">
+    <div id="batteryModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('surfaceModal')">&times;</span>
-            <h3 style="color:var(--teal);">〰️ Surface Roughness Conversion</h3>
-            <table class="comp-table">
-                <thead><tr><th>N-Grade</th><th>Ra (µm)</th><th>Ra (µin)</th><th>Typical Process</th></tr></thead>
-                <tbody>
-                    <tr><td>N12</td><td>50</td><td>2000</td><td>Flame Cut, Sawing</td></tr>
-                    <tr><td>N11</td><td>25</td><td>1000</td><td>Sand Casting, Sawing</td></tr>
-                    <tr><td>N10</td><td>12.5</td><td>500</td><td>Die Casting, Planing</td></tr>
-                    <tr><td>N9</td><td>6.3</td><td>250</td><td>Drilling, Rough Turning</td></tr>
-                    <tr><td>N8</td><td>3.2</td><td>125</td><td>Milling, Fine Turning</td></tr>
-                    <tr><td>N7</td><td>1.6</td><td>63</td><td>Reaming, Broaching, Grinding</td></tr>
-                    <tr><td>N6</td><td>0.8</td><td>32</td><td>Grinding, Honing</td></tr>
-                    <tr><td>N5</td><td>0.4</td><td>16</td><td>Lapping, Polishing</td></tr>
-                    <tr><td>N4</td><td>0.2</td><td>8</td><td>Superfinishing</td></tr>
-                    <tr><td>N3</td><td>0.1</td><td>4</td><td>Mirror Finish</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('infoModal')">&times;</span>
-            <h3 style="color:var(--primary);">🛑 Torna (Turning) vs 🏭 Freze (Milling)</h3>
-            <p class="analysis-text">Comparison of basic machining processes.</p>
-            <div style="overflow-x:auto;">
-                <table class="comp-table">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>🛑 Turning (Lathe)</th>
-                            <th>🏭 Milling</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Principle</strong></td>
-                            <td>Workpiece rotates, Tool moves.</td>
-                            <td>Tool rotates, Workpiece moves.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Part Shape</strong></td>
-                            <td>Cylindrical (Shaft, Tube).</td>
-                            <td>Prismatic (Block, Plate).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Feed Unit</strong></td>
-                            <td>mm/rev (G95)</td>
-                            <td>mm/min (G94)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Common Tools</strong></td>
-                            <td>DNMG, CNMG (Single Point)</td>
-                            <td>End Mill, Face Mill (Multi Point)</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <span class="close" onclick="closeModal('batteryModal')">&times;</span>
+            <h3 style="color:#f59e0b;">🔋 Battery Pack Architect</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <span class="unit-tag">Targets</span>
+                    <div class="row">
+                        <div style="flex:1"><small>Target Volts (V)</small><input type="number" id="batTargetV" value="72"></div>
+                        <div style="flex:1"><small>Target Ah</small><input type="number" id="batTargetAh" value="40"></div>
+                    </div>
+                    <span class="unit-tag">Cell Data (e.g. 18650)</span>
+                    <div class="row">
+                        <div style="flex:1"><small>Cell V (Nom)</small><input type="number" id="cellV" value="3.7"></div>
+                        <div style="flex:1"><small>Cell mAh</small><input type="number" id="cellMah" value="2500"></div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1"><small>Max Disch. (A)</small><input type="number" id="cellAmps" value="20"></div>
+                        <div style="flex:1"><small>Cell Weight (g)</small><input type="number" id="cellG" value="48"></div>
+                    </div>
+                    <button onclick="calcBattery()">Generate Pack</button>
+                </div>
+                <div class="result-box">
+                    <div style="font-size:2rem; color:#f59e0b; margin-bottom:15px; font-weight:800;" id="batConf">--S / --P</div>
+                    <div class="res-grid">
+                         <div class="res-item"><small>Total Energy</small><span id="batKwh">0 kWh</span></div>
+                         <div class="res-item"><small>Max Power</small><span id="batKw">0 kW</span></div>
+                         <div class="res-item"><small>Real Capacity</small><span id="batRealAh">0 Ah</span></div>
+                         <div class="res-item"><small>Total Cells</small><span id="batTotalCells">0</span></div>
+                         <div class="res-item"><small>Est Weight</small><span id="batWeight">0 kg</span></div>
+                         <div class="res-item"><small>Full Charge V</small><span id="batMaxV">0 V</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="disclaimer-bar">⚠️ Safety Warning: All calculations are for reference only. Verify with official standards before critical manufacturing.</div>
+    <div id="latheModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('latheModal')">&times;</span>
+            <h3>🛑 Lathe / Turning Calculator</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <span class="unit-tag">Parameters</span>
+                    <div class="row">
+                        <div style="flex:1"><small>Material</small><select id="latheMat"><option value="200">Steel (Mild)</option><option value="150">Stainless</option><option value="400">Aluminum</option><option value="180">Cast Iron</option></select></div>
+                        <div style="flex:1"><small>Diameter (mm)</small><input type="number" id="latheDia" value="50"></div>
+                    </div>
+                    <div class="row">
+                         <div style="flex:1"><small>Depth Cut (mm)</small><input type="number" id="latheAp" value="1.5"></div>
+                         <div style="flex:1"><small>Feed (mm/rev)</small><input type="number" id="latheFn" value="0.2"></div>
+                    </div>
+                    <button onclick="calcLathe()">Calculate Cutting Data</button>
+                </div>
+                <div class="result-box">
+                    <div class="res-grid">
+                        <div class="res-item highlight"><small>Spindle Speed</small><span id="latheRPM">0 RPM</span></div>
+                        <div class="res-item"><small>Cutting Speed</small><span id="latheVc">0 m/min</span></div>
+                        <div class="res-item"><small>MRR (Removal)</small><span id="latheMRR">0 cm³/min</span></div>
+                        <div class="res-item"><small>Req Power</small><span id="lathePower">0 kW</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cncModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cncModal')">&times;</span>
+            <h3>🏭 CNC Milling Calculator</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <span class="unit-tag">Tool & Cut</span>
+                    <div class="row">
+                        <div style="flex:1"><small>Tool Dia (mm)</small><input type="number" id="cncD" value="10"></div>
+                        <div style="flex:1"><small>Flutes (Z)</small><input type="number" id="cncZ" value="4"></div>
+                    </div>
+                    <small>Surface Speed (Vc - m/min)</small><input type="number" id="matType" value="150">
+                    <small>Feed per Tooth (fz - mm)</small><input type="number" id="cncFz" value="0.1">
+                    <div class="row">
+                        <div style="flex:1"><small>Stepover (Ae)</small><input type="number" id="cncAe" value="4"></div>
+                        <div style="flex:1"><small>Depth (Ap)</small><input type="number" id="cncAp" value="10"></div>
+                    </div>
+                    <button onclick="calcCNC()">Calculate Feeds</button>
+                </div>
+                <div class="result-box">
+                    <div class="res-grid">
+                        <div class="res-item highlight"><small>RPM</small><span id="resRPM">0</span></div>
+                        <div class="res-item"><small>Feed Rate</small><span id="resFeed">0 mm/min</span></div>
+                        <div class="res-item"><small>MRR (Volume)</small><span id="resMRR">0 cm³/min</span></div>
+                        <div class="res-item"><small>Tooth Load</small><span id="resChip">0 mm</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="robotModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('robotModal')">&times;</span><h3>🤖 Robot Kinematics</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">Arm Parameters</span><div class="row"><div style="flex:1"><small>Link 1 (mm)</small><input type="number" id="robL1" value="100" oninput="drawRobot()"></div><div style="flex:1"><small>Link 2 (mm)</small><input type="number" id="robL2" value="80" oninput="drawRobot()"></div></div><span class="unit-tag">Joint Angles</span><div style="margin-top:5px;"><small>Joint 1 (θ1): <span id="valT1" style="color:#a78bfa">45</span>°</small><input type="range" id="robT1" min="0" max="360" value="45" oninput="drawRobot()" style="width:100%"></div><div><small>Joint 2 (θ2): <span id="valT2" style="color:#a78bfa">-30</span>°</small><input type="range" id="robT2" min="-180" max="180" value="-30" oninput="drawRobot()" style="width:100%"></div><div class="result-box"><div>X: <strong id="robX">0</strong> | Y: <strong id="robY">0</strong></div></div></div><div class="viewer-container" style="background:#020617;"><canvas id="robotCanvas" width="500" height="350" style="width:100%; height:100%;"></canvas></div></div></div></div>
+
+    <div id="infoModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('infoModal')">&times;</span><h3>ℹ️ Lathe vs Milling Differences</h3><table class="comp-table"><thead><tr><th>Feature</th><th>Lathe (Turning)</th><th>Milling</th></tr></thead><tbody><tr><td><strong>Primary Motion</strong></td><td>Workpiece Rotates</td><td>Tool Rotates</td></tr><tr><td><strong>Feed Motion</strong></td><td>Tool moves linearly</td><td>Workpiece moves linearly</td></tr><tr><td><strong>Shape Produced</strong></td><td>Cylindrical / Round</td><td>Flat / Prismatic / Contoured</td></tr><tr><td><strong>Cutting Tool</strong></td><td>Single Point Insert</td><td>Multi-Point (Endmill/Face)</td></tr></tbody></table></div></div>
+    <div id="gdtModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gdtModal')">&times;</span><h3>📐 GD&T Symbols (ASME Y14.5)</h3><table class="comp-table"><thead><tr><th>Symbol</th><th>Type</th><th>Name</th></tr></thead><tbody><tr><td>⏤</td><td>Form</td><td>Straightness</td></tr><tr><td>⏥</td><td>Form</td><td>Flatness</td></tr><tr><td>○</td><td>Form</td><td>Circularity</td></tr><tr><td>⌭</td><td>Form</td><td>Cylindricity</td></tr><tr><td>∥</td><td>Orientation</td><td>Parallelism</td></tr><tr><td>⟂</td><td>Orientation</td><td>Perpendicularity</td></tr><tr><td>◎</td><td>Location</td><td>Concentricity</td></tr></tbody></table></div></div>
+    <div id="surfaceModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('surfaceModal')">&times;</span><h3>〰️ Surface Roughness Conversion</h3><table class="comp-table"><thead><tr><th>ISO Grade</th><th>Ra (µm)</th><th>Ra (µin)</th><th>Rz (µm)</th></tr></thead><tbody><tr><td>N12</td><td>50</td><td>2000</td><td>200</td></tr><tr><td>N10</td><td>12.5</td><td>500</td><td>50</td></tr><tr><td>N9</td><td>6.3</td><td>250</td><td>25</td></tr><tr><td>N8</td><td>3.2</td><td>125</td><td>12.5</td></tr><tr><td>N7</td><td>1.6</td><td>63</td><td>6.3</td></tr><tr><td>N6</td><td>0.8</td><td>32</td><td>3.2</td></tr></tbody></table></div></div>
+
+    <div id="gcodeModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gcodeModal')">&times;</span><h3>📜 G-Code Reference</h3><div class="input-group"><input type="text" id="codeSearch" placeholder="Search code (e.g. G01)..." onkeyup="searchCodes()"></div><div style="max-height:400px; overflow-y:auto; margin-top:15px;"><table id="gCodeTable" class="comp-table"><thead><tr><th>Code</th><th>Description</th></tr></thead><tbody id="codeTableBody"><tr><td>G00</td><td>Rapid Positioning</td></tr><tr><td>G01</td><td>Linear Interpolation (Cutting)</td></tr><tr><td>G02</td><td>Circular Interpolation (CW)</td></tr><tr><td>G03</td><td>Circular Interpolation (CCW)</td></tr><tr><td>G20</td><td>Units: Inches</td></tr><tr><td>G21</td><td>Units: Millimeters</td></tr><tr><td>G28</td><td>Return to Home</td></tr><tr><td>G90</td><td>Absolute Positioning</td></tr><tr><td>G91</td><td>Incremental Positioning</td></tr><tr><td>M03</td><td>Spindle ON (CW)</td></tr><tr><td>M04</td><td>Spindle ON (CCW)</td></tr><tr><td>M05</td><td>Spindle OFF</td></tr><tr><td>M06</td><td>Tool Change</td></tr><tr><td>M08</td><td>Coolant ON</td></tr><tr><td>M30</td><td>End Program</td></tr></tbody></table></div></div></div>
+
+    <div id="materialModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('materialModal')">&times;</span><h3>📚 Materials Library</h3><div class="input-group"><input type="text" id="matSearch" placeholder="Search material (e.g. Steel)..." onkeyup="searchMaterials()"></div><div style="max-height:400px; overflow-y:auto; margin-top:15px;"><table class="comp-table"><thead><tr><th>Material</th><th>Density (g/cm³)</th><th>Yield (MPa)</th></tr></thead><tbody id="matTableBody"><tr><td>Steel 1018 (Mild)</td><td>7.87</td><td>370</td></tr><tr><td>Steel 1040 (Carbon)</td><td>7.85</td><td>415</td></tr><tr><td>Steel 4140</td><td>7.85</td><td>655</td></tr><tr><td>Stainless 304</td><td>8.00</td><td>215</td></tr><tr><td>Aluminum 6061-T6</td><td>2.70</td><td>276</td></tr><tr><td>Aluminum 7075-T6</td><td>2.81</td><td>503</td></tr><tr><td>Titanium Gr5</td><td>4.43</td><td>880</td></tr><tr><td>Brass C360</td><td>8.50</td><td>310</td></tr><tr><td>ABS Plastic</td><td>1.04</td><td>40</td></tr></tbody></table></div></div></div>
+
+    <div id="fastenerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('fastenerModal')">&times;</span><h3>🔩 Fastener Standards (ISO)</h3><div class="input-group"><input type="text" id="fastenerSearch" placeholder="Search size (e.g. M6)..." onkeyup="searchFasteners()"></div><div style="max-height:400px; overflow-y:auto; margin-top:15px;"><table class="comp-table"><thead><tr><th>Size</th><th>Pitch</th><th>Tap Drill</th><th>Hex Key</th></tr></thead><tbody id="fastenerBody"><tr><td>M2</td><td>0.4</td><td>1.6 mm</td><td>1.5 mm</td></tr><tr><td>M3</td><td>0.5</td><td>2.5 mm</td><td>2.5 mm</td></tr><tr><td>M4</td><td>0.7</td><td>3.3 mm</td><td>3.0 mm</td></tr><tr><td>M5</td><td>0.8</td><td>4.2 mm</td><td>4.0 mm</td></tr><tr><td>M6</td><td>1.0</td><td>5.0 mm</td><td>5.0 mm</td></tr><tr><td>M8</td><td>1.25</td><td>6.8 mm</td><td>6.0 mm</td></tr><tr><td>M10</td><td>1.5</td><td>8.5 mm</td><td>8.0 mm</td></tr><tr><td>M12</td><td>1.75</td><td>10.2 mm</td><td>10.0 mm</td></tr></tbody></table></div></div></div>
+
+    <div id="weldingModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('weldingModal')">&times;</span><h3>🔥 Welding Parameter Calc</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">Process</span><select id="weldType"><option value="mig">MIG (GMAW)</option><option value="stick">Stick (SMAW)</option><option value="tig">TIG (GTAW)</option></select><small>Material Thickness (mm)</small><input type="number" id="weldThick" value="3"><button onclick="calcWeld()">Calculate Amps</button></div><div class="result-box"><div>Recommended Current</div><div id="weldAmps" class="result-val">0 - 0 A</div><small id="weldNote" style="display:block; margin-top:10px; color:var(--text-muted);">--</small></div></div></div></div>
+
+    <div id="laserModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('laserModal')">&times;</span><h3>⚡ Laser/Plasma Cost</h3><div class="modal-grid"><div class="input-group"><small>Path Length (m)</small><input type="number" id="cutLen" value="5.5"><small>Cutting Speed (mm/min)</small><input type="number" id="cutSpeed" value="1200"><small>Hourly Rate ($/€)</small><input type="number" id="cutRate" value="80"><button onclick="calcLaser()">Estimate Cost</button></div><div class="result-box"><div>Total Cost</div><div id="cutCostRes" class="result-val">0.00</div><hr><div>Time: <span id="cutTimeRes">0 min</span></div></div></div></div></div>
+
+    <div id="oringModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('oringModal')">&times;</span><h3>⭕ O-Ring Groove Design</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">O-Ring Spec</span><div class="row"><div style="flex:1"><small>CS (mm)</small><select id="oringW"><option value="1.78">1.78</option><option value="2.62">2.62</option><option value="3.53">3.53</option><option value="5.33">5.33</option></select></div><div style="flex:1"><small>Type</small><select id="oringApp"><option value="rod">Rod Seal</option><option value="piston">Piston Seal</option></select></div></div><small>Diameter (mm)</small><input type="number" id="oringDia" value="50"><button onclick="calcOring()">Calculate Groove</button></div><div class="result-box" style="text-align:left;"><div>Groove Depth: <strong id="grooveD" style="float:right">0</strong></div><hr><div>Groove Width: <strong id="grooveW" style="float:right">0</strong></div><hr><div><span style="color:var(--primary)">Cut Diameter:</span> <strong id="grooveDiaRes" style="float:right; font-size:1.2rem;">0</strong></div></div></div></div></div>
+
+    <div id="sheetModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('sheetModal')">&times;</span><h3>📐 Sheet Metal Bending</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Thick (mm)</small><input type="number" id="bendT" value="2"></div><div style="flex:1"><small>Radius (mm)</small><input type="number" id="bendR" value="2"></div></div><div class="row"><div style="flex:1"><small>Angle (°)</small><input type="number" id="bendA" value="90"></div><div style="flex:1"><small>K-Factor</small><input type="number" id="bendK" value="0.33"></div></div><button onclick="calcBend()">Calc Unfolded Length</button></div><div class="result-box"><div>Bend Allowance (BA)</div><div id="bendBA" class="result-val">0.00 mm</div><hr><div>Bend Deduction (BD): <span id="bendBD">0.00 mm</span></div></div></div></div></div>
+
+    <div id="hydroModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('hydroModal')">&times;</span><h3>🚜 Hydraulic Force</h3><div class="modal-grid"><div class="input-group"><small>Bore Dia (mm)</small><input type="number" id="cylBore" value="80"><small>Rod Dia (mm)</small><input type="number" id="cylRod" value="40"><small>Pressure (Bar)</small><input type="number" id="cylPress" value="160"><button onclick="calcHydro()">Calculate Force</button></div><div class="result-box"><div>Push Force</div><div id="pushForce" class="result-val">0.00 Ton</div><hr><div>Pull Force: <span id="pullForce">0.00 Ton</span></div></div></div></div></div>
+
+    <div id="fitsModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('fitsModal')">&times;</span><h3>🔩 ISO Fits & Tolerances (ISO 286)</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Dia (mm)</small><input type="number" id="fitDia" value="25"></div><div style="flex:1"><small>Class</small><select id="fitType"><option value="H7g6">H7/g6 (Slide)</option><option value="H7h6">H7/h6 (Clear)</option><option value="H7p6">H7/p6 (Press)</option></select></div></div><button onclick="calcFits()">Check Fit</button></div><div class="result-box"><div>Result: <strong id="fitValRes" style="color:var(--accent)">--</strong></div><div style="margin-top:10px; font-size:0.9rem;">Hole: <span id="fitHoleRes">--</span></div><div style="font-size:0.9rem;">Shaft: <span id="fitShaftRes">--</span></div></div></div></div></div>
+
+    <div id="gearModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('gearModal')">&times;</span><h3>⚙️ Drivetrain / Gearing</h3><div class="modal-grid"><div class="input-group"><small>Motor RPM</small><input type="number" id="motorRPM" value="4500"><div class="row"><div style="flex:1"><small>Driver T</small><input type="number" id="gearDriver" value="12"></div><div style="flex:1"><small>Driven T</small><input type="number" id="gearDriven" value="54"></div></div><small>Wheel Dia (cm)</small><input type="number" id="tireDia" value="26"><button onclick="calcGearing()">Calculate Speed</button></div><div class="result-box"><div>Top Speed</div><div id="speedRes" class="result-val">0 km/h</div><hr><div>Ratio: <span id="ratioRes">0:1</span></div></div></div></div></div>
+
+    <div id="beltModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beltModal')">&times;</span><h3>⛓️ Belt Length Calc</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Large Dia</small><input type="number" id="beltD" value="100"></div><div style="flex:1"><small>Small Dia</small><input type="number" id="belt_d" value="50"></div></div><small>Center Dist (mm)</small><input type="number" id="beltC" value="200"><button onclick="calcBelt()">Calculate Length</button></div><div class="result-box"><div>Belt Length</div><div id="beltLenRes" class="result-val">0 mm</div></div></div></div></div>
+
+    <div id="weightModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('weightModal')">&times;</span><h3>⚖️ Profile Weight Calculator</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Profile</small><select id="profileType" onchange="updateProfileInputs()"><option value="round_solid">Round Bar</option><option value="square_hollow">Square Tube</option><option value="plate">Plate</option></select></div><div style="flex:1"><small>Material</small><select id="profileMat"><option value="7.85">Steel</option><option value="2.70">Alu</option></select></div></div><div id="profileInputs"><small>Diameter (mm)</small><input type="number" id="pD" value="20"></div><small>Length (mm)</small><input type="number" id="profL" value="1000"><button onclick="calcProfileWeight()">Calculate Mass</button></div><div class="result-box"><div>Total Weight</div><div id="profWeightRes" class="result-val">0.00 kg</div></div></div></div></div>
+
+    <div id="geomModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('geomModal')">&times;</span><h3>📐 Volume & Mass</h3><div class="modal-grid"><div class="input-group"><select id="shapeType" onchange="updateGeomInputs()"><option value="cylinder">Cylinder</option><option value="sphere">Sphere</option><option value="cube">Cube/Block</option></select><select id="matDensity"><option value="7.85">Steel</option><option value="1.0">Water</option></select><div id="geomInputs"></div><button onclick="calcGeomVolume()">Calculate</button></div><div class="result-box"><div>Volume: <span id="geomRes">0</span> mm³</div><hr><div>Mass: <span id="massRes">0</span> kg</div></div></div></div></div>
+
+    <div id="beamModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('beamModal')">&times;</span><h3>🏗️ Beam Deflection</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">Parameters</span><select id="beamType"><option value="cantilever">Cantilever (Ankastre)</option><option value="simple">Simply Supported (Basit)</option></select><small>Load (N)</small><input type="number" id="beamF" value="1000"><small>Length (mm)</small><input type="number" id="beamL" value="2000"><small>Material (E - GPa)</small><select id="beamE"><option value="210">Steel (210)</option><option value="70">Aluminum (70)</option></select><small>Inertia (I - mm⁴)</small><input type="number" id="beamI" value="100000"><button onclick="calcBeamPro()">Calc Deflection</button></div><div class="result-box"><div>Max Deflection</div><div id="resDef" class="result-val">0.00 mm</div></div></div></div></div>
+
+    <div id="thermModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('thermModal')">&times;</span><h3>🔥 Thermal Expansion</h3><div class="modal-grid"><div class="input-group"><small>Length (mm)</small><input type="number" id="thermL" value="100"><small>Delta T (°C)</small><input type="number" id="thermDT" value="100"><small>Material</small><select id="thermMat"><option value="12">Steel</option><option value="23">Aluminum</option><option value="17">Copper</option></select><button onclick="calcThermal()">Calculate</button></div><div class="result-box"><div>Expansion (ΔL)</div><div id="thermRes" class="result-val">0 µm</div></div></div></div></div>
+
+    <div id="flowModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('flowModal')">&times;</span><h3>💧 Pipe Flow Velocity</h3><div class="modal-grid"><div class="input-group"><small>Pipe ID (mm)</small><input type="number" id="pipeID" value="50"><small>Flow Rate (L/min)</small><input type="number" id="pipeQ" value="100"><button onclick="calcFlow()">Calculate Velocity</button></div><div class="result-box"><div>Velocity</div><div id="pipeVel" class="result-val">0.00 m/s</div></div></div></div></div>
+
+    <div id="printModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('printModal')">&times;</span><h3>🖨️ 3D Print Cost Est.</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Spool Cost</small><input type="number" id="spoolCost" value="30"></div><div style="flex:1"><small>Spool (g)</small><input type="number" id="spoolWeight" value="1000"></div></div><div class="row"><div style="flex:1"><small>Part (g)</small><input type="number" id="partWeight" value="50"></div><div style="flex:1"><small>Hours</small><input type="number" id="printTime" value="4"></div></div><div class="row"><div style="flex:1"><small>Watts</small><input type="number" id="printerWatts" value="150"></div><div style="flex:1"><small>kWh Rate</small><input type="number" id="kwhCost" value="0.20"></div></div><button onclick="calcPrintCost()">Calculate</button></div><div class="result-box"><div>Total Cost</div><div id="resTotalPrint" class="result-val">0.00</div></div></div></div></div>
+
+    <div id="cableModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('cableModal')">&times;</span><h3>⚡ DC Cable Sizing</h3><div class="modal-grid"><div class="input-group"><div class="row"><div style="flex:1"><small>Volts</small><input type="number" id="cabV" value="12"></div><div style="flex:1"><small>Amps</small><input type="number" id="cabA" value="20"></div></div><div class="row"><div style="flex:1"><small>Length (m)</small><input type="number" id="cabL" value="5"></div><div style="flex:1"><small>Drop %</small><input type="number" id="cabDrop" value="3"></div></div><button onclick="calcCable()">Calculate Size</button></div><div class="result-box"><div>Min Section</div><div id="cabResMM" class="result-val">0 mm²</div><div style="font-size:0.9rem; margin-top:5px;">Nearest: <strong id="cabStd">--</strong></div></div></div></div></div>
+
+    <div id="electroModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('electroModal')">&times;</span><h3>💡 Electronics Lab</h3><div class="modal-grid"><div class="input-group"><span class="unit-tag">LED Resistor</span><div class="row"><div style="flex:1"><small>Source V</small><input type="number" id="ledVs" value="5"></div><div style="flex:1"><small>LED V</small><input type="number" id="ledVf" value="2.0"></div></div><small>Current (mA)</small><input type="number" id="ledI" value="20"><button onclick="calcLedResistor()">Find Resistor</button><div class="result-box" style="margin-top:5px; padding:5px;"><span id="resLedOhm">0 Ω</span></div></div><div class="input-group" style="border-left:1px solid var(--border); padding-left:15px;"><span class="unit-tag">Ohm's Law</span><small>Voltage (V)</small><input type="number" id="ohmV" oninput="calcOhm()"><small>Current (A)</small><input type="number" id="ohmI" oninput="calcOhm()"><small>Resistance (Ω)</small><input type="number" id="ohmR" oninput="calcOhm()"></div></div></div></div></div>
+
+    <div id="stepperModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stepperModal')">&times;</span><h3>🤖 Stepper Motor Calc</h3><div class="modal-grid"><div class="input-group"><small>Step Angle</small><select id="stepAng"><option value="1.8">1.8°</option><option value="0.9">0.9°</option></select><small>Microstepping</small><select id="stepMicro"><option value="1">Full</option><option value="2">1/2</option><option value="8">1/8</option><option value="16">1/16</option></select><small>Pitch / Lead (mm)</small><input type="number" id="transVal" value="8"><button onclick="calcStepper()">Calculate</button></div><div class="result-box"><div>Steps / mm</div><div id="stepRes" class="result-val">0</div></div></div></div></div>
+
+    <div id="linterpModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('linterpModal')">&times;</span><h3>🌡️ Linear Interpolation</h3><div class="input-group"><div class="row"><input type="number" id="lx1" placeholder="x1"><input type="number" id="ly1" placeholder="y1"></div><div class="row"><input type="number" id="lx2" placeholder="x2"><input type="number" id="ly2" placeholder="y2"></div><hr><input type="number" id="ltx" placeholder="Target X"><button onclick="calcLinterp()">Calculate Y</button><div class="result-box"><span id="lres" class="result-val">Y = --</span></div></div></div></div>
+
+    <div id="stressModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('stressModal')">&times;</span><h3>📈 Stress Calculator</h3><div class="modal-grid"><div class="input-group"><small>Force (N)</small><input type="number" id="stressF" value="5000"><small>Area (mm²)</small><input type="number" id="stressA" value="50"><small>Orig. Length (mm)</small><input type="number" id="stressL0" value="100"><small>Extension (mm)</small><input type="number" id="stressDl" value="0.5"><button onclick="calcStress()">Calculate</button></div><div class="result-box"><div class="res-item highlight"><small>Stress (σ)</small><span id="resSigma">0 MPa</span></div><div class="res-item"><small>Strain (ε)</small><span id="resEpsilon">0</span></div><hr><div class="res-item"><small>Modulus (E)</small><span id="resModulus">0 GPa</span></div></div></div></div></div>
 
     <footer class="info-footer">
-        <h3>📖 About Unitly Lab</h3>
-        <p>A comprehensive engineering data and manufacturing simulation suite.</p>
-        <p style="margin-top:10px; opacity:0.4; font-size:0.7rem;">&copy; 2026 Unitly Lab</p>
+        <h3>Unitly Lab © 2026</h3>
+        <div style="margin: 10px 0;">
+            <a href="mailto:unitlylab@gmail.com" class="contact-link">unitlylab@gmail.com</a>
+        </div>
+        <p class="disclaimer">
+            <strong>Disclaimer:</strong> All calculations, data, and information provided by Unitly Lab are for educational and reference purposes only. 
+            While we strive for high accuracy based on global engineering standards (ISO/ASME), real-world results may vary due to environmental factors, material inconsistencies, and specific machinery conditions. 
+            Use these tools as an estimation aid, not as a replacement for professional verification. Unitly Lab assumes no liability for errors or damages resulting from the use of this software.
+        </p>
     </footer>
 </div>
 
 <script>
-    // --- HELPER FUNCTIONS (VALIDATION) ---
+    // --- UTILS ---
     function safeFloat(id, def = 0) {
         const el = document.getElementById(id);
-        if(!el) return def;
-        const val = parseFloat(el.value);
-        return isNaN(val) ? def : val;
+        return el && !isNaN(parseFloat(el.value)) ? parseFloat(el.value) : def;
     }
 
-    // --- GENERAL ---
-    function initTheme() {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.body.setAttribute('data-theme', 'dark');
-            document.getElementById('checkbox').checked = true;
-        }
-    }
-    initTheme();
-
-    function toggleTheme() {
-        const isChecked = document.getElementById('checkbox').checked;
-        isChecked ? document.body.setAttribute('data-theme', 'dark') : document.body.removeAttribute('data-theme');
-    }
     function toggleDropdown(id) { 
         var dropdowns = document.getElementsByClassName("dropdown-content");
-        for (var i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].id !== id) {
-                dropdowns[i].classList.remove('show');
-            }
-        }
+        for (var i = 0; i < dropdowns.length; i++) { if (dropdowns[i].id !== id) dropdowns[i].classList.remove('show'); }
         document.getElementById(id).classList.toggle("show"); 
     }
-    function openModal(id) { 
-        document.getElementById(id).style.display = "block"; 
-        if(id === 'sketchModal') {
-             setTimeout(() => {
-                 initCanvas();
-                 resizeCanvas(); // Ensure correct size on open
-             }, 100);
-        }
-        if(id === 'threeModal') {
-            setTimeout(() => {
-                init3D();
-                animate3D(); // Restart loop
-            }, 100);
-        }
-        if(id === 'geomModal') updateGeomInputs();
-        if(id === 'weightModal') updateProfileInputs();
-        if(id === 'fitsModal') calcFits(); 
-        if(id === 'latheModal') calcLathe();
-    }
     
-    function closeModal(id) { 
-        document.getElementById(id).style.display = "none";
-        // Stop 3D animation to save battery
-        if(id === 'threeModal') {
-             if(reqAnimId) cancelAnimationFrame(reqAnimId);
-             isLineDrawing = false;
+    // Global close handler
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn') && !event.target.matches('.dropbtn span')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
+            }
         }
     }
 
-    // --- Search Materials ---
+    // FIX: Animasyon ID'si saklanarak modal kapanınca durdurulacak
+    let animationId = null; 
+
+    function openModal(id) { 
+        document.getElementById(id).style.display = "block";
+        if(id === 'threeModal') setTimeout(init3D, 100);
+        if(id === 'sketchModal') setTimeout(() => { initCanvas(); resizeCanvas(); }, 100);
+        if(id === 'robotModal') setTimeout(drawRobot, 100);
+        if(id === 'geomModal') updateGeomInputs();
+        if(id === 'weightModal') updateProfileInputs();
+    }
+
+    function closeModal(id) { 
+        document.getElementById(id).style.display = "none"; 
+        
+        // FIX: Three.js modalı kapanınca animasyonu durdur (Pil tasarrufu)
+        if(id === 'threeModal' && animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    }
+
+    // --- SEARCH FUNCTIONS ---
     function searchMaterials() {
         let input = document.getElementById('matSearch').value.toUpperCase();
         let rows = document.getElementById('matTableBody').getElementsByTagName('tr');
-        for (let row of rows) {
-             row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
-        }
-    }
-
-    // --- 3D STUDIO (THREE.JS - OPTIMIZED) ---
-    let scene, camera, renderer, currentLine, raycaster, drawingPlane;
-    let is3DInitialized = false;
-    let isLineDrawing = false;
-    let reqAnimId;
-
-    function init3D() {
-        if (is3DInitialized) return;
-        const container = document.getElementById('threeContainer');
-        
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x111111);
-        scene.fog = new THREE.Fog(0x111111, 10, 80);
-
-        // Grid
-        const gridHelper = new THREE.GridHelper(100, 100, 0x444444, 0x222222);
-        scene.add(gridHelper);
-        const axesHelper = new THREE.AxesHelper(5);
-        scene.add(axesHelper);
-
-        // Invisible Plane for Drawing
-        const planeGeo = new THREE.PlaneGeometry(100, 100);
-        const planeMat = new THREE.MeshBasicMaterial({ visible: false });
-        drawingPlane = new THREE.Mesh(planeGeo, planeMat);
-        drawingPlane.rotation.x = -Math.PI / 2;
-        scene.add(drawingPlane);
-
-        camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(10, 10, 10);
-        camera.lookAt(0, 0, 0);
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
-
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.position.set(10, 10, 10);
-        scene.add(dirLight);
-
-        // Events
-        raycaster = new THREE.Raycaster();
-        renderer.domElement.addEventListener('click', on3DClick);
-        
-        // Basic Orbit Control (Simplified)
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-
-        container.addEventListener('mousedown', (e) => { if(!isLineDrawing) isDragging = true; });
-        container.addEventListener('mouseup', (e) => { isDragging = false; });
-        container.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
-                const deltaRotationQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(toRadians(deltaMove.y * 0.5), toRadians(deltaMove.x * 0.5), 0, 'XYZ'));
-                scene.quaternion.multiplyQuaternions(deltaRotationQuaternion, scene.quaternion);
-            }
-            previousMousePosition = { x: e.offsetX, y: e.offsetY };
-        });
-
-        // Touch
-        container.addEventListener('touchstart', (e) => { if(!isLineDrawing) { isDragging = true; previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }; } });
-        container.addEventListener('touchmove', (e) => {
-             if (isDragging) {
-                const deltaMove = { x: e.touches[0].clientX - previousMousePosition.x, y: e.touches[0].clientY - previousMousePosition.y };
-                const deltaRotationQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(toRadians(deltaMove.y * 0.5), toRadians(deltaMove.x * 0.5), 0, 'XYZ'));
-                scene.quaternion.multiplyQuaternions(deltaRotationQuaternion, scene.quaternion);
-                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
-        });
-        container.addEventListener('touchend', (e) => { isDragging = false; });
-
-        is3DInitialized = true;
-    }
-
-    function toggle3DDrawMode() {
-        isLineDrawing = !isLineDrawing;
-        const btn = document.getElementById('btn3DDraw');
-        btn.classList.toggle('active', isLineDrawing);
-        btn.innerText = isLineDrawing ? "🛑 Stop Drawing" : "✍️ Draw Line Mode";
-        
-        if(isLineDrawing) {
-            // Start new line geometry
-            const geometry = new THREE.BufferGeometry();
-            const material = new THREE.LineBasicMaterial({ color: 0x10b981, linewidth: 2 });
-            currentLine = new THREE.Line(geometry, material);
-            scene.add(currentLine);
-        } else {
-            currentLine = null;
-        }
-    }
-
-    function on3DClick(event) {
-        if (!isLineDrawing || !currentLine) return;
-        
-        // FIX: Calculate mouse position accurately relative to the canvas in the modal
-        const rect = renderer.domElement.getBoundingClientRect();
-        const mouse = new THREE.Vector2();
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(drawingPlane);
-
-        if (intersects.length > 0) {
-            const point = intersects[0].point;
-            // Snap to grid
-            point.x = Math.round(point.x);
-            point.z = Math.round(point.z);
-            point.y = 0; 
-
-            // Add point to line
-            const positions = currentLine.geometry.attributes.position ? Array.from(currentLine.geometry.attributes.position.array) : [];
-            positions.push(point.x, point.y + 0.1, point.z); 
-            currentLine.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        }
-    }
-
-    function set3DView(view) {
-        scene.rotation.set(0,0,0);
-        scene.quaternion.set(0,0,0,1);
-
-        if(view === 'top') {
-            camera.position.set(0, 20, 0); camera.lookAt(0, 0, 0);
-        } else if(view === 'front') {
-            camera.position.set(0, 0, 20); camera.lookAt(0, 0, 0);
-        } else if(view === 'right') {
-            camera.position.set(20, 0, 0); camera.lookAt(0, 0, 0);
-        } else { 
-            camera.position.set(10, 10, 10); camera.lookAt(0, 0, 0);
-        }
-    }
-
-    function toRadians(angle) { return angle * (Math.PI / 180); }
-    
-    function animate3D() {
-        if(document.getElementById('threeModal').style.display !== 'block') return; // Stop if hidden
-        reqAnimId = requestAnimationFrame(animate3D);
-        renderer.render(scene, camera);
-    }
-    
-    function add3DCube() {
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
-        const material = new THREE.MeshPhongMaterial({ color: 0x2563eb, flatShading: true });
-        const obj = new THREE.Mesh(geometry, material);
-        obj.position.y = 1; scene.add(obj);
-    }
-    function add3DCylinder() {
-        const geometry = new THREE.CylinderGeometry(1, 1, 4, 32);
-        const material = new THREE.MeshPhongMaterial({ color: 0x10b981, flatShading: true });
-        const obj = new THREE.Mesh(geometry, material);
-        obj.position.y = 2; scene.add(obj);
-    }
-    function clear3D() {
-        for( let i = scene.children.length - 1; i >= 0; i--) { 
-             let obj = scene.children[i];
-             if(obj.type === 'Mesh' || obj.type === 'Line') scene.remove(obj); 
-        }
-        isLineDrawing = false;
-        document.getElementById('btn3DDraw').classList.remove('active');
-        document.getElementById('btn3DDraw').innerText = "✍️ Draw Line Mode";
-    }
-    function toggleWireframe() {
-        scene.children.forEach(c => {
-            if(c.type === 'Mesh') { c.material.wireframe = !c.material.wireframe; }
-        });
-    }
-
-    // --- CALCULATOR LOGIC (UPDATED WITH VALIDATION) ---
-    function updateProfileInputs() {
-        const type = document.getElementById('profileType').value;
-        let html = '';
-        if(type === 'square_hollow') html = '<div class="row"><div><small>Width (mm)</small><input type="number" id="pW" value="40"></div><div><small>Thickness (mm)</small><input type="number" id="pT" value="2"></div></div>';
-        else if(type === 'round_hollow') html = '<div class="row"><div><small>Diameter (mm)</small><input type="number" id="pD" value="30"></div><div><small>Thickness (mm)</small><input type="number" id="pT" value="2"></div></div>';
-        else if(type === 'l_profile') html = '<div class="row"><div><small>A (mm)</small><input type="number" id="pW" value="40"></div><div><small>B (mm)</small><input type="number" id="pH" value="40"></div><div><small>t (mm)</small><input type="number" id="pT" value="4"></div></div>';
-        else if(type === 'round_solid') html = '<small>Diameter (mm)</small><input type="number" id="pD" value="20">';
-        else html = '<div class="row"><div><small>Width (mm)</small><input type="number" id="pW" value="50"></div><div><small>Height (mm)</small><input type="number" id="pH" value="10"></div></div>';
-        document.getElementById('profileInputs').innerHTML = html;
-    }
-
-    function calcProfileWeight() {
-        const type = document.getElementById('profileType').value;
-        const rho = safeFloat('profileMat', 7.85);
-        const L = safeFloat('profL', 1000);
-        let area = 0; 
-        if(type === 'square_hollow') {
-            const w = safeFloat('pW');
-            const t = safeFloat('pT');
-            area = (w * w) - ((w - 2*t) * (w - 2*t));
-        } else if(type === 'round_hollow') {
-            const d = safeFloat('pD');
-            const t = safeFloat('pT');
-            area = (Math.PI/4) * (Math.pow(d, 2) - Math.pow(d - 2*t, 2));
-        } else if(type === 'l_profile') {
-            const a = safeFloat('pW');
-            const b = safeFloat('pH');
-            const t = safeFloat('pT');
-            area = (a * t) + ((b - t) * t);
-        } else if(type === 'round_solid') {
-            const d = safeFloat('pD');
-            area = (Math.PI/4) * Math.pow(d, 2);
-        } else {
-            const w = safeFloat('pW');
-            const h = safeFloat('pH');
-            area = w * h;
-        }
-        if(area < 0) area = 0;
-        const massKg = (area * L * rho) / 1000000;
-        document.getElementById('profWeightRes').innerText = massKg.toFixed(2) + " kg";
-        document.getElementById('profWeightLbs').innerText = "Weight: " + (massKg * 2.204).toFixed(2) + " lbs";
-        document.getElementById('profWeightNote').innerText = "Volume: " + Math.round(area * L) + " mm³";
-    }
-
-    const pointData = {
-        'proportional': '<strong>Proportional Limit:</strong> Linear elastic region ends here. Hooke\'s Law applies.',
-        'yield': '<strong>Yield Point:</strong> Transition from elastic to plastic deformation.',
-        'ultimate': '<strong>Ultimate Tensile Strength (UTS):</strong> Max stress before necking.',
-        'fracture': '<strong>Fracture Point:</strong> Material breaks.'
-    };
-
-    function convert(type) {
-        const val = safeFloat(type + 'Input', 0);
-        const from = parseFloat(document.getElementById(type + 'From').value);
-        const to = parseFloat(document.getElementById(type + 'To').value);
-        const res = val * from / to;
-        document.getElementById(type + 'Res').innerText = res < 0.01 && res !== 0 ? res.toExponential(4) : res.toLocaleString();
-    }
-    function updateTapDrill() {
-        const val = document.getElementById('tapSizeSelector').value;
-        document.getElementById('tapDrillRes').innerText = val ? val + " mm" : "-- mm";
-    }
-    function updateCNCDefaults() {}
-
-    function calcCNC() {
-        const vc = safeFloat('matType', 150);
-        const d = safeFloat('cncD', 10);
-        const fz = safeFloat('cncFz', 0.1);
-        const z = safeFloat('cncZ', 4);
-        if(d <= 0) return;
-        const rpm = (vc * 1000) / (Math.PI * d);
-        const feed = rpm * fz * z;
-        document.getElementById('resRPM').innerText = Math.round(rpm) + " RPM";
-        document.getElementById('resFeed').innerText = Math.round(feed) + " mm/min";
-        document.getElementById('resCNCSfpm').innerText = `Speed in SFM: ${Math.round(vc * 3.28)} ft/min`;
-    }
-    function updateGeomInputs() {
-        const type = document.getElementById('shapeType').value;
-        let html = '';
-        if(type === 'cylinder') html = '<div class="row"><div><small>Radius (mm)</small><input type="number" id="gR" value="10"></div><div><small>Length (mm)</small><input type="number" id="gL" value="100"></div></div>';
-        else if(type === 'sphere') html = '<small>Radius (mm)</small><input type="number" id="gR" value="10">';
-        else html = '<div class="row"><div><small>L (mm)</small><input type="number" id="gL" value="10"></div><div><small>W (mm)</small><input type="number" id="gW" value="10"></div><div><small>H (mm)</small><input type="number" id="gH" value="10"></div></div>';
-        document.getElementById('geomInputs').innerHTML = html;
-    }
-    function calcGeomVolume() {
-        const type = document.getElementById('shapeType').value;
-        const rho = safeFloat('matDensity', 7.85);
-        let vol = 0;
-        if(type === 'cylinder') vol = Math.PI * Math.pow(safeFloat('gR'), 2) * safeFloat('gL');
-        else if(type === 'sphere') vol = (4/3) * Math.PI * Math.pow(safeFloat('gR'), 3);
-        else vol = safeFloat('gL') * safeFloat('gW') * safeFloat('gH');
-        const mass = (vol / 1000) * (rho / 1000); 
-        document.getElementById('geomRes').innerText = Math.round(vol).toLocaleString() + " mm³";
-        document.getElementById('massRes').innerText = mass.toFixed(3) + " kg";
-        document.getElementById('massLbs').innerText = `Mass: ${(mass * 2.204).toFixed(3)} lbs`;
-        document.getElementById('volInches').innerText = `Volume: ${(vol / 16387).toFixed(3)} in³`;
-    }
-    function calcMobility() {
-        const v = safeFloat('evV', 72);
-        const ah = safeFloat('evAh', 40);
-        const w = safeFloat('evW', 3000);
-        const spd = safeFloat('evSpd', 45);
-        if(spd <= 0 || w <= 0) return;
-        const wh = v * ah;
-        const range = ((wh * 0.85) / (w / spd));
-        const runtime = ((wh * 0.85) / w) * 60;
-        document.getElementById('resWh').innerText = wh + " Wh";
-        document.getElementById('resRange').innerText = range.toFixed(1) + " km";
-        document.getElementById('resRangeMi').innerText = `Range: ${(range * 0.621).toFixed(1)} miles`;
-        document.getElementById('resRuntime').innerText = `Full Load Runtime: ${Math.round(runtime)} min`;
-    }
-    function calcBeamPro() {
-        const F = safeFloat('beamF');
-        const L = safeFloat('beamL');
-        const E_GPa = safeFloat('beamE');
-        const I = safeFloat('beamI');
-        if(I <= 0) return;
-        const E = E_GPa * 1000;
-        const def = (F * Math.pow(L, 3)) / (3 * E * I);
-        document.getElementById('resDef').innerText = def.toFixed(2) + " mm";
-    }
-    function showPoint(id) { document.getElementById('pointDesc').innerHTML = pointData[id]; }
-    function calcFin() {
-        const p = safeFloat('pCap'), r = safeFloat('pRate'), t = safeFloat('pTime');
-        document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString();
+        for (let row of rows) row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
     }
     function searchCodes() {
         let input = document.getElementById('codeSearch').value.toUpperCase();
         let rows = document.getElementById('codeTableBody').getElementsByTagName('tr');
-        for (let row of rows) { if (row.cells.length > 1) { row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none"; } }
+        for (let row of rows) row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
     }
     function searchFasteners() {
         let input = document.getElementById('fastenerSearch').value.toUpperCase();
         let rows = document.getElementById('fastenerBody').getElementsByTagName('tr');
-        for (let row of rows) { row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none"; }
-    }
-    
-    function calcGearing() {
-        const rpm = safeFloat('motorRPM');
-        const driver = safeFloat('gearDriver');
-        const driven = safeFloat('gearDriven');
-        const diaCm = safeFloat('tireDia');
-        if(driver <= 0) return;
-        const ratio = driven / driver;
-        const wheelRpm = rpm / ratio;
-        const circumference = Math.PI * diaCm; // cm
-        const speedKmh = (wheelRpm * circumference * 60) / 100000;
-        document.getElementById('speedRes').innerText = speedKmh.toFixed(1) + " km/h";
-        document.getElementById('ratioRes').innerText = ratio.toFixed(2) + " : 1";
-        document.getElementById('wheelRpmRes').innerText = Math.round(wheelRpm);
-        document.getElementById('torqueMult').innerText = ratio.toFixed(2) + "x";
+        for (let row of rows) row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
     }
 
-    function calcPrintCost() {
-        const spoolCost = safeFloat('spoolCost');
-        const spoolWeight = safeFloat('spoolWeight');
-        const partWeight = safeFloat('partWeight');
-        const time = safeFloat('printTime');
-        const watts = safeFloat('printerWatts');
-        const kwhPrice = safeFloat('kwhCost');
-        if(spoolWeight <= 0) return;
-        const matCost = (partWeight / spoolWeight) * spoolCost;
-        const energyCost = (watts / 1000) * time * kwhPrice;
-        const total = matCost + energyCost;
-        document.getElementById('resMatCost').innerText = matCost.toFixed(2);
-        document.getElementById('resEnergyCost').innerText = energyCost.toFixed(2);
-        document.getElementById('resTotalPrint').innerText = total.toFixed(2);
+    // --- CONVERTER LOGIC ---
+    function convert(type) {
+        const val = safeFloat(type + 'Input');
+        const from = parseFloat(document.getElementById(type + 'From').value);
+        const to = parseFloat(document.getElementById(type + 'To').value);
+        const res = val * from / to;
+        document.getElementById(type + 'Res').innerText = res < 0.01 && res !== 0 ? res.toExponential(4) : res.toLocaleString(undefined, {maximumFractionDigits: 4});
+    }
+    function calcFin() {
+        const p = safeFloat('pCap'), r = safeFloat('pRate'), t = safeFloat('pTime');
+        document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString();
     }
 
-    function calcLedResistor() {
-        const vs = safeFloat('ledVs');
-        const vf = safeFloat('ledVf');
-        const i = safeFloat('ledI') / 1000; // mA to A
-        if(i <= 0 || vs <= vf) { document.getElementById('resLedOhm').innerText = "Error"; return; }
-        const r = (vs - vf) / i;
-        const p = Math.pow(i, 2) * r;
-        document.getElementById('resLedOhm').innerText = Math.round(r) + " Ω";
-        document.getElementById('resLedPower').innerText = (p * 1000).toFixed(0) + " mW";
+    // --- ROBOT LOGIC ---
+    function drawRobot() {
+        const c = document.getElementById('robotCanvas');
+        if(!c) return;
+        const ctx = c.getContext('2d');
+        const L1 = parseFloat(document.getElementById('robL1').value);
+        const L2 = parseFloat(document.getElementById('robL2').value);
+        const t1 = parseInt(document.getElementById('robT1').value);
+        const t2 = parseInt(document.getElementById('robT2').value);
+        
+        document.getElementById('valT1').innerText = t1; document.getElementById('valT2').innerText = t2;
+        const rad1 = t1 * (Math.PI / 180); const rad2 = t2 * (Math.PI / 180);
+        const ox = c.width / 2; const oy = c.height - 50;
+        const j1x = ox + L1 * Math.cos(-rad1); const j1y = oy + L1 * Math.sin(-rad1);
+        const j2x = j1x + L2 * Math.cos(-(rad1 + rad2)); const j2y = j1y + L2 * Math.sin(-(rad1 + rad2));
+        document.getElementById('robX').innerText = (j2x - ox).toFixed(1); document.getElementById('robY').innerText = (oy - j2y).toFixed(1);
+
+        ctx.clearRect(0, 0, c.width, c.height);
+        // Draw Grid
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1; ctx.beginPath();
+        for(let i=0; i<c.width; i+=20) { ctx.moveTo(i,0); ctx.lineTo(i,c.height); }
+        for(let i=0; i<c.height; i+=20) { ctx.moveTo(0,i); ctx.lineTo(c.width,i); }
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b'; ctx.fillRect(ox - 25, oy, 50, 10);
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(j1x, j1y); ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.beginPath(); ctx.arc(j1x, j1y, 6, 0, 2*Math.PI); ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(j1x, j1y); ctx.lineTo(j2x, j2y); ctx.strokeStyle = '#34d399'; ctx.lineWidth = 8; ctx.stroke();
+        ctx.beginPath(); ctx.arc(j2x, j2y, 6, 0, 2*Math.PI); ctx.fillStyle = '#f87171'; ctx.fill();
     }
 
-    function calcOhm() {
-        const v = parseFloat(document.getElementById('ohmV').value);
-        const i = parseFloat(document.getElementById('ohmI').value);
-        const r = parseFloat(document.getElementById('ohmR').value);
-        // Using direct parsing here to allow clearing fields
-        if(!isNaN(v) && !isNaN(i)) document.getElementById('ohmR').value = v / i;
-        else if(!isNaN(v) && !isNaN(r)) document.getElementById('ohmI').value = v / r;
-        else if(!isNaN(i) && !isNaN(r)) document.getElementById('ohmV').value = i * r;
-    }
+    // --- ENGINEERING LOGIC (CORRECTED) ---
 
-    function calcFits() {
-        const dia = safeFloat('fitDia', 10);
+    // 1. Fits & Tolerances (ISO 286 Simple Logic)
+    function calcFits(){
+        const d = safeFloat('fitDia');
         const type = document.getElementById('fitType').value;
-        let holeMax=0, holeMin=0, shaftMax=0, shaftMin=0, valText = "";
-        const baseTol = Math.pow(dia, 0.45) * 0.001 * 15; 
-        if(type === 'H7g6') {
-            holeMax = baseTol; holeMin = 0;
-            shaftMax = -baseTol * 0.4; shaftMin = -baseTol * 1.2;
-            valText = "Clearance / Sliding Fit";
-        } else if(type === 'H7h6') {
-            holeMax = baseTol; holeMin = 0;
-            shaftMax = 0; shaftMin = -baseTol * 0.8;
-            valText = "Clearance Fit";
-        } else if(type === 'H7k6') {
-            holeMax = baseTol; holeMin = 0;
-            shaftMax = baseTol * 0.6; shaftMin = baseTol * 0.1;
-            valText = "Transition Fit";
-        } else if(type === 'H7p6') {
-            holeMax = baseTol; holeMin = 0;
-            shaftMax = baseTol * 1.5; shaftMin = baseTol * 0.9;
-            valText = "Interference Fit (Press)";
+        let h_upper = 0, h_lower = 0;
+        let s_upper = 0, s_lower = 0;
+        
+        // H7 Hole (Standard Basis) - Approx values in microns
+        if(d <= 3) { h_upper=10; }
+        else if(d <= 6) { h_upper=12; }
+        else if(d <= 10) { h_upper=15; }
+        else if(d <= 18) { h_upper=18; }
+        else if(d <= 30) { h_upper=21; }
+        else if(d <= 50) { h_upper=25; }
+        else { h_upper=30; } // default >50
+
+        // Shafts
+        if(type === 'H7g6') { // Slide (Gap)
+             if(d<=3){ s_upper=-2; s_lower=-8; }
+             else if(d<=6){ s_upper=-4; s_lower=-12; }
+             else if(d<=10){ s_upper=-5; s_lower=-14; }
+             else if(d<=18){ s_upper=-6; s_lower=-17; }
+             else if(d<=30){ s_upper=-7; s_lower=-20; }
+             else { s_upper=-9; s_lower=-25; }
+             document.getElementById('fitValRes').innerText = "Clearance / Slide";
+        } 
+        else if(type === 'H7h6') { // Clearance (Zero)
+             s_upper = 0; 
+             // h6 range approx
+             if(d<=3) s_lower=-6;
+             else if(d<=6) s_lower=-8;
+             else if(d<=10) s_lower=-9;
+             else if(d<=18) s_lower=-11;
+             else if(d<=30) s_lower=-13;
+             else s_lower=-16;
+             document.getElementById('fitValRes').innerText = "Clearance / Locational";
         }
-        document.getElementById('fitHoleRes').innerText = `+${(holeMax*1000).toFixed(1)} / +${(holeMin*1000).toFixed(1)} µm`;
-        document.getElementById('fitShaftRes').innerText = `${(shaftMax*1000 > 0 ? '+' : '')}${(shaftMax*1000).toFixed(1)} / ${(shaftMin*1000 > 0 ? '+' : '')}${(shaftMin*1000).toFixed(1)} µm`;
-        document.getElementById('fitValRes').innerText = valText;
-    }
-
-    function calcBelt() {
-        const D = safeFloat('beltD');
-        const d = safeFloat('belt_d');
-        const C = safeFloat('beltC');
-        if(C <= 0) return;
-        const L = (2 * C) + (1.57 * (D + d)) + (Math.pow(D - d, 2) / (4 * C));
-        document.getElementById('beltLenRes').innerText = Math.round(L) + " mm";
-    }
-
-    function calcStepper() {
-        const deg = safeFloat('stepAng');
-        const micro = safeFloat('stepMicro');
-        const pitch = safeFloat('transVal');
-        if(pitch === 0) return;
-        const stepsPerRev = (360 / deg) * micro;
-        const stepsPerUnit = stepsPerRev / pitch;
-        document.getElementById('stepRes').innerText = stepsPerUnit.toFixed(2);
-        document.getElementById('stepResMicron').innerText = (1000 / stepsPerUnit).toFixed(2);
-    }
-
-    function calcLinterp() {
-        const x1 = safeFloat('lx1');
-        const y1 = safeFloat('ly1');
-        const x2 = safeFloat('lx2');
-        const y2 = safeFloat('ly2');
-        const x = safeFloat('ltx');
-        if (x2 === x1) { document.getElementById('lres').innerText = "Error (x1=x2)"; return; }
-        const y = y1 + ((x - x1) * (y2 - y1) / (x2 - x1));
-        document.getElementById('lres').innerText = "Y = " + y.toFixed(4);
-    }
-
-    function calcHydro() {
-        const bore = safeFloat('cylBore');
-        const rod = safeFloat('cylRod');
-        const bar = safeFloat('cylPress');
-        const areaPush = Math.PI * Math.pow(bore/20, 2); 
-        const areaPull = areaPush - (Math.PI * Math.pow(rod/20, 2));
-        const fPush = (bar * areaPush) / 1000;
-        const fPull = (bar * areaPull) / 1000;
-        document.getElementById('pushForce').innerText = fPush.toFixed(2) + " Ton";
-        document.getElementById('pullForce').innerText = fPull.toFixed(2) + " Ton";
-    }
-
-    function calcCable() {
-        const v = safeFloat('cabV');
-        const i = safeFloat('cabA');
-        const l = safeFloat('cabL'); 
-        const dropPerc = safeFloat('cabDrop');
-        if(dropPerc <= 0) return;
-        const maxDropV = v * (dropPerc / 100);
-        const section = (2 * l * i * 0.0175) / maxDropV;
-        document.getElementById('cabResMM').innerText = section.toFixed(2) + " mm²";
-        document.getElementById('cabVDrop').innerText = maxDropV.toFixed(2) + " V";
-        const standards = [0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
-        let std = "Custom";
-        for(let s of standards) { if(s >= section) { std = s + " mm²"; break; } }
-        document.getElementById('cabStd').innerText = std;
-    }
-
-    function calcBend() {
-        const T = safeFloat('bendT');
-        const R = safeFloat('bendR');
-        const A = safeFloat('bendA');
-        const K = safeFloat('bendK');
-        const radA = A * (Math.PI / 180);
-        const BA = radA * (R + (K * T));
-        const OSSB = (R + T) * Math.tan(radA / 2);
-        const BD = (2 * OSSB) - BA;
-        document.getElementById('bendBA').innerText = BA.toFixed(2) + " mm";
-        document.getElementById('bendBD').innerText = BD.toFixed(2) + " mm";
-    }
-
-    function calcFlow() {
-        const id = safeFloat('pipeID'); 
-        const Q_lmin = safeFloat('pipeQ');
-        const d_m = id / 1000;
-        const Q_m3s = Q_lmin / 60000;
-        const Area = Math.PI * Math.pow(d_m / 2, 2);
-        const vel = Area > 0 ? Q_m3s / Area : 0;
-        document.getElementById('pipeVel').innerText = vel.toFixed(2) + " m/s";
-    }
-
-    function calcThermal() {
-        const L = safeFloat('thermL');
-        const dT = safeFloat('thermDT');
-        const alpha = safeFloat('thermMat') * 0.000001; 
-        const dL = L * alpha * dT;
-        const newL = L + dL;
-        document.getElementById('thermRes').innerText = (dL * 1000).toFixed(1) + " µm (" + dL.toFixed(3) + " mm)";
-        document.getElementById('thermNewL').innerText = newL.toFixed(3) + " mm";
-    }
-
-    function calcWeld() {
-        const type = document.getElementById('weldType').value;
-        const t = safeFloat('weldThick');
-        let ampMin = 0, ampMax = 0, note = "";
-        if (type === 'stick') {
-            ampMin = t * 30; ampMax = t * 40;
-            note = "Electrode: ~" + (t/2 + 1).toFixed(1) + "mm";
-        } else if (type === 'mig') {
-            ampMin = t * 35; ampMax = t * 45;
-            note = "Wire: 0.8mm - 1.0mm";
-        } else if (type === 'tig') {
-            ampMin = t * 30; ampMax = t * 35;
-            note = "Tungsten: 1.6mm - 2.4mm";
+        else if(type === 'H7p6') { // Press (Interference)
+             // p6 range approx
+             if(d<=3){ s_upper=12; s_lower=6; }
+             else if(d<=6){ s_upper=20; s_lower=12; }
+             else if(d<=10){ s_upper=24; s_lower=15; }
+             else if(d<=18){ s_upper=29; s_lower=18; }
+             else if(d<=30){ s_upper=35; s_lower=22; }
+             else { s_upper=42; s_lower=26; }
+             document.getElementById('fitValRes').innerText = "Interference / Press";
         }
-        document.getElementById('weldAmps').innerText = Math.round(ampMin) + " - " + Math.round(ampMax) + " A";
-        document.getElementById('weldNote').innerText = note;
+
+        document.getElementById('fitHoleRes').innerText = `+${(h_upper/1000).toFixed(3)} / 0`;
+        document.getElementById('fitShaftRes').innerText = `${(s_upper/1000).toFixed(3)} / ${(s_lower/1000).toFixed(3)}`;
     }
 
-    function calcLaser() {
-        const len = safeFloat('cutLen'); 
-        const speed = safeFloat('cutSpeed'); 
-        const rate = safeFloat('cutRate'); 
-        const setup = safeFloat('cutSetup'); 
-        if(speed <= 0) return;
-        const lenMM = len * 1000;
-        const timeMin = lenMM / speed;
-        const cost = (timeMin / 60) * rate + setup;
-        document.getElementById('cutCostRes').innerText = cost.toFixed(2);
-        document.getElementById('cutTimeRes').innerText = timeMin.toFixed(1) + " min";
-    }
-
-    function calcOring() {
-        const w = safeFloat('oringW');
-        const type = document.getElementById('oringApp').value;
-        const dia = safeFloat('oringDia');
-        const compress = 0.85; 
-        const glandDepth = w * compress;
-        const grooveWidth = w * 1.3; 
-        let grooveDia = 0;
-        if(type === 'rod') {
-            document.getElementById('grooveD').innerText = glandDepth.toFixed(2) + " mm";
-            document.getElementById('grooveW').innerText = grooveWidth.toFixed(2) + " mm";
-            grooveDia = dia + (2 * glandDepth); 
-            document.getElementById('grooveDiaRes').innerText = grooveDia.toFixed(2) + " mm";
+    // 2. Beam Deflection (Cantilever vs Simply Supported)
+    function calcBeamPro(){
+        const F = safeFloat('beamF');
+        const L = safeFloat('beamL');
+        const E = safeFloat('beamE') * 1000; // Convert GPa to MPa (N/mm2)
+        const I = safeFloat('beamI');
+        const type = document.getElementById('beamType').value;
+        
+        let def = 0;
+        if(type === 'cantilever') {
+            // FL^3 / 3EI
+            def = (F * Math.pow(L, 3)) / (3 * E * I);
         } else {
-             document.getElementById('grooveD').innerText = glandDepth.toFixed(2) + " mm";
-             document.getElementById('grooveW').innerText = grooveWidth.toFixed(2) + " mm";
-             grooveDia = dia - (2 * glandDepth);
-             document.getElementById('grooveDiaRes').innerText = grooveDia.toFixed(2) + " mm";
+            // Simply Supported: FL^3 / 48EI (Point load at center)
+            def = (F * Math.pow(L, 3)) / (48 * E * I);
+        }
+        document.getElementById('resDef').innerText = def.toFixed(3) + " mm";
+    }
+
+    // 3. Stress Calc
+    function calcStress() {
+        const F = safeFloat('stressF');
+        const A = safeFloat('stressA');
+        const L0 = safeFloat('stressL0');
+        const Dl = safeFloat('stressDl');
+        
+        if(A > 0) {
+            const sigma = F / A;
+            document.getElementById('resSigma').innerText = sigma.toFixed(2) + " MPa";
+            
+            if(L0 > 0) {
+                const epsilon = Dl / L0;
+                document.getElementById('resEpsilon').innerText = epsilon.toFixed(4);
+                
+                if(epsilon > 0) {
+                     const modulus = (sigma / epsilon) / 1000; // GPa
+                     document.getElementById('resModulus').innerText = modulus.toFixed(1) + " GPa";
+                }
+            }
         }
     }
 
-    function updateLatheDefaults() { }
+    // 4. EV Sim
+    function calcMobility() {
+        const V = safeFloat('evV');
+        const Ah = safeFloat('evAh');
+        const W_motor = safeFloat('evW');
+        const Speed = safeFloat('evSpd');
+        const Weight = safeFloat('evWeight', 100);
 
-    function calcLathe() {
-        const mat = document.getElementById('latheMat').value;
-        const insert = document.getElementById('latheInsert').value;
-        const dia = safeFloat('latheDia', 50);
-        const rad = safeFloat('latheRad', 0.8);
-        if(dia <= 0) return;
+        const TotalWh = V * Ah;
+        const UsableWh = TotalWh * 0.85; 
 
-        const speedDB = {
-            'steel': { 'cnmg': 220, 'dnmg': 240, 'wnmg': 200, 'vbmt': 280 },
-            'stainless': { 'cnmg': 160, 'dnmg': 180, 'wnmg': 150, 'vbmt': 200 },
-            'aluminum': { 'cnmg': 400, 'dnmg': 450, 'wnmg': 350, 'vbmt': 500 },
-            'cast': { 'cnmg': 180, 'dnmg': 200, 'wnmg': 170, 'vbmt': 220 }
-        };
-        let feed = 0.15; 
-        let depth = 1.0; 
-        if(insert === 'cnmg' || insert === 'wnmg') { feed = 0.25; depth = 2.5; }
-        else if(insert === 'vbmt') { feed = 0.1; depth = 0.5; }
-        else { feed = 0.2; depth = 1.5; }
-        if(rad > 0.8) feed *= 1.2;
-        if(rad < 0.4) feed *= 0.8;
-        const Vc = speedDB[mat][insert] || 200;
-        const rpm = (Vc * 1000) / (Math.PI * dia);
-        document.getElementById('latheRPM').innerText = Math.round(rpm) + " RPM";
-        document.getElementById('latheFeed').innerText = feed.toFixed(2);
-        document.getElementById('latheDepth').innerText = depth.toFixed(1);
-        document.getElementById('latheVc').innerText = Vc;
+        // Physics Approximation (Flat Ground)
+        const P_roll = 0.015 * Weight * 9.81 * (Speed / 3.6); 
+        const P_drag = 0.4 * 0.5 * 1.225 * Math.pow((Speed / 3.6), 3);
+        
+        let P_required = (P_roll + P_drag) / 0.85; 
+        if(P_required < 50) P_required = 50; 
+
+        const rangeKM = (UsableWh / P_required) * Speed;
+        const timeH = rangeKM / Speed;
+        const whPerKm = P_required / Speed;
+        const estMaxSpeed = Math.pow((W_motor * 0.85) / (0.4 * 0.5 * 1.225), 1/3) * 3.6;
+        const cost = (TotalWh / 1000) * 3.5; 
+
+        document.getElementById('resRange').innerText = rangeKM.toFixed(1) + " km";
+        document.getElementById('resTime').innerText = Math.floor(timeH) + "h " + Math.round((timeH%1)*60) + "m";
+        document.getElementById('resWhKm').innerText = whPerKm.toFixed(1) + " Wh/km";
+        document.getElementById('resTotalE').innerText = TotalWh.toFixed(0) + " Wh";
+        document.getElementById('resMaxSpd').innerText = estMaxSpeed.toFixed(0) + " km/h";
+        document.getElementById('resCost').innerText = cost.toFixed(2) + " ₺";
     }
 
-    // --- SKETCH 2D LOGIC ---
-    let canvas, ctx, shapes = [], points = [], activeTool = 'poly', isDrawing = false, startPoint = null, tempPoint = null;
+    // 5. Battery Architect
+    function calcBattery() {
+        const targetV = safeFloat('batTargetV');
+        const targetAh = safeFloat('batTargetAh');
+        const cellV = safeFloat('cellV');
+        const cellMah = safeFloat('cellMah');
+        const cellAmps = safeFloat('cellAmps');
+        const cellG = safeFloat('cellG');
 
-    function initCanvas() {
-        canvas = document.getElementById('designCanvas');
-        if(!canvas) return;
-        ctx = canvas.getContext('2d');
-        resizeCanvas();
+        if(cellV <= 0 || cellMah <= 0) return;
 
-        // FIX: Re-bind events to ensure they don't stack up if init called multiple times
-        canvas.removeEventListener('mousedown', handleStart);
-        canvas.removeEventListener('mousemove', handleMove);
-        canvas.removeEventListener('mouseup', handleEnd);
+        const sCount = Math.ceil(targetV / cellV);
+        const pCount = Math.ceil(targetAh / (cellMah / 1000));
+        
+        const totalCells = sCount * pCount;
+        const packWeight = (totalCells * cellG) / 1000; 
+        const realAh = (pCount * cellMah) / 1000;
+        const totalEnergyKwh = (sCount * cellV * realAh) / 1000;
+        const maxPowerKw = (pCount * cellAmps * (sCount * cellV)) / 1000;
+        const maxV = sCount * 4.2; 
 
-        canvas.addEventListener('mousedown', handleStart);
-        canvas.addEventListener('mousemove', handleMove);
-        canvas.addEventListener('mouseup', handleEnd);
-        canvas.addEventListener('touchstart', handleStart, {passive: false});
-        canvas.addEventListener('touchmove', handleMove, {passive: false});
-        canvas.addEventListener('touchend', handleEnd);
+        document.getElementById('batConf').innerText = `${sCount}S / ${pCount}P`;
+        document.getElementById('batKwh').innerText = totalEnergyKwh.toFixed(2) + " kWh";
+        document.getElementById('batKw').innerText = maxPowerKw.toFixed(1) + " kW";
+        document.getElementById('batRealAh').innerText = realAh.toFixed(1) + " Ah";
+        document.getElementById('batTotalCells').innerText = totalCells;
+        document.getElementById('batWeight').innerText = packWeight.toFixed(2) + " kg";
+        document.getElementById('batMaxV').innerText = maxV.toFixed(1) + " V";
+    }
+
+    // 6. CNC Calc
+    function calcCNC() {
+        const vc = safeFloat('matType'); 
+        const d = safeFloat('cncD');
+        const fz = safeFloat('cncFz');
+        const z = safeFloat('cncZ');
+        const ae = safeFloat('cncAe');
+        const ap = safeFloat('cncAp');
+
+        // FIX: Sıfıra bölme kontrolü
+        if(d <= 0) { document.getElementById('resRPM').innerText = "Err"; return; }
+
+        const rpm = (vc * 1000) / (Math.PI * d);
+        const feed = rpm * fz * z; 
+        const mrr = (feed * ae * ap) / 1000; 
+
+        document.getElementById('resRPM').innerText = Math.round(rpm).toLocaleString();
+        document.getElementById('resFeed').innerText = Math.round(feed) + " mm/min";
+        document.getElementById('resMRR').innerText = mrr.toFixed(1) + " cm³/min";
+        document.getElementById('resChip').innerText = fz + " mm";
+    }
+
+    // 7. Lathe Calc
+    function calcLathe() {
+        const dia = safeFloat('latheDia');
+        const vc = safeFloat('latheMat');
+        const ap = safeFloat('latheAp');
+        const fn = safeFloat('latheFn');
+
+        // FIX: Sıfıra bölme kontrolü
+        if(dia <= 0) { document.getElementById('latheRPM').innerText = "Err (Dia)"; return; }
+
+        const rpm = (vc * 1000) / (Math.PI * dia);
+        const mrrVal = vc * ap * fn; 
+        const power = (mrrVal * 2000) / 60000; 
+
+        document.getElementById('latheRPM').innerText = Math.round(rpm) + " RPM";
+        document.getElementById('latheVc').innerText = vc + " m/min";
+        document.getElementById('latheMRR').innerText = mrrVal.toFixed(1) + " cm³/min";
+        document.getElementById('lathePower').innerText = power.toFixed(1) + " kW";
+    }
+
+    // --- OTHER CALCULATORS ---
+    function calcWeld(){
+        const t = safeFloat('weldThick');
+        document.getElementById('weldAmps').innerText = (t*30).toFixed(0) + " - " + (t*40).toFixed(0) + " A";
+        document.getElementById('weldNote').innerText = "Rough Guide: 30-40A per mm";
+    }
+    function calcLaser(){
+        const cost = ((safeFloat('cutLen')*1000/safeFloat('cutSpeed')/60)*safeFloat('cutRate')+safeFloat('cutSetup'));
+        document.getElementById('cutCostRes').innerText = cost.toFixed(2);
+        document.getElementById('cutTimeRes').innerText = (safeFloat('cutLen')*1000/safeFloat('cutSpeed')).toFixed(1) + " min";
+    }
+    function calcOring(){
+        const w = safeFloat('oringW');
+        document.getElementById('grooveD').innerText = (w*0.85).toFixed(2) + " mm";
+        document.getElementById('grooveW').innerText = (w*1.3).toFixed(2) + " mm";
+        document.getElementById('grooveDiaRes').innerText = (safeFloat('oringDia')+(2*w*0.85)).toFixed(2)+" mm";
+    }
+    function calcBend(){
+        const ba = (safeFloat('bendA')*Math.PI/180)*(safeFloat('bendR')+(safeFloat('bendK')*safeFloat('bendT'))); 
+        document.getElementById('bendBA').innerText = ba.toFixed(2) + " mm";
+    }
+    function calcHydro(){
+        const f = (safeFloat('cylPress')*Math.PI*Math.pow(safeFloat('cylBore')/20,2)/1000);
+        document.getElementById('pushForce').innerText = f.toFixed(2)+" Ton";
+        document.getElementById('pullForce').innerText = (f * 0.7).toFixed(2) + " Ton";
+    }
+    function calcGearing(){
+        const ratio = safeFloat('gearDriven')/safeFloat('gearDriver');
+        const speed = (safeFloat('motorRPM')/ratio*Math.PI*safeFloat('tireDia')*60/100000);
+        document.getElementById('speedRes').innerText = speed.toFixed(1)+" km/h";
+        document.getElementById('ratioRes').innerText = ratio.toFixed(2)+":1";
+    }
+    function calcBelt(){
+        const L = (2*safeFloat('beltC')+1.57*(safeFloat('beltD')+safeFloat('belt_d'))+(Math.pow(safeFloat('beltD')-safeFloat('belt_d'),2)/(4*safeFloat('beltC'))));
+        document.getElementById('beltLenRes').innerText = L.toFixed(0) + " mm";
+    }
+    function updateProfileInputs() {
+        const t = document.getElementById('profileType').value;
+        const div = document.getElementById('profileInputs');
+        if(t==='round_solid') div.innerHTML = '<small>Dia (mm)</small><input type="number" id="pD" value="20">';
+        else if(t==='plate') div.innerHTML = '<div class="row"><div style="flex:1"><small>W</small><input type="number" id="pW" value="50"></div><div style="flex:1"><small>Thick</small><input type="number" id="pT" value="5"></div></div>';
+        else div.innerHTML = '<div class="row"><div style="flex:1"><small>W</small><input type="number" id="pW" value="40"></div><div style="flex:1"><small>Thick</small><input type="number" id="pT" value="2"></div></div>';
+    }
+    function calcProfileWeight(){
+        const rho = parseFloat(document.getElementById('profileMat').value);
+        let area = 0;
+        const t = document.getElementById('profileType').value;
+        if(t==='round_solid') area = Math.PI*Math.pow(safeFloat('pD')/2,2);
+        else if(t==='plate') area = safeFloat('pW')*safeFloat('pT');
+        else area = Math.pow(safeFloat('pW'),2) - Math.pow(safeFloat('pW')-2*safeFloat('pT'),2);
+        document.getElementById('profWeightRes').innerText = (area*safeFloat('profL')*rho/1000000).toFixed(2)+" kg";
+    }
+    function updateGeomInputs(){
+        const t = document.getElementById('shapeType').value;
+        const d = document.getElementById('geomInputs');
+        if(t==='sphere') d.innerHTML='<small>Radius</small><input type="number" id="gR" value="10">';
+        else if(t==='cube') d.innerHTML='<div class="row"><input id="gL" placeholder="L"><input id="gW" placeholder="W"><input id="gH" placeholder="H"></div>';
+        else d.innerHTML='<div class="row"><input id="gR" placeholder="R"><input id="gL" placeholder="L"></div>';
+    }
+    function calcGeomVolume(){
+        const t = document.getElementById('shapeType').value;
+        let v = 0;
+        if(t==='sphere') v = (4/3)*Math.PI*Math.pow(safeFloat('gR'),3);
+        else if(t==='cube') v = safeFloat('gL')*safeFloat('gW')*safeFloat('gH');
+        else v = Math.PI*Math.pow(safeFloat('gR'),2)*safeFloat('gL');
+        document.getElementById('geomRes').innerText = v.toFixed(0);
+        document.getElementById('massRes').innerText = (v*safeFloat('matDensity')/1000000).toFixed(3);
+    }
+    function calcThermal(){document.getElementById('thermRes').innerText = (safeFloat('thermL')*safeFloat('thermMat')*1e-6*safeFloat('thermDT')*1000).toFixed(1)+" µm";}
+    function calcFlow(){document.getElementById('pipeVel').innerText = (safeFloat('pipeQ')/60000 / (Math.PI*Math.pow(safeFloat('pipeID')/2000,2))).toFixed(2) + " m/s";}
+    function calcPrintCost(){document.getElementById('resTotalPrint').innerText = ((safeFloat('partWeight')/safeFloat('spoolWeight')*safeFloat('spoolCost')) + (safeFloat('printerWatts')/1000*safeFloat('printTime')*safeFloat('kwhCost'))).toFixed(2);}
+    function calcCable(){
+        const sect = (2*safeFloat('cabL')*safeFloat('cabA')*0.0175 / (safeFloat('cabV')*safeFloat('cabDrop')/100));
+        document.getElementById('cabResMM').innerText = sect.toFixed(2) + " mm²";
+        const std = [0.5, 0.75, 1.0, 1.5, 2.5, 4, 6];
+        document.getElementById('cabStd').innerText = std.find(s=>s>=sect) || "Check Max";
+    }
+    function calcLedResistor(){const r = (safeFloat('ledVs')-safeFloat('ledVf'))/(safeFloat('ledI')/1000); document.getElementById('resLedOhm').innerText = r.toFixed(0) + " Ω";}
+    // FIX: Sıfıra bölme kontrolü
+    function calcOhm(){const v=safeFloat('ohmV'), i=safeFloat('ohmI'); if(v&&i) document.getElementById('ohmR').value = v/i;}
+    function calcStepper(){document.getElementById('stepRes').innerText = ((360/1.8*16)/safeFloat('transVal')).toFixed(2);}
+    function calcLinterp(){document.getElementById('lres').innerText = (safeFloat('ly1')+((safeFloat('ltx')-safeFloat('lx1'))*(safeFloat('ly2')-safeFloat('ly1'))/(safeFloat('lx2')-safeFloat('lx1')))).toFixed(4);}
+
+    // --- 2D SKETCH LOGIC (UPDATED WITH TOUCH) ---
+    let canvas, ctx, shapes=[], points=[], activeTool='pencil', isDrawing=false, startPoint=null;
+    
+    function initCanvas(){ 
+        canvas = document.getElementById('designCanvas'); 
+        if(canvas){ 
+            ctx = canvas.getContext('2d'); 
+            
+            // Mouse Events
+            canvas.onmousedown = handleStart; 
+            canvas.onmousemove = handleMove; 
+            canvas.onmouseup = handleEnd; 
+            
+            // Touch Events (Mapped to mouse)
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousedown", { clientX: touch.clientX, clientY: touch.clientY });
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const mouseEvent = new MouseEvent("mouseup", {});
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+        }
     }
     
-    // FIX: Canvas Resize Logic
-    function resizeCanvas() {
-        if(!canvas) return;
-        // Check if modal is visible to avoid 0 width
-        if(canvas.parentElement.offsetWidth > 0) {
+    function resizeCanvas(){ 
+        if(canvas){ 
             canvas.width = canvas.parentElement.offsetWidth; 
-            canvas.height = 500; 
+            canvas.height = 550; 
             drawCanvas(); 
         }
     }
-    
-    window.addEventListener('resize', () => {
-         if(document.getElementById('sketchModal').style.display === 'block') {
-             resizeCanvas();
-         }
-    });
 
-    function getCoords(e) {
-        e.preventDefault(); 
-        const rect = canvas.getBoundingClientRect();
-        let x, y;
-        if (e.touches && e.touches.length > 0) { x = e.touches[0].clientX - rect.left; y = e.touches[0].clientY - rect.top; }
-        else { x = e.clientX - rect.left; y = e.clientY - rect.top; }
-        return {x, y};
+    function setTool(t){ 
+        activeTool = t; 
+        points = [];
+        startPoint = null;
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        let btnId = t === 'pencil' ? 'btnPencil' : t === 'poly' ? 'btnPoly' : 'btnCircle';
+        document.getElementById(btnId).classList.add('active');
     }
-    function handleStart(e) {
-        const coords = getCoords(e);
-        if(activeTool === 'poly') { points.push(coords); startPoint = coords; } 
-        else if(activeTool === 'circle') { isDrawing = true; startPoint = coords; }
-        drawCanvas();
-    }
-    function handleMove(e) {
-        const coords = getCoords(e);
-        tempPoint = coords;
-        document.getElementById('cursorPos').innerText = `X:${Math.round(coords.x)} Y:${Math.round(coords.y)}`;
-        drawCanvas();
-    }
-    function handleEnd(e) {
-        if(activeTool === 'circle' && isDrawing) {
-            const coords = getCoords(e);
-            const radius = Math.sqrt(Math.pow(coords.x - startPoint.x, 2) + Math.pow(coords.y - startPoint.y, 2));
-            if(radius > 2) shapes.push({type: 'circle', center: startPoint, radius: radius});
-            isDrawing = false; startPoint = null; tempPoint = null; calcTotalArea();
+
+    function handleStart(e){ 
+        const r = canvas.getBoundingClientRect(); 
+        const p = {x: e.clientX - r.left, y: e.clientY - r.top}; 
+
+        if(activeTool === 'poly'){
+            points.push(p);
+            drawCanvas();
+        } else if(activeTool === 'pencil') {
+            isDrawing = true;
+            points = [p];
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+        } else if(activeTool === 'circle') {
+            isDrawing = true;
+            startPoint = p;
         }
-        drawCanvas();
     }
-    function setTool(tool) {
-        activeTool = tool;
-        document.getElementById('btnPoly').classList.toggle('active', tool === 'poly');
-        document.getElementById('btnCircle').classList.toggle('active', tool === 'circle');
-        points = []; startPoint = null; tempPoint = null; drawCanvas();
+
+    function handleMove(e){ 
+        const r = canvas.getBoundingClientRect(); 
+        const p = {x: e.clientX - r.left, y: e.clientY - r.top}; 
+
+        if(activeTool === 'pencil' && isDrawing) {
+            points.push(p);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        } else if(activeTool === 'circle' && isDrawing) {
+            drawCanvas();
+            const rad = Math.sqrt(Math.pow(p.x - startPoint.x, 2) + Math.pow(p.y - startPoint.y, 2));
+            ctx.beginPath();
+            ctx.arc(startPoint.x, startPoint.y, rad, 0, Math.PI*2);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        } else if(activeTool === 'poly' && points.length > 0) {
+            drawCanvas();
+            const last = points[points.length-1];
+            ctx.beginPath();
+            ctx.moveTo(last.x, last.y);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.stroke();
+        }
     }
-    function drawCanvas() {
+
+    function handleEnd(e){ 
+        if(!isDrawing) return;
+        const r = canvas.getBoundingClientRect(); 
+        const p = {x: e.clientX - r.left, y: e.clientY - r.top}; 
+
+        if(activeTool === 'pencil'){
+            isDrawing = false;
+            shapes.push({type: 'pencil', pts: points});
+            points = [];
+        } else if(activeTool === 'circle'){
+            isDrawing = false;
+            const rad = Math.sqrt(Math.pow(p.x - startPoint.x, 2) + Math.pow(p.y - startPoint.y, 2));
+            shapes.push({type: 'circle', c: startPoint, r: rad});
+            drawCanvas();
+            calcArea();
+        }
+    }
+
+    function closePolygon(){ 
+        if(points.length > 2) shapes.push({type:'poly', pts:points}); 
+        points=[]; 
+        drawCanvas(); 
+        calcArea(); 
+    }
+
+    function clearCanvas(){ 
+        shapes=[]; points=[]; 
+        drawCanvas(); 
+        document.getElementById('analysisResult').innerText="Area: 0 mm²"; 
+    }
+
+    function drawCanvas(){ 
         if(!ctx) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; ctx.lineWidth = 1;
-        const gridSize = 20;
-        for(let i=0; i<canvas.width; i+=gridSize) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
-        for(let j=0; j<canvas.height; j+=gridSize) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
-        for(let shape of shapes) {
-            ctx.strokeStyle = '#10b981'; ctx.fillStyle = 'rgba(16, 185, 129, 0.2)'; ctx.lineWidth = 2;
-            ctx.beginPath();
-            if(shape.type === 'poly') {
-                ctx.moveTo(shape.points[0].x, shape.points[0].y);
-                for(let i=1; i<shape.points.length; i++) ctx.lineTo(shape.points[i].x, shape.points[i].y);
-                ctx.closePath(); ctx.fill();
-                 for(let i=0; i<shape.points.length; i++) {
-                    let p1 = shape.points[i]; let p2 = shape.points[(i+1) % shape.points.length]; drawLabel(p1, p2);
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        for(let i=0; i<canvas.width; i+=20) { ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); }
+        for(let i=0; i<canvas.height; i+=20) { ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); }
+        ctx.stroke();
+
+        shapes.forEach(s => {
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath();
+            if(s.type === 'poly' || s.type === 'pencil'){ 
+                if(s.pts.length > 0){
+                    ctx.moveTo(s.pts[0].x, s.pts[0].y); 
+                    s.pts.forEach(p => ctx.lineTo(p.x, p.y)); 
+                    if(s.type === 'poly') ctx.closePath(); 
+                    ctx.stroke(); 
                 }
-            } else if(shape.type === 'circle') {
-                ctx.arc(shape.center.x, shape.center.y, shape.radius, 0, Math.PI*2); ctx.fill();
-                drawLabel(shape.center, {x: shape.center.x + shape.radius, y: shape.center.y});
             }
-            ctx.stroke();
-        }
-        if(points.length > 0) {
-            ctx.strokeStyle = activeTool === 'poly' ? '#3b82f6' : '#10b981'; ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            for(let i=1; i<points.length; i++) { ctx.lineTo(points[i].x, points[i].y); drawLabel(points[i-1], points[i]); }
-            ctx.stroke();
-            if(tempPoint && activeTool === 'poly') {
-                 ctx.beginPath(); ctx.moveTo(points[points.length-1].x, points[points.length-1].y); ctx.lineTo(tempPoint.x, tempPoint.y);
-                 ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)'; ctx.stroke();
-                 drawLabel(points[points.length-1], tempPoint, true); 
-            }
-            ctx.fillStyle = '#fff'; for(let p of points) { ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill(); }
-        }
-        if(isDrawing && activeTool === 'circle' && startPoint && tempPoint) {
-             const radius = Math.sqrt(Math.pow(tempPoint.x - startPoint.x, 2) + Math.pow(tempPoint.y - startPoint.y, 2));
-             ctx.beginPath(); ctx.arc(startPoint.x, startPoint.y, radius, 0, Math.PI*2);
-             ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)'; ctx.fillStyle = 'rgba(59, 130, 246, 0.1)'; ctx.fill(); ctx.stroke();
-             drawLabel(startPoint, tempPoint, true); 
+            if(s.type === 'circle'){ ctx.arc(s.c.x, s.c.y, s.r, 0, Math.PI*2); ctx.stroke(); }
+        });
+
+        if(activeTool === 'poly' && points.length > 0){
+             ctx.fillStyle = '#60a5fa';
+             points.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill(); });
+             ctx.beginPath();
+             ctx.strokeStyle = '#60a5fa';
+             ctx.moveTo(points[0].x, points[0].y);
+             for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+             ctx.stroke();
         }
     }
-    function drawLabel(p1, p2, isPreview = false) {
-         const midX = (p1.x + p2.x) / 2; const midY = (p1.y + p2.y) / 2;
-         const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-         if(dist < 5) return; 
-         ctx.save();
-         ctx.fillStyle = isPreview ? 'rgba(255,255,255,0.7)' : '#fff';
-         ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-         const text = Math.round(dist) + 'mm'; const metrics = ctx.measureText(text);
-         ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(midX - metrics.width/2 - 2, midY - 8, metrics.width + 4, 16);
-         ctx.fillStyle = isPreview ? 'rgba(255,255,255,0.9)' : '#fff'; ctx.fillText(text, midX, midY);
-         ctx.restore();
-    }
-    function closePolygon() {
-        if(points.length < 3) return;
-        shapes.push({type: 'poly', points: points}); points = []; startPoint = null; tempPoint = null;
-        drawCanvas(); calcTotalArea();
-    }
-    function calcTotalArea() {
-        let totalArea = 0;
-        for(let shape of shapes) {
-            if(shape.type === 'poly') {
-                let area = 0;
-                for (let i = 0; i < shape.points.length; i++) {
-                    let j = (i + 1) % shape.points.length;
-                    area += shape.points[i].x * shape.points[j].y;
-                    area -= shape.points[j].x * shape.points[i].y;
+
+    function calcArea(){
+        let total = 0;
+        shapes.forEach(s => {
+            if(s.type === 'circle') total += Math.PI * Math.pow(s.r, 2);
+            if(s.type === 'poly'){
+                let a = 0;
+                for(let i=0; i<s.pts.length; i++){
+                    let j = (i+1)%s.pts.length;
+                    a += s.pts[i].x*s.pts[j].y; a -= s.pts[j].x*s.pts[i].y;
                 }
-                totalArea += Math.abs(area) / 2;
-            } else if(shape.type === 'circle') { totalArea += Math.PI * Math.pow(shape.radius, 2); }
+                total += Math.abs(a)/2;
+            }
+        });
+        document.getElementById('analysisResult').innerText = "Area: " + total.toFixed(0) + " mm² (Approx)";
+    }
+
+    // --- 3D STUDIO LOGIC (FIXED MEMORY & RESIZE) ---
+    let scene, camera, renderer, controls, raycaster, mouse;
+    let is3DDrawMode = false;
+    let linePoints = [];
+    let currentLine = null;
+
+    function init3D() {
+        const cont = document.getElementById('threeContainer');
+        if(cont.children.length > 1) return; 
+        
+        scene = new THREE.Scene(); 
+        scene.background = new THREE.Color(0x111111);
+        camera = new THREE.PerspectiveCamera(75, cont.clientWidth/cont.clientHeight, 0.1, 1000);
+        camera.position.set(10, 10, 15);
+        renderer = new THREE.WebGLRenderer({antialias:true}); 
+        renderer.setSize(cont.clientWidth, cont.clientHeight);
+        cont.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        
+        const amb = new THREE.AmbientLight(0x404040); scene.add(amb);
+        const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(10,20,10); scene.add(light);
+        const grid = new THREE.GridHelper(40, 40, 0x333333, 0x222222); scene.add(grid);
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+        renderer.domElement.addEventListener('click', on3DClick, false);
+        
+        // RESIZE LISTENER
+        window.addEventListener('resize', () => {
+            if (!camera || !renderer) return;
+            const width = cont.clientWidth;
+            const height = cont.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        // FIX: Animasyonu bir değişkene atayarak kontrol edilebilir yapıyoruz
+        function animate() { 
+            animationId = requestAnimationFrame(animate); 
+            controls.update(); 
+            renderer.render(scene, camera); 
         }
-        document.getElementById('analysisResult').innerText = "Total Area: " + Math.round(totalArea).toLocaleString() + " mm²";
-        document.getElementById('areaInch').innerText = (totalArea * 0.00155).toFixed(3) + " in²";
+        animate();
     }
-    function clearCanvas() {
-        points = []; shapes = []; startPoint = null; tempPoint = null; isDrawing = false;
-        document.getElementById('analysisResult').innerText = "Total Area: 0 mm²";
-        document.getElementById('areaInch').innerText = "0 in²";
-        drawCanvas();
+
+    function toggle3DDrawMode(){
+        is3DDrawMode = !is3DDrawMode;
+        const btn = document.getElementById('btn3DDraw');
+        if(is3DDrawMode){
+            btn.style.background = "#10b981";
+            btn.innerText = "✍️ Mode ON (Click Grid)";
+            controls.enabled = false; 
+        } else {
+            btn.style.background = "";
+            btn.innerText = "✍️ Draw Line on Grid";
+            controls.enabled = true;
+            linePoints = []; 
+        }
     }
+
+    function on3DClick(event){
+        if(!is3DDrawMode) return;
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        
+        // FIX: Raycaster mantık hatası düzeltildi
+        const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const target = new THREE.Vector3();
+        const intersect = raycaster.ray.intersectPlane(plane, target); // Dönüş değerini kontrol et
+
+        if(intersect){
+            target.x = Math.round(target.x);
+            target.z = Math.round(target.z);
+            target.y = 0;
+            const geo = new THREE.SphereGeometry(0.2, 16, 16);
+            const mat = new THREE.MeshBasicMaterial({color: 0xf59e0b});
+            const marker = new THREE.Mesh(geo, mat);
+            marker.position.copy(target);
+            scene.add(marker);
+            linePoints.push(target);
+
+            if(linePoints.length > 1){
+                const points = linePoints;
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({ color: 0x3b82f6, linewidth: 3 });
+                if(currentLine) scene.remove(currentLine);
+                currentLine = new THREE.Line(geometry, material);
+                scene.add(currentLine);
+            }
+        }
+    }
+
+    function add3DCube(){ 
+        const g=new THREE.BoxGeometry(4,4,4); const m=new THREE.MeshPhongMaterial({color:0x3b82f6}); const c=new THREE.Mesh(g,m); 
+        c.position.y=2; c.position.x = (Math.random()-0.5)*10; c.position.z = (Math.random()-0.5)*10; scene.add(c); 
+    }
+    function add3DCylinder(){ 
+        const g=new THREE.CylinderGeometry(2,2,6,32); const m=new THREE.MeshPhongMaterial({color:0x10b981}); const c=new THREE.Mesh(g,m); 
+        c.position.y=3; c.position.x = (Math.random()-0.5)*10; scene.add(c); 
+    }
+    
+    // MEMORY CLEANUP
+    function clear3D(){ 
+        for(let i=scene.children.length-1; i>=0; i--){
+            let obj = scene.children[i];
+            if(obj.type==='Mesh' || obj.type==='Line') {
+                scene.remove(obj);
+                if(obj.geometry) obj.geometry.dispose();
+                if(obj.material) {
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+                    else obj.material.dispose();
+                }
+            }
+        }
+        linePoints = []; currentLine = null;
+    }
+    function toggleWireframe(){ 
+        scene.children.forEach(c => { if(c.type==='Mesh' && c.material) c.material.wireframe = !c.material.wireframe; });
+    }
+
 </script>
 </body>
 </html>
