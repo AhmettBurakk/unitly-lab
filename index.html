@@ -332,7 +332,7 @@
         
         <div style="margin-top:auto; font-size:0.75rem; color:var(--text-muted); padding-top:20px; border-top:1px solid var(--border);">
             System Status: <span style="color:#10b981">● Online</span><br>
-            Ver: 2.1.7
+            Ver: 2.2.0 (Enhanced)
         </div>
     </nav>
 
@@ -358,6 +358,13 @@
                 <div class="card"><h3>⏱️ Time</h3><div class="input-group"><input type="number" id="timInput" oninput="convert('tim')"><div class="row"><select id="timFrom" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="86400">Day</option></select>➔<select id="timTo" onchange="convert('tim')"><option value="3600">Hr</option><option value="60">Min</option><option value="1">Sec</option><option value="86400">Day</option></select></div></div><div class="result-box"><span id="timRes" class="result-val">0</span></div></div>
                 <div class="card"><h3>⚖️ Weight</h3><div class="input-group"><input type="number" id="wgtInput" oninput="convert('wgt')"><div class="row"><select id="wgtFrom" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option></select>➔<select id="wgtTo" onchange="convert('wgt')"><option value="1">kg</option><option value="0.001">g</option><option value="1000">ton</option><option value="0.453592">lb</option></select></div></div><div class="result-box"><span id="wgtRes" class="result-val">0</span></div></div>
                 <div class="card"><h3>🥛 Volume</h3><div class="input-group"><input type="number" id="volInput" oninput="convert('vol')"><div class="row"><select id="volFrom" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="3.78541">gal</option></select>➔<select id="volTo" onchange="convert('vol')"><option value="1">L</option><option value="0.001">ml</option><option value="1000">m³</option><option value="3.78541">gal</option></select></div></div><div class="result-box"><span id="volRes" class="result-val">0</span></div></div>
+                
+                <div class="card"><h3>🌡️ Temp</h3><div class="input-group"><input type="number" id="tempInput" oninput="calcTemp()"><div class="row"><select id="tempFrom" onchange="calcTemp()"><option value="c">°C</option><option value="f">°F</option><option value="k">K</option></select>➔<select id="tempTo" onchange="calcTemp()"><option value="c">°C</option><option value="f">°F</option><option value="k">K</option></select></div></div><div class="result-box"><span id="tempRes" class="result-val">0</span></div></div>
+                <div class="card"><h3>📐 Angle</h3><div class="input-group"><input type="number" id="angInput" oninput="convert('ang')"><div class="row"><select id="angFrom" onchange="convert('ang')"><option value="1">Deg (°)</option><option value="57.2958">Rad</option><option value="0.9">Grad</option></select>➔<select id="angTo" onchange="convert('ang')"><option value="1">Deg (°)</option><option value="57.2958">Rad</option><option value="0.9">Grad</option></select></div></div><div class="result-box"><span id="angRes" class="result-val">0</span></div></div>
+                <div class="card"><h3>🔋 Energy</h3><div class="input-group"><input type="number" id="nrgInput" oninput="convert('nrg')"><div class="row"><select id="nrgFrom" onchange="convert('nrg')"><option value="1">Joule</option><option value="3600000">kWh</option><option value="4184">kcal</option><option value="1055">BTU</option></select>➔<select id="nrgTo" onchange="convert('nrg')"><option value="1">Joule</option><option value="3600000">kWh</option><option value="4184">kcal</option><option value="1055">BTU</option></select></div></div><div class="result-box"><span id="nrgRes" class="result-val">0</span></div></div>
+                <div class="card"><h3>💾 Data</h3><div class="input-group"><input type="number" id="datInput" oninput="convert('dat')"><div class="row"><select id="datFrom" onchange="convert('dat')"><option value="1">MB</option><option value="0.0009765">KB</option><option value="1024">GB</option><option value="1048576">TB</option><option value="0.000000125">Bit</option></select>➔<select id="datTo" onchange="convert('dat')"><option value="1">MB</option><option value="0.0009765">KB</option><option value="1024">GB</option><option value="1048576">TB</option><option value="0.000000125">Bit</option></select></div></div><div class="result-box"><span id="datRes" class="result-val">0</span></div></div>
+                <div class="card"><h3>⛽ Fuel</h3><div class="input-group"><input type="number" id="fuelInput" oninput="calcFuel()"><div class="row"><select id="fuelFrom" onchange="calcFuel()"><option value="l100">L/100km</option><option value="mpg">MPG (US)</option><option value="kml">km/L</option></select>➔<select id="fuelTo" onchange="calcFuel()"><option value="l100">L/100km</option><option value="mpg">MPG (US)</option><option value="kml">km/L</option></select></div></div><div class="result-box"><span id="fuelRes" class="result-val">0</span></div></div>
+
                 <div class="card"><h3>📈 Finance</h3><div class="input-group"><input type="number" id="pCap" placeholder="Capital"><div class="row"><input type="number" id="pRate" value="45" placeholder="%"><input type="number" id="pTime" value="12" placeholder="Mo"></div><button onclick="calcFin()">Calculate</button></div><div class="result-box"><span id="finRes" class="result-val">0</span></div></div>
             </div>
 
@@ -892,7 +899,7 @@
         for (let row of rows) row.style.display = row.innerText.toUpperCase().includes(input) ? "" : "none";
     }
 
-    // --- CONVERTER LOGIC ---
+    // --- CONVERTER LOGIC (UPDATED WITH NEW TOOLS) ---
     function convert(type) {
         const val = safeFloat(type + 'Input');
         const from = parseFloat(document.getElementById(type + 'From').value);
@@ -900,6 +907,53 @@
         const res = val * from / to;
         document.getElementById(type + 'Res').innerText = res < 0.01 && res !== 0 ? res.toExponential(4) : res.toLocaleString(undefined, {maximumFractionDigits: 4});
     }
+
+    // SPECIAL CONVERTERS (Non-Linear)
+    function calcTemp() {
+        const val = safeFloat('tempInput');
+        const from = document.getElementById('tempFrom').value;
+        const to = document.getElementById('tempTo').value;
+        let celsius = 0;
+        
+        // Convert to Celsius first
+        if(from === 'c') celsius = val;
+        else if(from === 'f') celsius = (val - 32) * 5/9;
+        else if(from === 'k') celsius = val - 273.15;
+        
+        // Convert Celsius to Target
+        let res = 0;
+        if(to === 'c') res = celsius;
+        else if(to === 'f') res = (celsius * 9/5) + 32;
+        else if(to === 'k') res = celsius + 273.15;
+        
+        document.getElementById('tempRes').innerText = res.toFixed(2);
+    }
+    
+    function calcFuel() {
+        const val = safeFloat('fuelInput');
+        if(val <= 0) return;
+        const from = document.getElementById('fuelFrom').value;
+        const to = document.getElementById('fuelTo').value;
+        let res = 0;
+
+        // Constants for conversion
+        // L/100km to MPG = 235.215 / x
+        // L/100km to km/L = 100 / x
+        
+        let l100 = 0;
+        // Normalize to L/100km first
+        if(from === 'l100') l100 = val;
+        else if(from === 'mpg') l100 = 235.215 / val;
+        else if(from === 'kml') l100 = 100 / val;
+
+        // Convert to Target
+        if(to === 'l100') res = l100;
+        else if(to === 'mpg') res = 235.215 / l100;
+        else if(to === 'kml') res = 100 / l100;
+
+        document.getElementById('fuelRes').innerText = res.toFixed(2);
+    }
+
     function calcFin() {
         const p = safeFloat('pCap'), r = safeFloat('pRate'), t = safeFloat('pTime');
         document.getElementById('finRes').innerText = ((p*r*t)/1200).toLocaleString();
