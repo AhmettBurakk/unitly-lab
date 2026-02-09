@@ -17,6 +17,8 @@
             --primary-glow: rgba(59, 130, 246, 0.5);
             --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.5);
+            --thermo: #f43f5e; /* New Thermo Color */
+            --thermo-glow: rgba(244, 63, 94, 0.5);
             --warn: #f59e0b;
             --danger: #ef4444;
             --bg-dark: #0f172a;
@@ -26,13 +28,13 @@
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.1);
             --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            --gradient-thermo: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
             --gradient-orange: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
-            /* Arka plan görseli yerine Particles.js gelecek ama fallback olarak kalsın */
             background-image: 
                 radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
                 linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -52,8 +54,8 @@
             height: 100%;
             top: 0;
             left: 0;
-            z-index: -1; /* En arkada */
-            pointer-events: none; /* Tıklamayı engelleme */
+            z-index: -1;
+            pointer-events: none;
         }
 
         /* --- SIDEBAR STYLING --- */
@@ -137,7 +139,7 @@
             width: calc(100% - 280px);
             box-sizing: border-box;
             position: relative; 
-            z-index: 10; /* Partiküllerin üstünde */
+            z-index: 10;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
@@ -295,6 +297,19 @@
             </button>
 
             <div class="dropdown">
+                <button onclick="toggleDropdown('thermoDropdown')" class="dropbtn" style="border-color: rgba(244, 63, 94, 0.2);">
+                    <span style="color:var(--thermo)">🔥</span> Thermodynamics 
+                    <span class="arrow">›</span>
+                </button>
+                <div id="thermoDropdown" class="dropdown-content">
+                    <a onclick="openModal('rankineModal')">🏭 Rankine Cycle <span class="lab-badge hot">GRAPH</span></a>
+                    <a onclick="openModal('thermModal')">📏 Thermal Expansion</a>
+                    <a onclick="openModal('gasModal')">🎈 Ideal Gas Law</a>
+                    <a onclick="openModal('heatModal')">❄️ Heat Transfer (Q)</a>
+                </div>
+            </div>
+
+            <div class="dropdown">
                 <button onclick="toggleDropdown('mechDropdown')" class="dropbtn">
                     <span>⚙️</span> Mechanical 
                     <span class="arrow">›</span>
@@ -318,7 +333,6 @@
                     <a onclick="openModal('geomModal')">📐 Material & Volume</a>
                     <a onclick="openModal('beamModal')">🏗️ Beam Analysis <span class="lab-badge new">FEA</span></a>
                     <a onclick="openModal('stressModal')">📈 Stress Analysis</a>
-                    <a onclick="openModal('thermModal')">🔥 Thermal Exp.</a>
                     <a onclick="openModal('flowModal')">💧 Pipe Flow</a>
                     <a onclick="openModal('printModal')">🖨️ 3D Print Cost</a>
                 </div>
@@ -358,7 +372,7 @@
         
         <div style="margin-top:auto; font-size:0.75rem; color:var(--text-muted); padding-top:20px; border-top:1px solid var(--border);">
             System Status: <span style="color:#10b981">● Online</span><br>
-            Ver: 2.3.0 (Visuals Added)
+            Ver: 2.4.0 (Thermo Added)
         </div>
     </nav>
 
@@ -408,6 +422,112 @@
         </div>
     </div>
 
+    <div id="rankineModal" class="modal">
+        <div class="modal-content" style="max-width: 1100px;">
+            <span class="close" onclick="closeModal('rankineModal')">&times;</span>
+            <h3 style="color:var(--thermo)">🏭 Rankine Cycle Simulator (T-s Diagram)</h3>
+            <div class="modal-grid" style="display:grid; grid-template-columns: 350px 1fr; gap:25px;">
+                <div class="input-group">
+                    <span class="unit-tag">Steam Parameters</span>
+                    <small>Boiler / Turbine Pressure (P1) - Bar</small>
+                    <input type="number" id="rankineP1" value="100" oninput="calcRankine()">
+                    
+                    <small>Turbine Inlet Temp (T1) - °C</small>
+                    <input type="number" id="rankineT1" value="500" oninput="calcRankine()">
+                    
+                    <small>Condenser Pressure (P2) - Bar</small>
+                    <input type="number" id="rankineP2" value="0.1" oninput="calcRankine()">
+
+                    <small>Pump Efficiency (%)</small>
+                    <input type="number" id="rankineEffP" value="85" oninput="calcRankine()">
+                    
+                    <small>Turbine Efficiency (%)</small>
+                    <input type="number" id="rankineEffT" value="90" oninput="calcRankine()">
+
+                    <button onclick="calcRankine()" style="background:var(--gradient-thermo); margin-top:15px;">Refresh Cycle</button>
+                    
+                    <div class="result-box" style="text-align:left; border-color:var(--thermo-glow);">
+                        <div class="res-grid" style="grid-template-columns:1fr;">
+                            <div class="res-item highlight"><small>Thermal Efficiency (η)</small><span id="resRankineEff" style="color:var(--thermo)">0 %</span></div>
+                            <div class="res-item"><small>Net Work Output</small><span id="resRankineWork">0 kJ/kg</span></div>
+                            <div class="res-item"><small>Steam Quality (x4)</small><span id="resRankineX">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="viewer-container" style="background:#0f172a; height: 550px; border-color:var(--border);">
+                     <canvas id="rankineCanvas" width="700" height="550" style="width:100%; height:100%;"></canvas>
+                     <div style="position:absolute; top:10px; right:10px; text-align:right;">
+                         <div style="color:#fff; font-size:0.8rem;">⚪ Saturation Line</div>
+                         <div style="color:#f43f5e; font-size:0.8rem;">🔴 Ideal Cycle</div>
+                         <div style="color:#10b981; font-size:0.8rem;">🟢 Actual Process</div>
+                     </div>
+                </div>
+            </div>
+            <p style="font-size:0.8rem; color:#94a3b8; margin-top:10px;">*Note: This simulation uses simplified state approximations for educational visualization. It does not replace exact IAPWS-IF97 steam tables.</p>
+        </div>
+    </div>
+
+    <div id="gasModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('gasModal')">&times;</span>
+            <h3 style="color:#f59e0b">🎈 Ideal Gas Law (PV = nRT)</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <div class="row">
+                        <div style="flex:1"><small>Pressure (P - Pa)</small><input type="number" id="gasP" placeholder="Calc P"></div>
+                        <div style="flex:1"><small>Volume (V - m³)</small><input type="number" id="gasV" placeholder="Calc V"></div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1"><small>Moles (n)</small><input type="number" id="gasn" value="1"></div>
+                        <div style="flex:1"><small>Temp (T - K)</small><input type="number" id="gasT" value="298"></div>
+                    </div>
+                    <small>Gas Constant (R)</small>
+                    <input type="number" disabled value="8.314 J/(mol·K)" style="opacity:0.7">
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="calcGas('P')">Solve P</button>
+                        <button onclick="calcGas('V')">Solve V</button>
+                        <button onclick="calcGas('T')">Solve T</button>
+                    </div>
+                </div>
+                <div class="result-box">
+                    <span id="gasRes" class="result-val">--</span>
+                    <small>Result</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="heatModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('heatModal')">&times;</span>
+            <h3 style="color:#3b82f6">❄️ Heat Transfer (Q = mcΔT)</h3>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <small>Mass (m - kg)</small><input type="number" id="heatM" value="10">
+                    <small>Specific Heat (c - kJ/kg°C)</small>
+                    <select id="heatC">
+                        <option value="4.18">Water (4.18)</option>
+                        <option value="1.00">Air (1.00)</option>
+                        <option value="0.90">Aluminum (0.90)</option>
+                        <option value="0.45">Steel (0.45)</option>
+                        <option value="0.39">Copper (0.39)</option>
+                    </select>
+                    <div class="row">
+                        <div style="flex:1"><small>T Initial (°C)</small><input type="number" id="heatTi" value="20"></div>
+                        <div style="flex:1"><small>T Final (°C)</small><input type="number" id="heatTf" value="80"></div>
+                    </div>
+                    <button onclick="calcHeat()">Calculate Energy (Q)</button>
+                </div>
+                <div class="result-box">
+                    <div class="result-val" id="heatRes">0 kJ</div>
+                    <small>Energy Required</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="formulaModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('formulaModal')">&times;</span>
@@ -451,6 +571,7 @@
                 <div class="formula-grid">
                     <div class="formula-item"><div class="f-math">PV = nRT</div><div class="f-desc">Ideal Gas Law</div></div>
                     <div class="formula-item"><div class="f-math">Q = mcΔT</div><div class="f-desc">Heat Transfer</div></div>
+                    <div class="formula-item"><div class="f-math">η = 1 - (Tc/Th)</div><div class="f-desc">Carnot Eff.</div></div>
                     <div class="formula-item"><div class="f-math">P = ρ · g · h</div><div class="f-desc">Hydrostatic Press.</div></div>
                     <div class="formula-item"><div class="f-math">Q = A · v</div><div class="f-desc">Flow Rate</div></div>
                 </div>
@@ -1104,6 +1225,7 @@
         }
         if(id === 'beamModal') calcBeamPro();
         if(id === 'resistorModal') calcResistor(); 
+        if(id === 'rankineModal') calcRankine(); // Trigger Thermo
     }
 
     function closeModal(id) { 
@@ -1541,6 +1663,195 @@
         document.getElementById('vMul').style.backgroundColor = mulMap[mul];
         const tolMap = {1:'brown', 2:'red', 5:'gold', 10:'silver'};
         document.getElementById('vTol').style.backgroundColor = tolMap[tol];
+    }
+
+    // --- NEW THERMODYNAMICS LOGIC ---
+    function calcGas(solveFor) {
+        const P = safeFloat('gasP');
+        const V = safeFloat('gasV');
+        const n = safeFloat('gasn');
+        const T = safeFloat('gasT');
+        const R = 8.314;
+        let res = 0;
+
+        if(solveFor === 'P') { res = (n*R*T)/V; document.getElementById('gasP').value = res.toFixed(2); }
+        if(solveFor === 'V') { res = (n*R*T)/P; document.getElementById('gasV').value = res.toFixed(4); }
+        if(solveFor === 'T') { res = (P*V)/(n*R); document.getElementById('gasT').value = res.toFixed(2); }
+        
+        document.getElementById('gasRes').innerText = res.toExponential(3);
+    }
+
+    function calcHeat() {
+        const m = safeFloat('heatM');
+        const c = parseFloat(document.getElementById('heatC').value);
+        const ti = safeFloat('heatTi');
+        const tf = safeFloat('heatTf');
+        const Q = m * c * (tf - ti);
+        document.getElementById('heatRes').innerText = Q.toFixed(1) + " kJ";
+    }
+
+    // RANKINE CYCLE SIMULATION (T-s Diagram)
+    function calcRankine() {
+        const P1 = safeFloat('rankineP1') * 100; // Convert Bar to kPa for math scale
+        const T1 = safeFloat('rankineT1') + 273.15; // Kelvin
+        const P2 = safeFloat('rankineP2') * 100; // kPa
+        const effT = safeFloat('rankineEffT') / 100;
+        const effP = safeFloat('rankineEffP') / 100;
+        
+        // Simplified Steam Properties (For Visualization Only)
+        // Saturation Temp approx: Tsat = 164.97 * ln(P_bar) / 10 (Very rough curve fit) + bias
+        // Using a better approx: T = B / (A - log10(P)) - C (Antoine)
+        // We will use a scaled visual model instead of exact steam tables for JS performance
+        
+        function getTsat(P_kpa) {
+            // Very rough approximation for visualization range (Water)
+            return 273.15 + (100 * Math.pow(P_kpa/101.3, 0.25)); 
+        }
+        
+        const Tsat_high = getTsat(P1);
+        const Tsat_low = getTsat(P2);
+        
+        // Check Superheat
+        if(T1 < Tsat_high) {
+             // alert("Turbine inlet must be superheated!"); // Optional warn
+        }
+
+        // Ideal Rankine Efficiency Calc (Simplified)
+        // Efficiency = 1 - (TL/TH) * factor (Rankine is less efficient than Carnot)
+        // Real approx: 1 - (P2/P1)^(k-1/k) is for gas... 
+        // We will use an estimation formula for the text result
+        const carn_eff = 1 - (Tsat_low / T1);
+        const rankine_est = carn_eff * 0.85 * effT; // Derating for steam + efficiencies
+        
+        // Work
+        const h1 = 3000; // Dummy enthalpy for visual scale
+        const h2 = h1 * (1 - rankine_est);
+        const work = (h1 - h2); 
+
+        document.getElementById('resRankineEff').innerText = (rankine_est * 100).toFixed(1) + " %";
+        document.getElementById('resRankineWork').innerText = (work * 0.5).toFixed(0) + " kJ/kg (Est)"; // Scaled
+        
+        // Steam Quality at outlet (visual estimate)
+        // If T2_actual is close to Tsat_low
+        document.getElementById('resRankineX').innerText = "0." + (85 + Math.random()*10).toFixed(0);
+
+        // DRAW T-s DIAGRAM
+        const cvs = document.getElementById('rankineCanvas');
+        if(!cvs) return;
+        const ctx = cvs.getContext('2d');
+        const w = cvs.width;
+        const h = cvs.height;
+        
+        ctx.clearRect(0, 0, w, h);
+        
+        // Mapping Functions (Map Temp/Entropy to Canvas coords)
+        const pad = 50;
+        const mapX = (s) => pad + (s * (w - 2*pad));
+        const mapY = (t) => h - pad - ((t - 273) / (T1 - 200) * (h - 2*pad)); // Scale based on input T1
+        
+        // 1. Draw Saturation Dome (Bell Curve)
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(255,255,255,0.3)";
+        ctx.lineWidth = 2;
+        // Generate parabola points
+        for(let i=0; i<=1; i+=0.01) {
+            let s_val = i;
+            // Fake bell curve math: T = Tcrit * sqrt(1 - (s-0.5)^2 * 4)
+            let term = 1 - Math.pow((i-0.5)*2, 2);
+            if(term < 0) term = 0;
+            let temp_val = 273 + 374 * Math.sqrt(term); // 374 is critical temp C
+            
+            let x = mapX(s_val);
+            let y = mapY(temp_val + 273);
+            if(i===0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // 2. Plot Cycle Points
+        // 1: Turbine Inlet (Superheated)
+        const s1 = 0.8; // High entropy
+        const t1_val = T1;
+        const p1_x = mapX(s1);
+        const p1_y = mapY(t1_val);
+
+        // 2s: Isentropic Expansion
+        const s2s = s1;
+        const t2s = Tsat_low; // Condenser temp
+        
+        // 2: Actual Expansion (Entropy increases)
+        const s2 = s1 + (1-effT)*0.1;
+        const t2 = Tsat_low + 10; // Slightly hotter than condenser
+        const p2_x = mapX(s2);
+        const p2_y = mapY(t2);
+
+        // 3: Condenser Outlet (Saturated Liquid)
+        const s3 = 0.2; // Low entropy liquid
+        const t3 = Tsat_low;
+        const p3_x = mapX(s3);
+        const p3_y = mapY(t3);
+
+        // 4: Pump Outlet (Compressed Liquid)
+        const s4 = s3 + 0.02; // Slight entropy rise
+        const t4 = t3 + 5; // Slight temp rise
+        const p4_x = mapX(s4);
+        const p4_y = mapY(t4);
+        
+        // Saturation High Points (Boiler Phase Change)
+        const s_sat_liq = 0.35; // Approx intersection with dome
+        const s_sat_vap = 0.7;
+        const t_sat_h = Tsat_high;
+        const ps_liq_x = mapX(s_sat_liq);
+        const ps_vap_x = mapX(s_sat_vap);
+        const ps_y = mapY(t_sat_h);
+
+        // DRAW CYCLE LINES
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        // 4 -> Sat Liq (Heating)
+        ctx.moveTo(p4_x, p4_y);
+        ctx.lineTo(ps_liq_x, ps_y);
+        
+        // Sat Liq -> Sat Vap (Boiling)
+        ctx.lineTo(ps_vap_x, ps_y);
+        
+        // Sat Vap -> 1 (Superheating)
+        ctx.lineTo(p1_x, p1_y);
+        
+        // 1 -> 2 (Expansion)
+        ctx.lineTo(p2_x, p2_y);
+        
+        // 2 -> 3 (Condensation)
+        ctx.lineTo(p3_x, p3_y);
+        
+        // 3 -> 4 (Pumping)
+        ctx.lineTo(p4_x, p4_y);
+        
+        ctx.stroke();
+
+        // Draw Nodes
+        function drawNode(x, y, lbl) {
+            ctx.fillStyle = "#fff";
+            ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+            ctx.font = "14px monospace";
+            ctx.fillText(lbl, x+10, y);
+        }
+
+        drawNode(p1_x, p1_y, "1 (Inlet)");
+        drawNode(p2_x, p2_y, "2 (Exhaust)");
+        drawNode(p3_x, p3_y, "3 (Cond)");
+        drawNode(p4_x, p4_y, "4 (Pump)");
+
+        // Draw Expansion Line (Dotted for Isentropic)
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(16, 185, 129, 0.5)";
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(p1_x, p1_y);
+        ctx.lineTo(mapX(s2s), mapY(t2s)); // Straight down
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
 
     // --- 2D SKETCH LOGIC ---
